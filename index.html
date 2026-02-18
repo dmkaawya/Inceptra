@@ -8,9 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #00f3ff; /* Cyan Neon */
-            --secondary: #bc13fe; /* Purple Neon */
-            --accent: #00e676; /* Green for success */
+            --primary: #00f3ff;
+            --secondary: #bc13fe;
+            --accent: #00e676;
             --bg-dark: #050510;
             --card-bg: rgba(20, 20, 35, 0.7);
             --text-main: #ffffff;
@@ -30,286 +30,119 @@
 
         /* Animated Background */
         .bg-animation {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             background: linear-gradient(45deg, #050510, #0a0a20, #050510);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
         }
         .bg-animation::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.8) 80%);
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        /* Container */
-        .container {
-            width: 100%;
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
+        .container { width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
 
-        /* Logo & Header */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px 0;
-        }
-        .logo-text {
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: 3px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-            margin-bottom: 5px;
-        }
-        .logo-sub {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .lang-switch {
-            margin-top: 10px;
-            font-size: 0.8rem;
-            color: var(--primary);
-            cursor: pointer;
-            text-decoration: underline;
-        }
+        /* Header */
+        .header { text-align: center; margin-bottom: 30px; padding: 20px 0; }
+        .logo-text { font-size: 2.5rem; font-weight: 800; letter-spacing: 3px; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-sub { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Cards & Glass Effect */
+        /* Components */
         .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            transition: transform 0.3s ease;
+            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 25px; margin-bottom: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); transition: transform 0.3s ease;
         }
-        .glass-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Buttons */
+        
         .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            width: 100%; padding: 12px; border: none; border-radius: 8px; font-family: inherit;
+            font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease;
         }
-        .btn-primary {
-            background: linear-gradient(90deg, var(--primary), #00b4d8);
-            color: #000;
-            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
-        }
-        .btn-primary:hover {
-            box-shadow: 0 6px 25px rgba(0, 243, 255, 0.5);
-            transform: translateY(-1px);
-        }
-        .btn-danger {
-            background: rgba(255, 64, 129, 0.2);
-            color: #ff4081;
-            border: 1px solid #ff4081;
-            padding: 8px 20px;
-            width: auto;
-            font-size: 0.9rem;
-        }
+        .btn-primary { background: linear-gradient(90deg, var(--primary), #00b4d8); color: #000; box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3); }
+        .btn-primary:hover { box-shadow: 0 6px 25px rgba(0, 243, 255, 0.5); transform: translateY(-1px); }
+        .btn-danger { background: rgba(255, 64, 129, 0.2); color: #ff4081; border: 1px solid #ff4081; width: auto; padding: 8px 20px; font-size: 0.9rem; }
         .btn-danger:hover { background: #ff4081; color: white; }
         
         .btn-vote {
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
+            background: transparent; border: 1px solid var(--accent); color: var(--accent);
+            padding: 8px; font-size: 0.9rem;
         }
-        .btn-vote:hover {
-            background: var(--accent);
-            color: #000;
-            box-shadow: 0 0 15px var(--accent);
-        }
-        .btn-vote:disabled {
-            border-color: #555;
-            color: #555;
-            background: rgba(255,255,255,0.05);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+        .btn-vote:hover { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent); }
+        .btn-vote:disabled { border-color: #555; color: #555; background: rgba(255,255,255,0.05); cursor: not-allowed; box-shadow: none; }
 
-        /* Inputs */
-        .input-group { margin-bottom: 15px; }
         .input-field {
-            width: 100%;
-            padding: 14px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: white;
-            font-family: inherit;
-            transition: 0.3s;
+            width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px; color: white; font-family: inherit; margin-bottom: 10px;
         }
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
-        }
+        .input-field:focus { outline: none; border-color: var(--primary); }
 
-        /* Costume Grid */
-        .costume-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
+        /* Category Sections */
+        .category-title {
+            font-size: 1.5rem; color: var(--secondary); margin: 30px 0 15px; padding-left: 10px;
+            border-left: 4px solid var(--secondary); display: flex; align-items: center; gap: 10px;
         }
-        @media(min-width: 500px) {
-            .costume-grid { grid-template-columns: 1fr 1fr; }
-        }
+        .category-title.boys { color: #00b4d8; border-color: #00b4d8; }
+        .category-title.girls { color: #ff4081; border-color: #ff4081; }
 
-        .costume-card {
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
-        }
-        .costume-card:hover { border-color: var(--primary); }
+        .costume-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         
-        .costume-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        .costume-card {
+            background: rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative;
         }
-        .costume-info { padding: 15px; text-align: center; }
-        .costume-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 10px;
+        .costume-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .costume-img { width: 100%; height: 200px; object-fit: cover; }
+        .costume-info { padding: 15px; }
+        .costume-name { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 5px; }
+        .costume-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4; min-height: 40px; }
+
+        .voted-badge {
+            position: absolute; top: 10px; right: 10px; background: var(--accent); color: #000;
+            padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; z-index: 2;
         }
 
-        /* Admin Dashboard Tabs */
-        .tab-nav {
-            display: flex;
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            padding: 5px;
-            margin-bottom: 20px;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.3s;
-            font-family: inherit;
-        }
-        .tab-btn.active {
-            background: var(--secondary);
-            color: white;
-            box-shadow: 0 0 10px rgba(188, 19, 254, 0.4);
-        }
+        /* Admin Tabs */
+        .tab-nav { display: flex; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 8px; font-family: inherit; }
+        .tab-btn.active { background: var(--secondary); color: white; box-shadow: 0 0 10px rgba(188, 19, 254, 0.4); }
 
-        /* Live Chart */
-        .chart-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            background: rgba(0,0,0,0.2);
-            padding: 10px;
-            border-radius: 8px;
-        }
-        .chart-name { width: 80px; font-weight: 600; font-size: 0.9rem; }
-        .chart-bar-container {
-            flex-grow: 1;
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-            margin: 0 15px;
-            overflow: hidden;
-        }
-        .chart-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 4px;
-            transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        /* Chart */
+        .chart-row { display: flex; align-items: center; margin-bottom: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; }
+        .chart-name { width: 100px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chart-bar-container { flex-grow: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin: 0 10px; overflow: hidden; }
+        .chart-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 4px; transition: width 0.5s; }
         .chart-val { width: 30px; text-align: right; font-weight: bold; font-size: 0.9rem; color: var(--primary); }
 
-        /* Utilities */
         .hidden { display: none !important; }
         .text-center { text-align: center; }
         .flex-between { display: flex; justify-content: space-between; align-items: center; }
-        .status-box {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            border-left: 3px solid yellow;
-        }
+        
+        .status-box { background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; border-left: 3px solid yellow; }
         .status-success { border-color: var(--accent); color: var(--accent); }
         .status-error { border-color: #ff4081; color: #ff4081; }
-        
-        /* User Info Header */
-        .user-header {
-            background: linear-gradient(90deg, rgba(188,19,254,0.1), transparent);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(188,19,254,0.2);
-        }
+
+        select.input-field { cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="bg-animation"></div>
-
     <div class="container">
         
         <!-- Header -->
         <div class="header">
             <div class="logo-text">Inceptra25</div>
             <div class="logo-sub">Official Voting Platform</div>
-            <div class="logo-sub" style="font-family: 'Noto Sans Sinhala', sans-serif; text-transform: none; margin-top:5px;">නිල ඡන්ද වේදිකාව</div>
         </div>
 
         <!-- AUTH VIEW -->
         <div id="view-auth" class="hidden glass-card">
             <h2 class="text-center" style="margin-bottom: 20px;" id="auth-title">Login</h2>
-            <div class="input-group">
-                <input type="text" id="fullname" placeholder="Full Name / නම" class="input-field hidden">
-            </div>
-            <div class="input-group">
-                <input type="email" id="email" placeholder="Email / ඊමේල්" class="input-field">
-            </div>
-            <div class="input-group">
-                <input type="password" id="password" placeholder="Password / මුරපදය" class="input-field">
-            </div>
+            <input type="text" id="fullname" placeholder="Full Name / නම" class="input-field hidden">
+            <input type="email" id="email" placeholder="Email / ඊමේල්" class="input-field">
+            <input type="password" id="password" placeholder="Password / මුරපදය" class="input-field">
             <button onclick="handleAuth()" class="btn btn-primary" id="btn-auth">Login</button>
             <p onclick="toggleAuth()" style="color:#aaa; cursor:pointer; margin-top:15px; text-align:center; font-size:0.9rem;">
                 <span id="text-toggle">New? Create Account / ගිණුමක් සාදන්න</span>
@@ -318,7 +151,7 @@
 
         <!-- AUDIENCE VIEW -->
         <div id="view-audience" class="hidden">
-            <div class="user-header flex-between">
+            <div class="user-header flex-between glass-card" style="padding:15px;">
                 <div>
                     <div style="font-size:0.8rem; color:#aaa;">Welcome</div>
                     <div style="font-weight:600;" id="user-name-display">User</div>
@@ -326,11 +159,19 @@
                 <button onclick="logout()" class="btn-danger">Logout</button>
             </div>
 
-            <div id="loc-status" class="status-box">
-                📍 Detecting Location... / ස්ථානය සොයමින්...
+            <div id="loc-status" class="status-box">📍 Detecting Location...</div>
+
+            <!-- Boys Section -->
+            <div id="section-boys">
+                <div class="category-title boys">👦 Boys</div>
+                <div id="list-boys" class="costume-grid"></div>
             </div>
 
-            <div id="costume-list" class="costume-grid"></div>
+            <!-- Girls Section -->
+            <div id="section-girls">
+                <div class="category-title girls">👧 Girls</div>
+                <div id="list-girls" class="costume-grid"></div>
+            </div>
         </div>
 
         <!-- ADMIN VIEW -->
@@ -348,22 +189,28 @@
 
             <div id="tab-chart">
                 <div class="glass-card">
-                    <h3 class="text-center" style="margin-bottom: 15px;">
-                        Total Votes: <span id="total-votes" style="color: var(--primary);">0</span>
-                    </h3>
+                    <h3 class="text-center" style="margin-bottom: 15px;">Total Votes: <span id="total-votes" style="color: var(--primary);">0</span></h3>
                     <div id="admin-chart-container">Loading...</div>
                 </div>
             </div>
 
             <div id="tab-manage" class="hidden">
                 <div class="glass-card">
-                    <h3 style="margin-bottom: 15px;">Add Costume / නව ඇඳුමක් එකතු කරන්න</h3>
-                    <div class="input-group">
-                        <input type="text" id="new-name" placeholder="Name" class="input-field">
-                    </div>
-                    <div class="input-group">
-                        <input type="text" id="new-img" placeholder="Image URL" class="input-field">
-                    </div>
+                    <h3 style="margin-bottom: 15px;">Add New Costume</h3>
+                    <input type="text" id="new-name" placeholder="Name" class="input-field">
+                    <textarea id="new-desc" placeholder="Short Description" class="input-field" rows="2"></textarea>
+                    
+                    <select id="new-category" class="input-field">
+                        <option value="boys">Boys</option>
+                        <option value="girls">Girls</option>
+                    </select>
+
+                    <label class="btn" style="background: #333; margin-bottom: 10px; text-align: center; cursor: pointer;">
+                        📸 Upload Image (JPG/PNG)
+                        <input type="file" id="new-img-file" accept="image/png, image/jpeg" style="display: none;">
+                    </label>
+                    <div id="file-name" style="font-size:0.8rem; color:#aaa; margin-bottom:10px;"></div>
+
                     <button onclick="addCostume()" class="btn btn-primary">Add Costume</button>
                 </div>
                 <div id="manage-list"></div>
@@ -384,7 +231,8 @@
 
     const TARGET_LAT = 6.5847; 
     const TARGET_LNG = 79.9605;
-    const MAX_METERS = 50000000; 
+    const MAX_METERS = 50000; 
+    const BUCKET_NAME = 'costumes'; // Make sure you created this bucket in Supabase Storage!
 
     let currentUser = null;
     let isRegister = false;
@@ -408,22 +256,10 @@
     // --- AUTH ---
     function toggleAuth() {
         isRegister = !isRegister;
-        const title = document.getElementById('auth-title');
-        const btn = document.getElementById('btn-auth');
-        const toggleText = document.getElementById('text-toggle');
-        const nameInput = document.getElementById('fullname');
-
-        if(isRegister) {
-            title.innerText = "Register";
-            btn.innerText = "Create Account";
-            toggleText.innerText = "Have Account? Login / ගිණුමක් තිබේද? පිවිසෙන්න";
-            nameInput.classList.remove('hidden');
-        } else {
-            title.innerText = "Login";
-            btn.innerText = "Login";
-            toggleText.innerText = "New? Create Account / ගිණුමක් සාදන්න";
-            nameInput.classList.add('hidden');
-        }
+        document.getElementById('auth-title').innerText = isRegister ? "Register" : "Login";
+        document.getElementById('btn-auth').innerText = isRegister ? "Create Account" : "Login";
+        document.getElementById('text-toggle').innerText = isRegister ? "Have Account? Login" : "New? Create Account";
+        document.getElementById('fullname').classList.toggle('hidden', !isRegister);
     }
 
     async function handleAuth() {
@@ -431,23 +267,21 @@
         const password = document.getElementById('password').value;
         const fullname = document.getElementById('fullname').value;
 
-        if(!email || !password) return alert("Please enter details!");
+        if(!email || !password) return alert("Enter details!");
 
         if(isRegister) {
             const { error } = await sb.auth.signUp({
                 email, password,
                 options: { data: { full_name: fullname } }
             });
-            if(!error) alert("Success! Registered.");
+            if(!error) alert("Registered!");
             else alert(error.message);
         } else {
             const { error } = await sb.auth.signInWithPassword({ email, password });
             if(error) alert(error.message);
         }
         
-        if(!document.getElementById('view-auth').classList.contains('hidden')) {
-             window.location.reload();
-        }
+        if(!document.getElementById('view-auth').classList.contains('hidden')) window.location.reload();
     }
 
     async function logout() { await sb.auth.signOut(); window.location.reload(); }
@@ -459,8 +293,7 @@
             showView('view-admin');
             initAdmin();
         } else if(profile && profile.role === 'blocked') {
-            alert("Account Blocked!");
-            logout();
+            alert("Account Blocked!"); logout();
         } else {
             showView('view-audience');
             document.getElementById('user-name-display').innerText = profile?.full_name || "User";
@@ -481,78 +314,121 @@
             const locDiv = document.getElementById('loc-status');
             
             if(dist <= MAX_METERS) {
-                locDiv.innerHTML = "✅ Location Verified / ස්ථානය තහවුරු විය";
+                locDiv.innerHTML = "✅ Location Verified";
                 locDiv.className = "status-box status-success";
-                loadVotingCards();
+                loadVotingData();
             } else {
-                locDiv.innerHTML = `❌ Out of Range / පරාසයෙන් පිටත (${Math.round(dist/1000)}km)`;
+                locDiv.innerHTML = `❌ Out of Range (${Math.round(dist/1000)}km)`;
                 locDiv.className = "status-box status-error";
             }
         }, () => {
-             document.getElementById('loc-status').innerHTML = "❌ Location Permission Denied";
+             document.getElementById('loc-status').innerHTML = "❌ Permission Denied";
              document.getElementById('loc-status').className = "status-box status-error";
         });
     }
 
-    async function loadVotingCards() {
+    async function loadVotingData() {
+        // 1. Fetch Costumes
         const { data: costumes } = await sb.from('costumes').select('*').order('id');
-        const { data: vote } = await sb.from('votes').select('*').eq('user_id', currentUser.id).single();
-        const list = document.getElementById('costume-list');
-        list.innerHTML = '';
+        
+        // 2. Fetch User's Votes
+        const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
+        
+        // Determine voted categories
+        const votedIds = votes.map(v => v.costume_id);
+        let votedBoy = false;
+        let votedGirl = false;
 
-        if(costumes.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1;'>No costumes available.</p>";
+        // Find which categories user has voted for
+        costumes.forEach(c => {
+            if(votedIds.includes(c.id)) {
+                if(c.category === 'boys') votedBoy = true;
+                if(c.category === 'girls') votedGirl = true;
+            }
+        });
+
+        // HTML Containers
+        const listBoys = document.getElementById('list-boys');
+        const listGirls = document.getElementById('list-girls');
+        listBoys.innerHTML = '';
+        listGirls.innerHTML = '';
+
+        if(costumes.length === 0) {
+            listBoys.innerHTML = "<p>No costumes yet.</p>";
+            return;
+        }
 
         costumes.forEach(c => {
-            const hasVoted = !!vote;
-            const isVotedThis = vote && vote.costume_id === c.id;
+            const isVoted = votedIds.includes(c.id);
             
+            // Determine if button should be blocked
+            // If I already voted for a boy, block other boys.
+            // If I already voted for a girl, block other girls.
+            let isBlocked = false;
+            if(c.category === 'boys' && votedBoy && !isVoted) isBlocked = true;
+            if(c.category === 'girls' && votedGirl && !isVoted) isBlocked = true;
+
             let btnHtml = '';
-            if(hasVoted) {
-                if(isVotedThis) {
-                    btnHtml = `<button class="btn btn-vote" disabled style="border-color:#00e676; color:#00e676;">✓ Voted</button>`;
-                } else {
-                    btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
-                }
+            if(isVoted) {
+                btnHtml = `<button class="btn btn-vote" disabled style="border-color:#00e676; color:#00e676;">✓ Voted</button>`;
+            } else if(isBlocked) {
+                btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
             } else {
-                btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote / ඡන්දය</button>`;
+                btnHtml = `<button onclick="castVote(${c.id}, '${c.category}')" class="btn btn-vote">Vote</button>`;
             }
 
-            list.innerHTML += `
+            const cardHtml = `
                 <div class="costume-card glass-card" style="padding:0; margin-bottom:0;">
+                    ${isVoted ? '<div class="voted-badge">SELECTED</div>' : ''}
                     <img src="${c.image_url}" onerror="this.src='https://via.placeholder.com/300x200?text=Inceptra25'" class="costume-img">
                     <div class="costume-info">
                         <div class="costume-name">${c.name}</div>
+                        <div class="costume-desc">${c.description || 'No description'}</div>
                         ${btnHtml}
                     </div>
                 </div>
             `;
+
+            if(c.category === 'boys') listBoys.innerHTML += cardHtml;
+            else listGirls.innerHTML += cardHtml;
         });
     }
 
-    async function castVote(id) {
-        if(!confirm("Confirm Vote? / ඡන්දය තහවුරු කරන්නද?")) return;
-        const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
-        if(error) alert("Error voting!");
-        else loadVotingCards();
+    async function castVote(id, category) {
+        if(!confirm(`Confirm vote for this ${category} category?`)) return;
+        
+        const { error } = await sb.from('votes').insert([{ 
+            user_id: currentUser.id, 
+            costume_id: id 
+        }]);
+        
+        if(error) {
+            alert("Error voting! You might have already voted in this category.");
+        } else {
+            loadVotingData(); // Refresh UI
+        }
     }
 
     // --- ADMIN ---
     function initAdmin() {
         loadAdminData();
-        // Realtime subscription
         sb.channel('public:costumes').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
         sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
+        
+        // File input display
+        document.getElementById('new-img-file').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : "";
+            document.getElementById('file-name').innerText = fileName ? `Selected: ${fileName}` : "";
+        });
     }
 
     async function loadAdminData() {
         // 1. Chart
         const { data: costumes } = await sb.from('costumes').select('*').order('vote_count', { ascending: false });
-        let total = 0; 
-        costumes.forEach(c => total += c.vote_count);
+        let total = 0; costumes.forEach(c => total += c.vote_count);
         document.getElementById('total-votes').innerText = total;
 
         const maxVotes = costumes.length > 0 ? costumes[0].vote_count : 1;
-
         document.getElementById('admin-chart-container').innerHTML = costumes.map(c => `
             <div class="chart-row">
                 <div class="chart-name">${c.name}</div>
@@ -567,8 +443,11 @@
         document.getElementById('manage-list').innerHTML = costumes.map(c => `
             <div class="glass-card flex-between" style="padding:15px; margin-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <img src="${c.image_url}" style="width:40px; height:40px; object-fit:cover; border-radius:5px;">
-                    <span>${c.name}</span>
+                    <img src="${c.image_url}" style="width:50px; height:50px; object-fit:cover; border-radius:5px;">
+                    <div>
+                        <b>${c.name}</b> <span style="font-size:0.8rem; color:#aaa;">(${c.category})</span><br>
+                        <small style="color:#aaa">${c.description || ''}</small>
+                    </div>
                 </div>
                 <button onclick="delCostume(${c.id})" class="btn-danger">Delete</button>
             </div>
@@ -595,21 +474,57 @@
 
     async function addCostume() {
         const name = document.getElementById('new-name').value;
-        const img = document.getElementById('new-img').value;
-        if(name) {
-            await sb.from('costumes').insert([{ name, image_url: img }]);
+        const desc = document.getElementById('new-desc').value;
+        const category = document.getElementById('new-category').value;
+        const fileInput = document.getElementById('new-img-file');
+        
+        if(!name) return alert("Name is required!");
+        if(fileInput.files.length === 0) return alert("Please select an image!");
+
+        const file = fileInput.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`; // Unique file name
+
+        // 1. Upload Image to Storage
+        const { data: uploadData, error: uploadError } = await sb.storage
+            .from(BUCKET_NAME)
+            .upload(fileName, file);
+
+        if(uploadError) {
+            alert("Image Upload Failed! Did you create the 'costumes' bucket in Supabase?");
+            console.error(uploadError);
+            return;
+        }
+
+        // 2. Get Public URL
+        const { data: urlData } = sb.storage.from(BUCKET_NAME).getPublicUrl(fileName);
+        const imageUrl = urlData.publicUrl;
+
+        // 3. Insert to DB
+        const { error } = await sb.from('costumes').insert([{ 
+            name: name, 
+            description: desc,
+            category: category,
+            image_url: imageUrl 
+        }]);
+
+        if(!error) {
+            alert("Costume Added!");
             document.getElementById('new-name').value = '';
-            document.getElementById('new-img').value = '';
-            alert("Added!");
+            document.getElementById('new-desc').value = '';
+            document.getElementById('file-name').innerText = '';
+            fileInput.value = '';
+        } else {
+            alert("Error adding costume!");
         }
     }
 
     async function delCostume(id) {
-        if(confirm("Delete this costume?")) await sb.from('costumes').delete().eq('id', id);
+        if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
     }
 
     async function changeUserRole(uid, role) {
-        if(confirm("Change user role?")) await sb.from('profiles').update({ role }).eq('id', uid);
+        if(confirm("Change Role?")) await sb.from('profiles').update({ role }).eq('id', uid);
     }
 
     // --- UTILS ---
