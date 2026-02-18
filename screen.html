@@ -2,91 +2,35 @@
 <html lang="si">
 <head>
     <meta charset="UTF-8">
-    <title>Live Results - Best Costume</title>
+    <title>Live Results</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #000;
-            color: #fff;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        h1 { font-size: 3rem; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2px; color: #f1c40f; }
-        
-        .results-container {
-            width: 100%;
-            max-width: 900px;
-        }
-
-        .result-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-            background: #111;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #333;
-        }
-
-        .costume-name {
-            width: 200px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            padding-right: 20px;
-            text-align: right;
-        }
-
-        .bar-area {
-            flex-grow: 1;
-            background: #333;
-            height: 40px;
-            border-radius: 20px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ff4081, #ff80ab);
-            width: 0%;
-            transition: width 0.8s ease-out; /* Smooth Animation */
-            border-radius: 20px;
-        }
-
-        .vote-count {
-            width: 80px;
-            text-align: left;
-            padding-left: 20px;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #00e676;
-        }
+        body { font-family: sans-serif; background: #000; color: #fff; padding: 50px; }
+        .bar-container { margin-bottom: 20px; border: 1px solid #333; padding: 10px; border-radius: 10px; }
+        .name { font-size: 24px; display: flex; justify-content: space-between; }
+        .bar-bg { background: #333; height: 30px; border-radius: 15px; margin-top: 10px; overflow: hidden; }
+        .bar-fill { background: #00e676; height: 100%; width: 0%; transition: width 0.5s; }
     </style>
 </head>
 <body>
-
     <h1>Live Results 📊</h1>
-    <div id="results" class="results-container">loading...</div>
+    <div id="results">Loading...</div>
 
     <script>
-        // Supabase Config
         const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // නම වෙනස් කළා
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         async function init() {
-            // 1. මුලින්ම තියෙන දත්ත ටික අරන් පෙන්නනවා
-            const { data } = await supabase.from('costumes').select('*').order('id');
+            const { data } = await supabaseClient.from('costumes').select('*').order('id');
             renderBars(data);
 
-            // 2. Real-time Channel එකට Subscribe කරනවා
-            supabase.channel('public:costumes')
+            // Realtime Update (නම වෙනස් කළා)
+            supabaseClient.channel('public:costumes')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'costumes' }, payload => {
-                // යම් වෙනසක් වුණාම මේක වැඩ කරනවා
-                updateSingleBar(payload.new);
+                updateBar(payload.new);
             })
             .subscribe();
         }
@@ -94,36 +38,26 @@
         function renderBars(data) {
             const container = document.getElementById('results');
             container.innerHTML = '';
-            
             data.forEach(item => {
                 container.innerHTML += `
-                    <div class="result-row" id="row-${item.id}">
-                        <div class="costume-name">${item.name}</div>
-                        <div class="bar-area">
-                            <div class="bar-fill" id="bar-${item.id}" style="width: ${calculateWidth(item.votes)}%"></div>
+                    <div class="bar-container">
+                        <div class="name">
+                            <span>${item.name}</span>
+                            <span id="count-${item.id}">${item.votes}</span>
                         </div>
-                        <div class="vote-count" id="count-${item.id}">${item.votes}</div>
+                        <div class="bar-bg">
+                            <div class="bar-fill" id="bar-${item.id}" style="width: ${item.votes}%"></div>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function updateSingleBar(newItem) {
-            // අලුත් අගයන් update කිරීම
-            const countEl = document.getElementById(`count-${newItem.id}`);
-            const barEl = document.getElementById(`bar-${newItem.id}`);
-            
-            if (countEl) countEl.innerText = newItem.votes;
-            if (barEl) barEl.style.width = calculateWidth(newItem.votes) + '%';
-        }
-
-        function calculateWidth(votes) {
-            // 1000 දෙනෙක් ඉන්න නිසා 1000න් බෙදලා ප්‍රතිශතය ගන්නවා.
-            // Bar එක ලස්සනට පේන්න ඕන නිසා පොඩි ගානක් වැඩි කරලා පෙන්නනවා.
-            // (votes / max_audience) * 100
-            let percentage = (votes / 500) * 100; // දැනට 500ක් කියල හිතමු bar එක පිරෙන්න
-            if(percentage > 100) percentage = 100;
-            return percentage;
+        function updateBar(item) {
+            const countEl = document.getElementById(`count-${item.id}`);
+            const barEl = document.getElementById(`bar-${item.id}`);
+            if(countEl) countEl.innerText = item.votes;
+            if(barEl) barEl.style.width = (item.votes) + '%';
         }
 
         init();
