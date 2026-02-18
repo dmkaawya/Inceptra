@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vote for Best Costume</title>
+    <title>Location Based Voting</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: sans-serif; background-color: #0f0f0f; color: #fff; text-align: center; padding: 20px; }
@@ -11,38 +11,85 @@
         img { width: 100%; border-radius: 5px; }
         button { background: #00e676; color: #000; border: none; padding: 10px 20px; width: 100%; margin-top: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; }
         button:disabled { background: #555; color: #888; cursor: not-allowed; }
+        #location-status { margin-bottom: 20px; color: #ff4081; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <h1>🏆 හොඳම ඇඳුම තෝරන්න</h1>
-    <div id="status" style="color: yellow;">Loading...</div>
-    <div id="costume-list"></div>
+    
+    <div id="location-status">Location Check කරමින් පවතී...</div>
+
+    <div id="costume-list" style="display:none;"></div>
 
     <script>
-        // 1. Supabase Client එක හදාගැනීම (නම වෙනස් කළා: supabaseClient)
+        // ==========================================
+        // 1. පහත විස්තර වෙනස් කරන්න (SETTINGS)
+        // ==========================================
+        
+        // Supabase Keys
         const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
         
-        // මෙතන තමයි වෙනස: 'supabase' වෙනුවට 'supabaseClient' දැම්මා
+        // ==========================================
+// 1. පහත විස්තර වෙනස් කරන්න (SETTINGS)
+// ==========================================
+
+// Event එක තියෙන තැන (කළුතර - J284+XXJ)
+const TARGET_LAT = 6.5847; 
+const TARGET_LNG = 79.9605;
+
+// මීටර් 500ක් ඇතුලත ඉන්න අයට විතරයි Vote කරන්න පුළුවන්
+const MAX_DISTANCE_METERS = 500;
+
+        // ==========================================
+
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        async function loadCostumes() {
-            const list = document.getElementById('costume-list');
-            const status = document.getElementById('status');
-
-            // දත්ත ලබා ගැනීම (supabaseClient භාවිතා කරමින්)
-            const { data, error } = await supabaseClient.from('costumes').select('*').order('id');
-            
-            if (error) {
-                console.error('Error:', error);
-                status.innerHTML = "Error loading data! Please refresh.";
+        // මුලින්ම Location එක Check කරනවා
+        function initLocationCheck() {
+            if (!navigator.geolocation) {
+                document.getElementById('location-status').innerText = "ඔබේ Browser එකේ Location වැඩ කරන්නේ නැත.";
                 return;
             }
 
-            status.style.display = 'none'; // Loading අයින් කරනවා
+            document.getElementById('location-status').innerText = "කරුණාකර Location Access ලබා දෙන්න...";
 
-            // කලින් Vote කරලද බලනවා
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    
+                    // දුර මනිනවා
+                    const distance = getDistanceFromLatLonInKm(userLat, userLng, TARGET_LAT, TARGET_LNG) * 1000; // Meters වලින්
+                    
+                    console.log("ඔබ සිටින දුර (Meters): " + distance);
+
+                    if (distance <= MAX_DISTANCE_METERS) {
+                        document.getElementById('location-status').innerHTML = "✅ Location තහවුරු විය! <br>ඔබට ඡන්දය දිය හැක.";
+                        document.getElementById('location-status').style.color = "#00e676";
+                        document.getElementById('costume-list').style.display = "block"; // List එක පෙන්නනවා
+                        loadCostumes(); // Data load කරනවා
+                    } else {
+                        document.getElementById('location-status').innerHTML = `❌ ඔබ සිටින්නේ Event එකට පිටතින්! <br> මීටර් ${Math.round(distance)} ක් දුරින්.`;
+                    }
+                },
+                (error) => {
+                    document.getElementById('location-status').innerText = "⚠️ Location Access ලබා දුන්නේ නැත. ඡන්දය දිය නොහැක.";
+                },
+                { enableHighAccuracy: true } // GPS හරියටම ගන්න කියනවා
+            );
+        }
+
+        async function loadCostumes() {
+            const list = document.getElementById('costume-list');
+            const { data, error } = await supabaseClient.from('costumes').select('*').order('id');
+            
+            if (error) {
+                list.innerText = "Error loading data.";
+                return;
+            }
+
             const hasVoted = localStorage.getItem('has_voted_costume');
 
             data.forEach(item => {
@@ -50,7 +97,7 @@
                 div.className = 'card';
                 div.innerHTML = `
                     <h3>${item.name}</h3>
-                    <button id="btn-${item.id}" onclick="vote(${item.id})" ${hasVoted ? 'disabled' : ''}>
+                    <button onclick="vote(${item.id})" ${hasVoted ? 'disabled' : ''}>
                         ${hasVoted ? 'ඡන්දය දී ඇත' : 'Vote Now'}
                     </button>
                 `;
@@ -59,15 +106,10 @@
         }
 
         async function vote(id) {
-            if(localStorage.getItem('has_voted_costume')) {
-                alert("දැනටමත් ඡන්දය දී ඇත!");
-                return;
-            }
-
-            // Buttons Disable
+            if(localStorage.getItem('has_voted_costume')) { alert("දැනටමත් ඡන්දය දී ඇත!"); return; }
+            
             document.querySelectorAll('button').forEach(b => { b.disabled = true; b.innerText = "Processing..."; });
 
-            // Vote කිරීම (RPC Call)
             const { error } = await supabaseClient.rpc('vote_for_costume', { row_id: id });
 
             if (!error) {
@@ -75,13 +117,31 @@
                 alert("Vote Success!");
                 document.querySelectorAll('button').forEach(b => b.innerText = "ඡන්දය දී ඇත");
             } else {
-                alert("Error voting. Try again.");
-                console.error(error);
-                location.reload(); // Refresh page if error
+                alert("Error voting.");
+                location.reload();
             }
         }
 
-        loadCostumes();
+        // දුර මනින ගණිත සූත්‍රය (Haversine Formula)
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            var R = 6371; // Radius of the earth in km
+            var dLat = deg2rad(lat2-lat1);  
+            var dLon = deg2rad(lon2-lon1); 
+            var a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            var d = R * c; // Distance in km
+            return d;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI/180)
+        }
+
+        // Start Process
+        initLocationCheck();
+
     </script>
 </body>
 </html>
