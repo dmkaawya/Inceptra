@@ -3,162 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Costume Voting App</title>
+    <title>Nova Voting System</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 0; display: flex; justify-content: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 600px; padding: 20px; text-align: center; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: white; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 500px; text-align: center; }
         
-        /* Utility Classes */
+        /* Inputs & Buttons */
+        input { width: 100%; padding: 12px; margin: 5px 0; background: #222; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin-top: 10px; background: #00e676; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        button.secondary { background: #333; color: white; }
         .hidden { display: none !important; }
-        .btn { background: #00e676; color: #000; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; font-size: 16px; }
-        .btn:disabled { background: #333; color: #777; cursor: not-allowed; }
-        .btn-danger { background: #ff5252; color: white; }
-        .btn-secondary { background: #333; color: white; }
-        input { width: 100%; padding: 12px; margin: 8px 0; background: #1e1e1e; border: 1px solid #333; color: white; border-radius: 5px; box-sizing: border-box; }
         
-        /* Card Styles */
-        .card { background: #1e1e1e; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: left; border: 1px solid #333; }
-        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        /* Cards */
+        .card { background: #1a1a1a; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; text-align: left; }
+        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 5px; }
+        .card h3 { margin: 10px 0 5px; color: #00e676; }
         
-        /* Bar Chart */
-        .bar-row { display: flex; align-items: center; margin-bottom: 8px; background: #222; padding: 8px; border-radius: 5px; }
-        .bar-label { width: 100px; font-size: 14px; }
-        .bar-track { flex-grow: 1; background: #444; height: 20px; margin: 0 10px; border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; background: #00e676; width: 0%; transition: width 0.5s; }
-        
-        /* Loading */
-        .loader { border: 4px solid #333; border-top: 4px solid #00e676; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 50px auto; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        /* Admin Bar */
+        .bar-row { display: flex; align-items: center; margin-bottom: 5px; }
+        .bar-fill { height: 20px; background: #00e676; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    
+
     <div id="view-loading">
-        <div class="loader"></div>
-        <p>Loading System...</p>
+        <h2>Loading System...</h2>
     </div>
 
     <div id="view-auth" class="hidden">
-        <h1 style="color:#00e676;">Welcome</h1>
-        <div class="card">
+        <h1 style="color:#00e676;">Nova Voting</h1>
+        <div class="card" style="text-align: center;">
             <h2 id="auth-title">Login</h2>
-            <input type="email" id="email" placeholder="Enter Email">
-            <input type="password" id="password" placeholder="Enter Password">
-            <button class="btn" onclick="handleAuth()">Submit</button>
-            <p style="margin-top:15px; font-size:14px; color:#aaa; cursor:pointer;" onclick="toggleAuthMode()" id="auth-toggle">
-                New here? Create Account
+            
+            <input type="text" id="fullname" placeholder="Full Name" class="hidden">
+            
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            
+            <button onclick="handleAuth()" id="btn-auth">Login</button>
+            
+            <p onclick="toggleAuth()" style="color:#aaa; cursor:pointer; margin-top:15px; text-decoration:underline;">
+                <span id="text-toggle">New? Create Account</span>
             </p>
+
+            <div style="margin-top:20px; font-size:12px; color:#555; border-top:1px solid #333; padding-top:10px;">
+                <b>Admin Tip:</b> Register as <br> <code style="color:yellow">admin@nova.com</code> to become Admin automatically.
+            </div>
         </div>
     </div>
 
     <div id="view-audience" class="hidden">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3>Vote Now</h3>
-            <button onclick="logout()" style="background:none; border:none; color:#ff5252; cursor:pointer;">Logout</button>
+            <h3>Welcome, <span id="user-name-display">User</span></h3>
+            <button onclick="logout()" style="width:auto; background:#ff4081; padding:5px 15px; font-size:12px;">Logout</button>
         </div>
-        
-        <div id="location-status" style="background:#332b00; padding:10px; border-radius:5px; color:#ffd700; margin-bottom:20px;">
+
+        <div id="loc-status" style="background:#222; padding:10px; border-radius:5px; margin:10px 0; color:yellow;">
             Checking GPS...
         </div>
 
-        <div id="costume-list"></div>
+        <div id="costume-list">Loading Costumes...</div>
     </div>
 
     <div id="view-admin" class="hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 style="color:#00e676;">Admin Panel</h2>
-            <button onclick="logout()" class="btn-danger" style="width:auto; padding:5px 15px;">Logout</button>
+        <h2 style="color:#00e676;">Admin Panel</h2>
+        <button onclick="logout()" style="background:#ff4081; margin-bottom:20px;">Logout</button>
+
+        <div class="card">
+            <h3>Live Results</h3>
+            <div id="admin-chart">Loading...</div>
         </div>
 
-        <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <button class="btn btn-secondary" onclick="showAdminTab('chart')">Chart</button>
-            <button class="btn btn-secondary" onclick="showAdminTab('costumes')">Costumes</button>
-            <button class="btn btn-secondary" onclick="showAdminTab('users')">Users</button>
+        <div class="card">
+            <h3>Add New Costume</h3>
+            <input type="text" id="new-name" placeholder="Costume Name">
+            <input type="text" id="new-img" placeholder="Image URL">
+            <button onclick="addCostume()">Add Costume</button>
         </div>
 
-        <div id="admin-chart">
-            <h3>Total Votes: <span id="total-votes">0</span></h3>
-            <div id="chart-container"></div>
-        </div>
-
-        <div id="admin-costumes" class="hidden">
-            <div class="card">
-                <h3>Add Costume</h3>
-                <input type="text" id="new-name" placeholder="Name">
-                <input type="text" id="new-img" placeholder="Image URL">
-                <button class="btn" onclick="addCostume()">Add</button>
-            </div>
-            <div id="admin-costume-list"></div>
-        </div>
-
-        <div id="admin-users" class="hidden">
-            <div id="admin-user-list"></div>
+        <div class="card">
+            <h3>Registered Users</h3>
+            <div id="user-list">Loading...</div>
         </div>
     </div>
 
 </div>
 
 <script>
-    // --- CONFIGURATION ---
+    // --- SETTINGS ---
     const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
     const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
-    const TARGET_LAT = 6.5847; // Kalutara
+    // Location Settings (Kalutara)
+    const TARGET_LAT = 6.5847; 
     const TARGET_LNG = 79.9605;
-    const MAX_METERS = 10000; // 10KM Radius (Change to 500 later)
+    const MAX_METERS = 50000; // 50KM (ටෙස්ට් කරන්න වැඩි කළා)
 
     let currentUser = null;
     let isRegister = false;
 
-    // --- APP START ---
+    // --- INIT ---
     async function init() {
         const { data: { session } } = await sb.auth.getSession();
-        
-        if (!session) {
-            showView('view-auth');
-        } else {
+        if (session) {
             currentUser = session.user;
-            checkRoleAndRedirect(currentUser.id);
-        }
-    }
-
-    async function checkRoleAndRedirect(uid) {
-        const { data: profile } = await sb.from('profiles').select('*').eq('id', uid).single();
-        
-        if (!profile || profile.role === 'audience') {
-            showView('view-audience');
-            initAudience();
-        } else if (profile.role === 'admin') {
-            showView('view-admin');
-            initAdmin();
+            checkRole(currentUser.id);
         } else {
-            alert("Account Blocked");
-            sb.auth.signOut();
             showView('view-auth');
         }
     }
 
-    // --- AUTH ---
-    function toggleAuthMode() {
+    // --- AUTH LOGIC ---
+    function toggleAuth() {
         isRegister = !isRegister;
         document.getElementById('auth-title').innerText = isRegister ? "Register" : "Login";
-        document.getElementById('auth-toggle').innerText = isRegister ? "Have account? Login" : "New here? Create Account";
+        document.getElementById('btn-auth').innerText = isRegister ? "Register" : "Login";
+        document.getElementById('text-toggle').innerText = isRegister ? "Have account? Login" : "New? Create Account";
+        // Show/Hide Name Field
+        if(isRegister) document.getElementById('fullname').classList.remove('hidden');
+        else document.getElementById('fullname').classList.add('hidden');
     }
 
     async function handleAuth() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        if (!email || !password) return alert("Fill all fields");
+        const fullname = document.getElementById('fullname').value;
 
-        const { error } = isRegister 
-            ? await sb.auth.signUp({ email, password })
-            : await sb.auth.signInWithPassword({ email, password });
+        if(!email || !password) return alert("Email & Password required!");
+        if(isRegister && !fullname) return alert("Full Name required!");
 
-        if (error) alert(error.message);
+        let error;
+        if(isRegister) {
+            // Register වෙද්දී නම (Full Name) Meta Data විදියට යවනවා
+            const res = await sb.auth.signUp({
+                email, password,
+                options: { data: { full_name: fullname } }
+            });
+            error = res.error;
+            if(!error) alert("Registration Success! Logging in...");
+        } else {
+            const res = await sb.auth.signInWithPassword({ email, password });
+            error = res.error;
+        }
+
+        if(error) alert(error.message);
         else window.location.reload();
     }
 
@@ -167,94 +159,99 @@
         window.location.reload();
     }
 
-    // --- AUDIENCE LOGIC ---
-    function initAudience() {
-        if (!navigator.geolocation) {
-            document.getElementById('location-status').innerText = "GPS Not Supported";
-            return;
+    // --- ROLE CHECK ---
+    async function checkRole(uid) {
+        const { data: profile } = await sb.from('profiles').select('*').eq('id', uid).single();
+        
+        if(profile && profile.role === 'admin') {
+            showView('view-admin');
+            loadAdminData();
+        } else {
+            showView('view-audience');
+            document.getElementById('user-name-display').innerText = profile?.full_name || "User";
+            checkLocation();
         }
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                const dist = getDist(pos.coords.latitude, pos.coords.longitude);
-                if (dist <= MAX_METERS) {
-                    document.getElementById('location-status').innerHTML = "✅ Location Verified";
-                    document.getElementById('location-status').style.color = "#00e676";
-                    loadVotingCards();
-                } else {
-                    document.getElementById('location-status').innerText = `❌ Too far (${Math.round(dist)}m)`;
-                    document.getElementById('location-status').style.color = "#ff5252";
-                }
-            },
-            () => document.getElementById('location-status').innerText = "⚠️ Allow GPS Access!"
-        );
     }
 
-    async function loadVotingCards() {
+    // --- AUDIENCE LOGIC ---
+    function checkLocation() {
+        if(!navigator.geolocation) return document.getElementById('loc-status').innerText = "No GPS!";
+        
+        navigator.geolocation.getCurrentPosition(pos => {
+            const dist = getDist(pos.coords.latitude, pos.coords.longitude);
+            if(dist <= MAX_METERS) {
+                document.getElementById('loc-status').innerHTML = "✅ Location Verified";
+                document.getElementById('loc-status').style.color = "#00e676";
+                loadCostumes();
+            } else {
+                document.getElementById('loc-status').innerHTML = `❌ Too Far (${Math.round(dist)}m)`;
+                document.getElementById('loc-status').style.color = "red";
+            }
+        });
+    }
+
+    async function loadCostumes() {
         const { data: costumes } = await sb.from('costumes').select('*').order('id');
         const { data: vote } = await sb.from('votes').select('*').eq('user_id', currentUser.id).single();
+        
         const list = document.getElementById('costume-list');
         list.innerHTML = '';
+
+        if(costumes.length === 0) {
+            list.innerHTML = "<p>No costumes added yet.</p>";
+            return;
+        }
 
         costumes.forEach(c => {
             const hasVoted = !!vote;
             const btnText = hasVoted ? (vote.costume_id === c.id ? "✅ You Voted This" : "Locked") : "Vote Now";
+            
             list.innerHTML += `
                 <div class="card">
-                    <img src="${c.image_url || 'https://via.placeholder.com/300'}" onerror="this.src='https://via.placeholder.com/300'">
+                    <img src="${c.image_url}" onerror="this.src='https://via.placeholder.com/300'">
                     <h3>${c.name}</h3>
-                    <button class="btn" onclick="castVote(${c.id})" ${hasVoted ? 'disabled' : ''}>${btnText}</button>
+                    <button onclick="vote(${c.id})" ${hasVoted ? 'disabled' : ''} class="${hasVoted ? 'secondary' : ''}">${btnText}</button>
                 </div>
             `;
         });
     }
 
-    async function castVote(cid) {
-        if(!confirm("Confirm Vote?")) return;
+    async function vote(cid) {
+        if(!confirm("Sure?")) return;
         const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: cid }]);
         if(error) alert("Error!");
-        else loadVotingCards();
+        else loadCostumes();
     }
 
     // --- ADMIN LOGIC ---
-    function initAdmin() {
-        loadAdminData();
-        sb.channel('updates').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
-    }
-
     async function loadAdminData() {
         // Chart
         const { data: costumes } = await sb.from('costumes').select('*').order('vote_count', { ascending: false });
         let total = 0; costumes.forEach(c => total += c.vote_count);
-        document.getElementById('total-votes').innerText = total;
         
-        document.getElementById('chart-container').innerHTML = costumes.map(c => `
-            <div class="bar-row">
-                <div class="bar-label">${c.name}</div>
-                <div class="bar-track"><div class="bar-fill" style="width:${(c.vote_count/(total||1))*100}%"></div></div>
-                <div>${c.vote_count}</div>
+        document.getElementById('admin-chart').innerHTML = costumes.map(c => `
+            <div style="margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span>${c.name}</span>
+                    <span>${c.vote_count}</span>
+                </div>
+                <div style="background:#333; height:10px; border-radius:5px; margin-top:2px;">
+                    <div style="background:#00e676; height:100%; width:${(c.vote_count/(total||1))*100}%"></div>
+                </div>
+                <button onclick="delCostume(${c.id})" style="padding:5px; margin-top:5px; background:red; font-size:10px; width:auto;">Delete</button>
             </div>
         `).join('');
 
-        // Costume List
-        document.getElementById('admin-costume-list').innerHTML = costumes.map(c => `
-            <div style="display:flex; justify-content:space-between; margin-top:10px; border-bottom:1px solid #333; padding-bottom:5px;">
-                <span>${c.name}</span>
-                <button class="btn-danger" style="padding:2px 10px; border:none; cursor:pointer;" onclick="delCostume(${c.id})">Del</button>
-            </div>
-        `).join('');
-
-        // User List
+        // Users
         const { data: users } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
-        document.getElementById('admin-user-list').innerHTML = users.map(u => `
-            <div class="card" style="padding:10px;">
-                <p><b>${u.email}</b></p>
-                <select onchange="changeRole('${u.id}', this.value)" style="width:100%; padding:5px;">
-                    <option value="audience" ${u.role==='audience'?'selected':''}>Audience</option>
-                    <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-                    <option value="blocked" ${u.role==='blocked'?'selected':''}>Blocked</option>
-                </select>
+        document.getElementById('user-list').innerHTML = users.map(u => `
+            <div style="border-bottom:1px solid #333; padding:5px; font-size:12px;">
+                <b>${u.full_name || 'No Name'}</b> (${u.email}) - <span style="color:yellow">${u.role}</span>
             </div>
         `).join('');
+        
+        // Realtime Subscribe
+        sb.channel('admin').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
     }
 
     async function addCostume() {
@@ -268,19 +265,10 @@
         if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
     }
 
-    async function changeRole(uid, role) {
-        if(confirm("Change role?")) await sb.from('profiles').update({ role }).eq('id', uid);
-    }
-
     // --- UTILS ---
     function showView(id) {
         ['view-loading', 'view-auth', 'view-audience', 'view-admin'].forEach(v => document.getElementById(v).classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
-    }
-
-    function showAdminTab(tab) {
-        ['admin-chart', 'admin-costumes', 'admin-users'].forEach(t => document.getElementById(t).classList.add('hidden'));
-        document.getElementById('admin-' + tab).classList.remove('hidden');
     }
 
     function getDist(lat1, lon1) {
