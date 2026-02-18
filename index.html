@@ -6,97 +6,41 @@
     <title>Vote for Best Costume</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #0f0f0f;
-            color: #ffffff;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-        h1 { color: #00e676; margin-bottom: 5px; }
-        p { color: #888; margin-bottom: 30px; }
-        
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: #1e1e1e;
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid #333;
-            transition: transform 0.2s;
-        }
-
-        .card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            background: #333;
-        }
-
-        .card h3 { font-size: 18px; margin: 10px 0; }
-
-        button {
-            background: linear-gradient(45deg, #2196F3, #21CBF3);
-            border: none;
-            padding: 10px 20px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.3s;
-        }
-
-        button:active { transform: scale(0.95); }
-        
-        button:disabled {
-            background: #444;
-            color: #888;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Loading Spinner */
-        .loader { border: 4px solid #333; border-top: 4px solid #00e676; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { font-family: sans-serif; background-color: #0f0f0f; color: #fff; text-align: center; padding: 20px; }
+        .card { background: #1e1e1e; border: 1px solid #333; border-radius: 10px; padding: 15px; margin: 10px auto; max-width: 300px; }
+        img { width: 100%; border-radius: 5px; }
+        button { background: #00e676; color: #000; border: none; padding: 10px 20px; width: 100%; margin-top: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        button:disabled { background: #555; color: #888; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <h1>🏆 හොඳම ඇඳුම තෝරන්න</h1>
-    <p>එක් අයෙකුට දිය හැක්කේ එක් ඡන්දයක් පමණි.</p>
-
-    <div id="loader" class="loader"></div>
-    <div id="costume-list" class="card-container"></div>
+    <div id="status" style="color: yellow;">Loading...</div>
+    <div id="costume-list"></div>
 
     <script>
-        // ඔබේ Supabase විස්තර (ඔයා එවපු ඒවා)
+        // 1. Supabase Client එක හදාගැනීම (නම වෙනස් කළා: supabaseClient)
         const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // මෙතන තමයි වෙනස: 'supabase' වෙනුවට 'supabaseClient' දැම්මා
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         async function loadCostumes() {
             const list = document.getElementById('costume-list');
-            const loader = document.getElementById('loader');
+            const status = document.getElementById('status');
 
-            // දත්ත ලබා ගැනීම
-            const { data, error } = await supabase.from('costumes').select('*').order('id');
+            // දත්ත ලබා ගැනීම (supabaseClient භාවිතා කරමින්)
+            const { data, error } = await supabaseClient.from('costumes').select('*').order('id');
             
-            loader.style.display = 'none';
-
             if (error) {
-                list.innerHTML = `<p style="color:red">Error loading data. Please refresh.</p>`;
+                console.error('Error:', error);
+                status.innerHTML = "Error loading data! Please refresh.";
                 return;
             }
+
+            status.style.display = 'none'; // Loading අයින් කරනවා
 
             // කලින් Vote කරලද බලනවා
             const hasVoted = localStorage.getItem('has_voted_costume');
@@ -104,11 +48,7 @@
             data.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'card';
-                // Image එකක් නැතිනම් Default එකක් පෙන්වයි
-                const imgDisplay = item.image_url ? `<img src="${item.image_url}">` : `<div style="height:150px; background:#333; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#555;">No Image</div>`;
-                
                 div.innerHTML = `
-                    ${imgDisplay}
                     <h3>${item.name}</h3>
                     <button id="btn-${item.id}" onclick="vote(${item.id})" ${hasVoted ? 'disabled' : ''}>
                         ${hasVoted ? 'ඡන්දය දී ඇත' : 'Vote Now'}
@@ -119,36 +59,25 @@
         }
 
         async function vote(id) {
-            // 1. Double Check (Browser Level)
             if(localStorage.getItem('has_voted_costume')) {
-                alert("සමාවන්න, ඔබ දැනටමත් ඡන්දය භාවිතා කර ඇත!");
+                alert("දැනටමත් ඡන්දය දී ඇත!");
                 return;
             }
 
-            // Button Disable කිරීම (Visual Feedback)
-            const allButtons = document.querySelectorAll('button');
-            allButtons.forEach(btn => {
-                btn.disabled = true;
-                btn.innerText = "Processing...";
-            });
+            // Buttons Disable
+            document.querySelectorAll('button').forEach(b => { b.disabled = true; b.innerText = "Processing..."; });
 
-            // 2. Supabase RPC Call එක (Vote Count එක වැඩි කිරීම)
-            const { error } = await supabase.rpc('vote_for_costume', { row_id: id });
+            // Vote කිරීම (RPC Call)
+            const { error } = await supabaseClient.rpc('vote_for_costume', { row_id: id });
 
             if (!error) {
-                // Success
                 localStorage.setItem('has_voted_costume', 'true');
-                alert("ජයවේවා! ඔබේ ඡන්දය සටහන් විය.");
-                allButtons.forEach(btn => btn.innerText = "ඡන්දය දී ඇත");
+                alert("Vote Success!");
+                document.querySelectorAll('button').forEach(b => b.innerText = "ඡන්දය දී ඇත");
             } else {
-                // Error
-                alert("පොඩි ගැටළුවක්. කරුණාකර නැවත උත්සාහ කරන්න.");
+                alert("Error voting. Try again.");
                 console.error(error);
-                // Buttons ආපසු enable කිරීම
-                allButtons.forEach(btn => {
-                    btn.disabled = false;
-                    btn.innerText = "Vote Now";
-                });
+                location.reload(); // Refresh page if error
             }
         }
 
