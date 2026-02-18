@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; background: black; color: white; padding: 50px; }
+        .bar-container { margin-bottom: 20px; }
+        .name { font-size: 24px; margin-bottom: 5px; }
+        .bar-bg { background: #333; height: 40px; border-radius: 20px; overflow: hidden; }
+        .bar-fill { background: #00e676; height: 100%; width: 0%; transition: width 0.5s ease-in-out; }
+        .count { float: right; font-size: 24px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center; font-size: 50px;">Live Results</h1>
+    <div id="results"></div>
+
+    <script>
+        const supabaseUrl = 'YOUR_SUPABASE_URL_HERE'
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY_HERE'
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+
+        async function init() {
+            const { data: initialData } = await supabase.from('costumes').select('*').order('id');
+            renderBars(initialData);
+
+            // Real-time Listener (මේක තමයි මැජික් එක)
+            supabase.channel('custom-all-channel')
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'costumes' },
+                (payload) => {
+                    updateBar(payload.new); // අලුත් data එක ආවම update වෙනවා
+                }
+            )
+            .subscribe()
+        }
+
+        function renderBars(data) {
+            const container = document.getElementById('results');
+            container.innerHTML = '';
+            data.forEach(item => {
+                container.innerHTML += `
+                    <div class="bar-container" id="card-${item.id}">
+                        <div class="name">${item.name} <span class="count" id="count-${item.id}">${item.votes}</span></div>
+                        <div class="bar-bg">
+                            <div class="bar-fill" id="bar-${item.id}" style="width: ${item.votes}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function updateBar(newItem) {
+            // අලුත් ගාන update කිරීම
+            const countEl = document.getElementById(`count-${newItem.id}`);
+            const barEl = document.getElementById(`bar-${newItem.id}`);
+            if(countEl) countEl.innerText = newItem.votes;
+            
+            // Bar එකේ දිග වෙනස් කිරීම (සරලව 1 vote = 1% වගේ දැම්මේ. ඕන නම් ගණිත ක්‍රමයක් දාන්න පුළුවන්)
+            if(barEl) barEl.style.width = (newItem.votes * 1) + '%'; 
+        }
+
+        init();
+    </script>
+</body>
+</html>
