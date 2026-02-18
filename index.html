@@ -1,68 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="si">
 <head>
-    <title>Live Results</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote for Best Costume</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background: black; color: white; padding: 50px; }
-        .bar-container { margin-bottom: 20px; }
-        .name { font-size: 24px; margin-bottom: 5px; }
-        .bar-bg { background: #333; height: 40px; border-radius: 20px; overflow: hidden; }
-        .bar-fill { background: #00e676; height: 100%; width: 0%; transition: width 0.5s ease-in-out; }
-        .count { float: right; font-size: 24px; font-weight: bold; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #0f0f0f;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 { color: #00e676; margin-bottom: 5px; }
+        p { color: #888; margin-bottom: 30px; }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #333;
+            transition: transform 0.2s;
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #333;
+        }
+
+        .card h3 { font-size: 18px; margin: 10px 0; }
+
+        button {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        button:active { transform: scale(0.95); }
+        
+        button:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading Spinner */
+        .loader { border: 4px solid #333; border-top: 4px solid #00e676; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <h1 style="text-align:center; font-size: 50px;">Live Results</h1>
-    <div id="results"></div>
+
+    <h1>🏆 හොඳම ඇඳුම තෝරන්න</h1>
+    <p>එක් අයෙකුට දිය හැක්කේ එක් ඡන්දයක් පමණි.</p>
+
+    <div id="loader" class="loader"></div>
+    <div id="costume-list" class="card-container"></div>
 
     <script>
-        const supabaseUrl = 'YOUR_SUPABASE_URL_HERE'
-        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY_HERE'
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+        // ඔබේ Supabase විස්තර (ඔයා එවපු ඒවා)
+        const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        async function init() {
-            const { data: initialData } = await supabase.from('costumes').select('*').order('id');
-            renderBars(initialData);
+        async function loadCostumes() {
+            const list = document.getElementById('costume-list');
+            const loader = document.getElementById('loader');
 
-            // Real-time Listener (මේක තමයි මැජික් එක)
-            supabase.channel('custom-all-channel')
-            .on(
-                'postgres_changes',
-                { event: 'UPDATE', schema: 'public', table: 'costumes' },
-                (payload) => {
-                    updateBar(payload.new); // අලුත් data එක ආවම update වෙනවා
-                }
-            )
-            .subscribe()
-        }
+            // දත්ත ලබා ගැනීම
+            const { data, error } = await supabase.from('costumes').select('*').order('id');
+            
+            loader.style.display = 'none';
 
-        function renderBars(data) {
-            const container = document.getElementById('results');
-            container.innerHTML = '';
+            if (error) {
+                list.innerHTML = `<p style="color:red">Error loading data. Please refresh.</p>`;
+                return;
+            }
+
+            // කලින් Vote කරලද බලනවා
+            const hasVoted = localStorage.getItem('has_voted_costume');
+
             data.forEach(item => {
-                container.innerHTML += `
-                    <div class="bar-container" id="card-${item.id}">
-                        <div class="name">${item.name} <span class="count" id="count-${item.id}">${item.votes}</span></div>
-                        <div class="bar-bg">
-                            <div class="bar-fill" id="bar-${item.id}" style="width: ${item.votes}%"></div>
-                        </div>
-                    </div>
+                const div = document.createElement('div');
+                div.className = 'card';
+                // Image එකක් නැතිනම් Default එකක් පෙන්වයි
+                const imgDisplay = item.image_url ? `<img src="${item.image_url}">` : `<div style="height:150px; background:#333; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#555;">No Image</div>`;
+                
+                div.innerHTML = `
+                    ${imgDisplay}
+                    <h3>${item.name}</h3>
+                    <button id="btn-${item.id}" onclick="vote(${item.id})" ${hasVoted ? 'disabled' : ''}>
+                        ${hasVoted ? 'ඡන්දය දී ඇත' : 'Vote Now'}
+                    </button>
                 `;
+                list.appendChild(div);
             });
         }
 
-        function updateBar(newItem) {
-            // අලුත් ගාන update කිරීම
-            const countEl = document.getElementById(`count-${newItem.id}`);
-            const barEl = document.getElementById(`bar-${newItem.id}`);
-            if(countEl) countEl.innerText = newItem.votes;
-            
-            // Bar එකේ දිග වෙනස් කිරීම (සරලව 1 vote = 1% වගේ දැම්මේ. ඕන නම් ගණිත ක්‍රමයක් දාන්න පුළුවන්)
-            if(barEl) barEl.style.width = (newItem.votes * 1) + '%'; 
+        async function vote(id) {
+            // 1. Double Check (Browser Level)
+            if(localStorage.getItem('has_voted_costume')) {
+                alert("සමාවන්න, ඔබ දැනටමත් ඡන්දය භාවිතා කර ඇත!");
+                return;
+            }
+
+            // Button Disable කිරීම (Visual Feedback)
+            const allButtons = document.querySelectorAll('button');
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.innerText = "Processing...";
+            });
+
+            // 2. Supabase RPC Call එක (Vote Count එක වැඩි කිරීම)
+            const { error } = await supabase.rpc('vote_for_costume', { row_id: id });
+
+            if (!error) {
+                // Success
+                localStorage.setItem('has_voted_costume', 'true');
+                alert("ජයවේවා! ඔබේ ඡන්දය සටහන් විය.");
+                allButtons.forEach(btn => btn.innerText = "ඡන්දය දී ඇත");
+            } else {
+                // Error
+                alert("පොඩි ගැටළුවක්. කරුණාකර නැවත උත්සාහ කරන්න.");
+                console.error(error);
+                // Buttons ආපසු enable කිරීම
+                allButtons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerText = "Vote Now";
+                });
+            }
         }
 
-        init();
+        loadCostumes();
     </script>
 </body>
 </html>
