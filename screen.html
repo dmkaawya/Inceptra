@@ -188,6 +188,8 @@
         .status-box { background: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid yellow; font-size: 0.9rem; backdrop-filter: blur(5px); }
         .status-success { border-color: var(--accent); color: var(--accent); }
         .status-error { border-color: #ff4081; color: #ff4081; }
+        .status-completed { border-color: #fff; color: #fff; background: rgba(255,255,255,0.1); }
+        
         .user-header { background: linear-gradient(90deg, rgba(188,19,254,0.1), transparent); padding: 10px 20px; border-radius: 50px; margin-bottom: 25px; border: 1px solid rgba(188,19,254,0.2); display: inline-flex; align-items: center; width: 100%; justify-content: space-between; }
         .action-icon { cursor: pointer; margin-left: 10px; opacity: 0.6; transition: 0.3s; font-size: 0.9rem; color: var(--primary); }
         .action-icon:hover { opacity: 1; }
@@ -203,6 +205,7 @@
         
         .u-name { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
         .u-email { color: var(--primary); font-size: 0.9rem; margin-bottom: 2px; word-break: break-all; }
+        .u-address { color: #ccc; font-size: 0.85rem; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
         .u-id { color: #666; font-size: 0.75rem; font-family: monospace; margin-bottom: 2px; }
         .u-date { color: #555; font-size: 0.75rem; }
 
@@ -243,6 +246,9 @@
         <div id="view-auth" class="hidden glass-card" style="max-width: 400px; margin: 0 auto;">
             <h2 class="text-center" style="margin-bottom: 20px; font-size: 1.5rem;" id="auth-title">Welcome Back</h2>
             <div class="input-group"><input type="text" id="fullname" placeholder="Full Name" class="input-field hidden"></div>
+            <!-- NEW: Address Input -->
+            <div class="input-group"><input type="text" id="address" placeholder="Address / City" class="input-field hidden"></div>
+            
             <div class="input-group"><input type="email" id="email" placeholder="Email Address" class="input-field"></div>
             <div class="input-group"><input type="password" id="password" placeholder="Password" class="input-field"></div>
             <button onclick="handleAuth()" class="btn btn-primary" id="btn-auth">Login</button>
@@ -400,6 +406,9 @@
     let activeCategory = 'boys'; 
     let allCostumes = [];
     let myVotes = []; 
+    let locationInterval = null; // Interval ID for location check
+    let votingComplete = false; // Flag to stop checking location
+    
     let settings = {
         endTime: new Date('2025-12-31T23:59:59').getTime(),
         lat: 0,
@@ -496,7 +505,6 @@
              if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
 
-        // FIX: Profile Realtime Listener
         sb.channel('public:profiles').on('postgres_changes', { event: '*', schema: 'public' }, () => {
              if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
@@ -542,13 +550,18 @@
         document.getElementById('btn-auth').innerText = isRegister ? "Register" : "Login";
         document.getElementById('text-toggle').innerText = isRegister ? "Have an account? Login" : "New here? Create Account";
         document.getElementById('fullname').classList.toggle('hidden', !isRegister);
+        document.getElementById('address').classList.toggle('hidden', !isRegister); // Toggle address
     }
 
     async function handleAuth() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const fullname = document.getElementById('fullname').value;
+        const address = document.getElementById('address').value; // Get address
+
         if(!email || !password) return showToast("Please enter details!", "error");
+        if(isRegister && !fullname) return showToast("Please enter your name!", "error");
+        if(isRegister && !address) return showToast("Please enter your address!", "error");
 
         if(isRegister) {
             const { data, error } = await sb.auth.signUp({ 
@@ -556,18 +569,17 @@
                 password, 
                 options: { 
                     data: { full_name: fullname },
-                    // If you have email confirmation disabled in Supabase, data.user will exist immediately.
-                    // If enabled, data.user will be null until confirmed.
                 } 
             });
 
             if(!error) {
                 if(data.user) {
-                    // Attempt to create profile immediately
+                    // Attempt to create profile immediately with address
                     const { error: profileError } = await sb.from('profiles').upsert({
                         id: data.user.id,
                         email: email,
                         full_name: fullname,
+                        address: address, // NEW: Save Address
                         role: 'audience',
                         created_at: new Date().toISOString()
                     }, { onConflict: 'id' });
@@ -580,6 +592,7 @@
                         document.getElementById('email').value = '';
                         document.getElementById('password').value = '';
                         document.getElementById('fullname').value = '';
+                        document.getElementById('address').value = '';
                         setTimeout(() => window.location.reload(), 1500);
                     }
                 } else {
@@ -617,10 +630,29 @@
     }
 
     // --- AUDIENCE LOGIC ---
-    function initAudience() { startCountdown(); checkLocation(); }
+    function initAudience() { 
+        startCountdown(); 
+        // Start periodic location check
+        checkLocation(); 
+        if(locationInterval) clearInterval(locationInterval);
+        locationInterval = setInterval(() => {
+            if(!votingComplete) {
+                checkLocation();
+            }
+        }, 5000); // Check every 5 seconds
+    }
 
     function checkLocation() {
         const locDiv = document.getElementById('loc-status');
+        
+        // If voting is complete, stop checking
+        if(votingComplete) {
+            locDiv.innerHTML = "✅ Voting Complete";
+            locDiv.className = "status-box status-completed";
+            if(locationInterval) clearInterval(locationInterval);
+            return;
+        }
+
         if(settings.lat === 0 && settings.long === 0) {
              locDiv.innerHTML = "⏳ Waiting for Admin to set location...";
              locDiv.className = "status-box status-error";
@@ -640,6 +672,8 @@
             } else {
                 locDiv.innerHTML = `❌ Out of Range (${Math.round(dist)}m away)`;
                 locDiv.className = "status-box status-error";
+                // Optional: Clear cards if out of range
+                document.getElementById('costume-list').innerHTML = '';
             }
         }, () => {
              locDiv.innerHTML = "❌ Location Permission Denied";
@@ -672,22 +706,46 @@
         const list = document.getElementById('costume-list');
         list.innerHTML = '';
         const filtered = allCostumes.filter(c => c.gender === activeCategory);
-        const votedInThisCategory = filtered.some(c => myVotes.includes(c.id));
+
+        // LOGIC: Check if user has voted for a Boy or Girl separately
+        // 1. Find all costumes I voted for
+        const votedCostumes = allCostumes.filter(c => myVotes.includes(c.id));
+        
+        // 2. Check specific category votes
+        const hasVotedBoy = votedCostumes.some(c => c.gender === 'boys');
+        const hasVotedGirl = votedCostumes.some(c => c.gender === 'girls');
+
+        // 3. If both voted, user is done
+        if(hasVotedBoy && hasVotedGirl) {
+            votingComplete = true;
+        }
 
         if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 40px; color:#555; font-size:1.2rem;'>No candidates found.</p>";
 
         filtered.forEach(c => {
             const hasVotedThis = myVotes.includes(c.id);
             let btnHtml = '';
-            if(votedInThisCategory) {
+            
+            // NEW LOGIC: Check category specific lock
+            if(activeCategory === 'boys' && hasVotedBoy) {
+                // User voted for a boy, so lock all boys
                 if(hasVotedThis) {
-                    btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent); box-shadow:0 0 15px rgba(0,230,118,0.3);">✓ Voted</button>`;
+                     btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent); box-shadow:0 0 15px rgba(0,230,118,0.3);">✓ Voted</button>`;
                 } else {
-                    btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
+                     btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
+                }
+            } else if (activeCategory === 'girls' && hasVotedGirl) {
+                // User voted for a girl, so lock all girls
+                if(hasVotedThis) {
+                     btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent); box-shadow:0 0 15px rgba(0,230,118,0.3);">✓ Voted</button>`;
+                } else {
+                     btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
                 }
             } else {
+                // Category is open for voting
                 btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote</button>`;
             }
+
             list.innerHTML += `
                 <div class="costume-card">
                     <img src="${c.image_url}" onerror="this.src='https://via.placeholder.com/300x400?text=No+Image'" class="costume-img">
@@ -706,15 +764,33 @@
 
     async function castVote(id) {
         if(!confirm("Confirm Vote?")) return;
+        
+        // Check logic again before insert to prevent race conditions
+        const votedCostumes = allCostumes.filter(c => myVotes.includes(c.id));
+        const hasVotedBoy = votedCostumes.some(c => c.gender === 'boys');
+        const hasVotedGirl = votedCostumes.some(c => c.gender === 'girls');
+
+        const targetCostume = allCostumes.find(c => c.id === id);
+        
+        if(targetCostume.gender === 'boys' && hasVotedBoy) return showToast("You already voted for a Boy!", "error");
+        if(targetCostume.gender === 'girls' && hasVotedGirl) return showToast("You already voted for a Girl!", "error");
+
         const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
         if(error) {
             console.error("Vote Failed", error);
             showToast("Error: " + error.message, "error");
         } else {
             myVotes.push(id);
-            renderVotingCards();
+            renderVotingCards(); // Re-render to update UI (locks)
             celebrateVote();
             showToast("Vote Cast Successfully!", "success");
+            
+            // Check if voting is complete now
+            const newVotedCostumes = allCostumes.filter(c => myVotes.includes(c.id));
+            if(newVotedCostumes.some(c => c.gender === 'boys') && newVotedCostumes.some(c => c.gender === 'girls')) {
+                votingComplete = true;
+                checkLocation(); // Trigger location update to show "Voting Complete"
+            }
         }
     }
 
@@ -776,7 +852,7 @@
             </div>
         `).join('');
 
-        // UPDATED USER LIST LOGIC
+        // UPDATED USER LIST LOGIC WITH ADDRESS
         const { data: users } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
         document.getElementById('user-list').innerHTML = (users || []).map(u => `
             <div class="glass-card" style="padding: 15px; margin-bottom: 10px;">
@@ -784,6 +860,8 @@
                     <div class="user-meta">
                         <div class="u-name">${u.full_name || 'No Name'}</div>
                         <div class="u-email">${u.email || 'No Email on record'}</div>
+                        <!-- NEW: Show Address -->
+                        <div class="u-address">📍 ${u.address || 'No Address'}</div>
                         <div class="u-id">ID: ${u.id}</div>
                         ${u.created_at ? `<div class="u-date">Joined: ${new Date(u.created_at).toLocaleDateString()}</div>` : ''}
                     </div>
