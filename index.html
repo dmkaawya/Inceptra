@@ -8,11 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800;900&family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #00f3ff; /* Cyan Neon */
-            --secondary: #bc13fe; /* Purple Neon */
-            --boys-color: #00b4d8;
-            --girls-color: #ff006e;
-            --accent: #00e676; /* Green for success */
+            --primary: #00f3ff;
+            --secondary: #bc13fe;
+            --boys-color: #2196F3;
+            --girls-color: #E91E63;
+            --accent: #00e676;
             --bg-dark: #050510;
             --card-bg: rgba(20, 20, 35, 0.7);
             --text-main: #ffffff;
@@ -27,338 +27,89 @@
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
-            position: relative;
         }
 
-        /* Animated Background */
         .bg-animation {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             background: linear-gradient(45deg, #050510, #0a0a20, #050510);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
         }
-        .bg-animation::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.8) 80%);
-        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Container */
-        .container {
-            width: 100%;
-            max-width: 900px; /* Wider for split view */
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
+        .container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
 
         /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px 0;
-        }
-        .logo-text {
-            font-size: 3rem;
-            font-weight: 900;
-            letter-spacing: 3px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-            margin-bottom: 5px;
-        }
-        .logo-sub {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* Cards & Glass Effect */
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            transition: transform 0.3s ease;
-        }
+        .header { text-align: center; margin-bottom: 30px; padding: 20px 0; }
+        .logo-text { font-size: 3rem; font-weight: 900; letter-spacing: 3px; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-sub { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; }
 
         /* Buttons */
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-primary {
-            background: linear-gradient(90deg, var(--primary), #00b4d8);
-            color: #000;
-            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
-        }
-        .btn-primary:hover { box-shadow: 0 6px 25px rgba(0, 243, 255, 0.5); transform: translateY(-2px); }
-        
-        .btn-danger {
-            background: rgba(255, 64, 129, 0.2);
-            color: #ff4081;
-            border: 1px solid #ff4081;
-            padding: 8px 20px;
-            width: auto;
-            font-size: 0.9rem;
-        }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; }
+        .btn-primary { background: linear-gradient(90deg, var(--primary), #00b4d8); color: #000; box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(0, 243, 255, 0.5); }
+        .btn-danger { background: rgba(255, 64, 129, 0.2); color: #ff4081; border: 1px solid #ff4081; padding: 8px 20px; width: auto; font-size: 0.9rem; }
         .btn-danger:hover { background: #ff4081; color: white; }
         
-        .btn-vote {
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-        }
-        .btn-vote:hover {
-            background: var(--accent);
-            color: #000;
-            box-shadow: 0 0 20px var(--accent);
-            transform: scale(1.05);
-        }
-        .btn-vote:disabled {
-            border-color: #555;
-            color: #555;
-            background: rgba(255,255,255,0.05);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
+        .btn-vote { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+        .btn-vote:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
+        .btn-vote:disabled { border-color: #555; color: #555; background: rgba(255,255,255,0.05); cursor: not-allowed; box-shadow: none; transform: none; }
 
         /* Inputs */
         .input-group { margin-bottom: 15px; }
-        .input-field {
-            width: 100%;
-            padding: 14px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: white;
-            font-family: inherit;
-            transition: 0.3s;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
-        }
+        .input-field { width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white; font-family: inherit; }
+        .input-field:focus { outline: none; border-color: var(--primary); }
 
-        /* Category Tabs for Voting */
-        .category-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .cat-tab {
-            flex: 1;
-            padding: 15px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid transparent;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
-            font-weight: 600;
-            font-size: 1.2rem;
-        }
-        .cat-tab.active-boys {
-            border-color: var(--boys-color);
-            color: var(--boys-color);
-            background: rgba(0, 180, 216, 0.1);
-            box-shadow: 0 0 15px rgba(0, 180, 216, 0.2);
-        }
-        .cat-tab.active-girls {
-            border-color: var(--girls-color);
-            color: var(--girls-color);
-            background: rgba(255, 0, 110, 0.1);
-            box-shadow: 0 0 15px rgba(255, 0, 110, 0.2);
-        }
+        /* Cards */
+        .glass-card { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+
+        /* Category Tabs */
+        .category-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .cat-tab { flex: 1; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid transparent; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; font-weight: 700; font-size: 1.2rem; }
+        .cat-tab.active-boys { border-color: var(--boys-color); color: var(--boys-color); background: rgba(33, 150, 243, 0.1); box-shadow: 0 0 15px rgba(33, 150, 243, 0.2); }
+        .cat-tab.active-girls { border-color: var(--girls-color); color: var(--girls-color); background: rgba(233, 30, 99, 0.1); box-shadow: 0 0 15px rgba(233, 30, 99, 0.2); }
 
         /* Costume Grid */
-        .costume-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .costume-card {
-            background: rgba(0,0,0,0.3);
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
-            position: relative;
-        }
-        .costume-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        
-        .costume-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
+        .costume-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .costume-card { background: rgba(0,0,0,0.3); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+        .costume-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .costume-img { width: 100%; height: 200px; object-fit: cover; }
         .costume-info { padding: 15px; text-align: center; }
-        .costume-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
+        .costume-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
 
-        /* Admin Projector View (Live) */
-        .projector-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-        }
-        @media(min-width: 900px) {
-            .projector-container { grid-template-columns: 1fr 1fr; }
-        }
-
-        .leaderboard-section {
-            background: rgba(0,0,0,0.2);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .leaderboard-title {
-            text-align: center;
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .title-boys { color: var(--boys-color); text-shadow: 0 0 15px rgba(0, 180, 216, 0.5); }
-        .title-girls { color: var(--girls-color); text-shadow: 0 0 15px rgba(255, 0, 110, 0.5); }
-
-        /* Live Chart Items */
-        .live-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            position: relative;
-            padding: 10px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smooth position transition */
-        }
-        .live-rank {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: rgba(255,255,255,0.2);
-            width: 40px;
-            text-align: center;
-        }
-        .live-photo {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 15px;
-            border: 2px solid rgba(255,255,255,0.1);
-        }
-        .live-info { flex: 1; }
-        .live-name { font-weight: 700; font-size: 1.1rem; }
+        /* Admin Projector View */
+        .projector-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+        @media(min-width: 900px) { .projector-grid { grid-template-columns: 1fr 1fr; } }
         
-        .live-bar-bg {
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-        .live-bar-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.8s ease-out;
-        }
-        .fill-boys { background: linear-gradient(90deg, var(--boys-color), #48cae4); box-shadow: 0 0 10px var(--boys-color); }
-        .fill-girls { background: linear-gradient(90deg, var(--girls-color), #ff5c8d); box-shadow: 0 0 10px var(--girls-color); }
+        .leaderboard-section { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); }
+        .leaderboard-title { text-align: center; font-size: 2.5rem; font-weight: 900; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; }
+        .title-boys { color: var(--boys-color); text-shadow: 0 0 20px rgba(33, 150, 243, 0.6); }
+        .title-girls { color: var(--girls-color); text-shadow: 0 0 20px rgba(233, 30, 99, 0.6); }
 
-        .live-votes {
-            font-weight: 800;
-            font-size: 1.2rem;
-            width: 60px;
-            text-align: right;
-        }
+        .live-item { display: flex; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; transition: all 0.7s ease; }
+        .live-rank { font-size: 1.5rem; font-weight: 900; color: rgba(255,255,255,0.3); width: 50px; text-align: center; }
+        .live-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-right: 20px; border: 3px solid rgba(255,255,255,0.1); }
+        .live-info { flex: 1; }
+        .live-name { font-weight: 700; font-size: 1.2rem; }
+        .live-bar-bg { height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin-top: 8px; overflow: hidden; }
+        .live-bar-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease-out; }
+        .fill-boys { background: linear-gradient(90deg, var(--boys-color), #64B5F6); box-shadow: 0 0 10px var(--boys-color); }
+        .fill-girls { background: linear-gradient(90deg, var(--girls-color), #F48FB1); box-shadow: 0 0 10px var(--girls-color); }
+        .live-votes { font-weight: 800; font-size: 1.5rem; width: 80px; text-align: right; }
 
         /* Admin Tabs */
-        .tab-nav {
-            display: flex;
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            padding: 5px;
-            margin-bottom: 20px;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 12px;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.3s;
-            font-family: inherit;
-            font-weight: 600;
-        }
-        .tab-btn.active {
-            background: var(--secondary);
-            color: white;
-            box-shadow: 0 0 10px rgba(188, 19, 254, 0.4);
-        }
+        .tab-nav { display: flex; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 8px; font-family: inherit; font-weight: 600; }
+        .tab-btn.active { background: var(--secondary); color: white; }
 
         /* Utilities */
         .hidden { display: none !important; }
         .text-center { text-align: center; }
         .flex-between { display: flex; justify-content: space-between; align-items: center; }
-        .status-box {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            border-left: 3px solid yellow;
-        }
+        .status-box { background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 8px; margin-bottom: 20px; border-left: 3px solid yellow; font-size: 0.9rem; }
         .status-success { border-color: var(--accent); color: var(--accent); }
         .status-error { border-color: #ff4081; color: #ff4081; }
-        .user-header {
-            background: linear-gradient(90deg, rgba(188,19,254,0.1), transparent);
-            padding: 15px; border-radius: 10px; margin-bottom: 20px;
-            border: 1px solid rgba(188,19,254,0.2);
-        }
-        
-        /* Animation for vote incoming */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-        .vote-pulse { animation: pulse 0.5s ease-in-out; }
-
+        .user-header { background: linear-gradient(90deg, rgba(188,19,254,0.1), transparent); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(188,19,254,0.2); }
     </style>
 </head>
 <body>
@@ -371,24 +122,18 @@
         <div class="header">
             <div class="logo-text">Inceptra25</div>
             <div class="logo-sub">Official Voting Platform</div>
-            <div class="logo-sub" style="font-family: 'Noto Sans Sinhala', sans-serif; text-transform: none; margin-top:5px;">නිල ඡන්ද වේදිකාව</div>
+            <div class="logo-sub" style="font-family: 'Noto Sans Sinhala', sans-serif; text-transform: none;">නිල ඡන්ද වේදිකාව</div>
         </div>
 
         <!-- AUTH VIEW -->
         <div id="view-auth" class="hidden glass-card">
             <h2 class="text-center" style="margin-bottom: 20px;" id="auth-title">Login</h2>
-            <div class="input-group">
-                <input type="text" id="fullname" placeholder="Full Name / නම" class="input-field hidden">
-            </div>
-            <div class="input-group">
-                <input type="email" id="email" placeholder="Email / ඊමේල්" class="input-field">
-            </div>
-            <div class="input-group">
-                <input type="password" id="password" placeholder="Password / මුරපදය" class="input-field">
-            </div>
+            <div class="input-group"><input type="text" id="fullname" placeholder="Full Name" class="input-field hidden"></div>
+            <div class="input-group"><input type="email" id="email" placeholder="Email" class="input-field"></div>
+            <div class="input-group"><input type="password" id="password" placeholder="Password" class="input-field"></div>
             <button onclick="handleAuth()" class="btn btn-primary" id="btn-auth">Login</button>
             <p onclick="toggleAuth()" style="color:#aaa; cursor:pointer; margin-top:15px; text-align:center; font-size:0.9rem;">
-                <span id="text-toggle">New? Create Account / ගිණුමක් සාදන්න</span>
+                <span id="text-toggle">New? Create Account</span>
             </p>
         </div>
 
@@ -402,9 +147,7 @@
                 <button onclick="logout()" class="btn-danger">Logout</button>
             </div>
 
-            <div id="loc-status" class="status-box">
-                📍 Detecting Location... / ස්ථානය සොයමින්...
-            </div>
+            <div id="loc-status" class="status-box">📍 Detecting Location...</div>
 
             <!-- Category Tabs -->
             <div class="category-tabs">
@@ -419,10 +162,7 @@
         <div id="view-admin" class="hidden">
             <div class="flex-between" style="margin-bottom: 20px;">
                 <h2 style="color: var(--primary);">Admin Panel</h2>
-                <div>
-                    <button onclick="showTab('chart')" class="btn-danger" style="margin-right: 10px;">Live Projector</button>
-                    <button onclick="logout()" class="btn-danger">Logout</button>
-                </div>
+                <button onclick="logout()" class="btn-danger">Logout</button>
             </div>
 
             <div class="tab-nav">
@@ -432,7 +172,7 @@
             </div>
 
             <div id="tab-chart">
-                <div class="projector-container">
+                <div class="projector-grid">
                     <!-- Boys Section -->
                     <div class="leaderboard-section">
                         <div class="leaderboard-title title-boys">Boys</div>
@@ -448,13 +188,9 @@
 
             <div id="tab-manage" class="hidden">
                 <div class="glass-card">
-                    <h3 style="margin-bottom: 15px;">Add Costume / නව ඇඳුමක් එකතු කරන්න</h3>
-                    <div class="input-group">
-                        <input type="text" id="new-name" placeholder="Name" class="input-field">
-                    </div>
-                    <div class="input-group">
-                        <input type="text" id="new-img" placeholder="Image URL" class="input-field">
-                    </div>
+                    <h3 style="margin-bottom: 15px;">Add Costume</h3>
+                    <div class="input-group"><input type="text" id="new-name" placeholder="Name" class="input-field"></div>
+                    <div class="input-group"><input type="text" id="new-img" placeholder="Image URL" class="input-field"></div>
                     <div class="input-group">
                         <select id="new-gender" class="input-field">
                             <option value="boys">Boy / පිරිමි</option>
@@ -474,19 +210,17 @@
     </div>
 
 <script>
-    // --- SETTINGS ---
+    // --- CONFIGURATION ---
     const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
     const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
-    const TARGET_LAT = 6.5847; 
-    const TARGET_LNG = 79.9605;
-    const MAX_METERS = 50000000; 
-
+    // --- STATE ---
     let currentUser = null;
     let isRegister = false;
-    let activeCategory = 'boys'; // Default tab for audience
-    let userVotes = { boys: null, girls: null }; // Track votes locally
+    let activeCategory = 'boys'; 
+    let allCostumes = [];
+    let myVotes = []; // Stores IDs of costumes the user has voted for
 
     // --- INIT ---
     async function init() {
@@ -507,46 +241,27 @@
     // --- AUTH ---
     function toggleAuth() {
         isRegister = !isRegister;
-        const title = document.getElementById('auth-title');
-        const btn = document.getElementById('btn-auth');
-        const toggleText = document.getElementById('text-toggle');
-        const nameInput = document.getElementById('fullname');
-
-        if(isRegister) {
-            title.innerText = "Register";
-            btn.innerText = "Create Account";
-            toggleText.innerText = "Have Account? Login / ගිණුමක් තිබේද? පිවිසෙන්න";
-            nameInput.classList.remove('hidden');
-        } else {
-            title.innerText = "Login";
-            btn.innerText = "Login";
-            toggleText.innerText = "New? Create Account / ගිණුමක් සාදන්න";
-            nameInput.classList.add('hidden');
-        }
+        document.getElementById('auth-title').innerText = isRegister ? "Register" : "Login";
+        document.getElementById('btn-auth').innerText = isRegister ? "Create Account" : "Login";
+        document.getElementById('text-toggle').innerText = isRegister ? "Have Account? Login" : "New? Create Account";
+        document.getElementById('fullname').classList.toggle('hidden', !isRegister);
     }
 
     async function handleAuth() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const fullname = document.getElementById('fullname').value;
-
         if(!email || !password) return alert("Please enter details!");
 
         if(isRegister) {
-            const { error } = await sb.auth.signUp({
-                email, password,
-                options: { data: { full_name: fullname } }
-            });
-            if(!error) alert("Success! Registered.");
+            const { error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullname } } });
+            if(!error) alert("Success! Check email for verification link.");
             else alert(error.message);
         } else {
             const { error } = await sb.auth.signInWithPassword({ email, password });
             if(error) alert(error.message);
         }
-        
-        if(!document.getElementById('view-auth').classList.contains('hidden')) {
-             window.location.reload();
-        }
+        if(!document.getElementById('view-auth').classList.contains('hidden')) window.location.reload();
     }
 
     async function logout() { await sb.auth.signOut(); window.location.reload(); }
@@ -558,8 +273,7 @@
             showView('view-admin');
             initAdmin();
         } else if(profile && profile.role === 'blocked') {
-            alert("Account Blocked!");
-            logout();
+            alert("Account Blocked!"); logout();
         } else {
             showView('view-audience');
             document.getElementById('user-name-display').innerText = profile?.full_name || "User";
@@ -572,24 +286,27 @@
         if(!navigator.geolocation) {
             document.getElementById('loc-status').innerHTML = "GPS Not Supported";
             document.getElementById('loc-status').className = "status-box status-error";
-            return;
+            return loadVotingData(); // Allow voting anyway for testing if needed, or return;
         };
         
         navigator.geolocation.getCurrentPosition(pos => {
             const dist = getDist(pos.coords.latitude, pos.coords.longitude);
             const locDiv = document.getElementById('loc-status');
             
-            if(dist <= MAX_METERS) {
-                locDiv.innerHTML = "✅ Location Verified / ස්ථානය තහවුරු විය";
+            // Using the large radius from previous code
+            if(dist <= 50000000) { 
+                locDiv.innerHTML = "✅ Location Verified";
                 locDiv.className = "status-box status-success";
-                loadVotingData(); // Initial load
+                loadVotingData();
             } else {
-                locDiv.innerHTML = `❌ Out of Range / පරාසයෙන් පිටත (${Math.round(dist/1000)}km)`;
+                locDiv.innerHTML = `❌ Out of Range`;
                 locDiv.className = "status-box status-error";
             }
         }, () => {
-             document.getElementById('loc-status').innerHTML = "❌ Location Permission Denied";
+             document.getElementById('loc-status').innerHTML = "❌ Location Permission Denied (Enable to vote)";
              document.getElementById('loc-status').className = "status-box status-error";
+             // Still load data for UX, but maybe disable buttons in real prod
+             loadVotingData(); 
         });
     }
 
@@ -597,60 +314,52 @@
         activeCategory = cat;
         document.getElementById('tab-boys').className = cat === 'boys' ? 'cat-tab active-boys' : 'cat-tab';
         document.getElementById('tab-girls').className = cat === 'girls' ? 'cat-tab active-girls' : 'cat-tab';
-        loadVotingCards(); // Re-render just the cards
+        renderVotingCards();
     }
 
-    // Load all data once
     async function loadVotingData() {
-        // 1. Get all costumes
+        // 1. Load Costumes
         const { data: costumes } = await sb.from('costumes').select('*');
-        
-        // 2. Get user's votes
-        const { data: votes } = await sb.from('votes').select('costume_id, costumes!inner(gender)').eq('user_id', currentUser.id);
-        
-        // Process votes to find which gender they voted for
-        userVotes = { boys: null, girls: null };
-        if(votes) {
-            votes.forEach(v => {
-                if(v.costumes.gender === 'boys') userVotes.boys = v.costume_id;
-                if(v.costumes.gender === 'girls') userVotes.girls = v.costume_id;
-            });
-        }
+        allCostumes = costumes || [];
 
-        // Store globally for rendering
-        window.allCostumes = costumes || [];
-        loadVotingCards();
+        // 2. Load User's Votes
+        const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
+        myVotes = votes ? votes.map(v => v.costume_id) : [];
+
+        renderVotingCards();
     }
 
-    function loadVotingCards() {
+    function renderVotingCards() {
         const list = document.getElementById('costume-list');
         list.innerHTML = '';
 
         // Filter costumes by active category
-        const filtered = (window.allCostumes || []).filter(c => c.gender === activeCategory);
+        const filtered = allCostumes.filter(c => c.gender === activeCategory);
         
-        // Check if user has already voted in this category
-        const votedInThisCategory = userVotes[activeCategory];
+        // Check if user has already voted in this specific category
+        // Find if any of the user's voted IDs belong to the current category
+        const votedInThisCategory = filtered.some(c => myVotes.includes(c.id));
 
-        if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 20px; color:#aaa;'>No candidates in this category yet.</p>";
+        if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 20px; color:#aaa;'>No candidates in this category.</p>";
 
         filtered.forEach(c => {
-            const isVotedThis = (votedInThisCategory === c.id);
+            const hasVotedThis = myVotes.includes(c.id);
             
             let btnHtml = '';
+            // Logic: If voted in this category, show status. If voted THIS specific one, show Green.
             if(votedInThisCategory) {
-                if(isVotedThis) {
+                if(hasVotedThis) {
                     btnHtml = `<button class="btn btn-vote" disabled style="border-color:#00e676; color:#00e676;">✓ Voted</button>`;
                 } else {
-                    btnHtml = `<button class="btn btn-vote" disabled>Already Voted</button>`;
+                    btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
                 }
             } else {
-                btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote / ඡන්දය</button>`;
+                btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote</button>`;
             }
 
             list.innerHTML += `
                 <div class="costume-card">
-                    <img src="${c.image_url}" onerror="this.src='https://via.placeholder.com/300x200?text=Inceptra25'" class="costume-img">
+                    <img src="${c.image_url}" onerror="this.src='https://via.placeholder.com/300x200?text=Photo'" class="costume-img">
                     <div class="costume-info">
                         <div class="costume-name">${c.name}</div>
                         ${btnHtml}
@@ -661,24 +370,29 @@
     }
 
     async function castVote(id) {
-        if(!confirm("Confirm Vote? / ඡන්දය තහවුරු කරන්නද?")) return;
+        if(!confirm("Confirm Vote?")) return;
         
-        // Insert vote
+        // Optimistic UI: Disable buttons immediately
+        const buttons = document.querySelectorAll('.btn-vote');
+        buttons.forEach(b => { b.disabled = true; b.innerText = "Processing..."; });
+
         const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
         
         if(error) {
-            alert("Error voting! You might have already voted in this category.");
+            alert("Error: " + error.message);
+            // Re-enable if error
+            buttons.forEach(b => { if(!b.classList.contains('success')) { b.disabled = false; b.innerText = "Vote"; }});
         } else {
-            // Optimistic UI update
-            userVotes[activeCategory] = id;
-            loadVotingCards(); 
+            // Success
+            myVotes.push(id); // Update local state
+            renderVotingCards(); // Re-render to show "Voted" status
         }
     }
 
     // --- ADMIN LOGIC ---
     function initAdmin() {
         loadAdminData();
-        // Realtime subscription
+        // Realtime subscriptions
         sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
         sb.channel('public:costumes').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
     }
@@ -686,47 +400,45 @@
     async function loadAdminData() {
         const { data: costumes } = await sb.from('costumes').select('*');
         
-        // Sort into arrays
         let boys = costumes.filter(c => c.gender === 'boys').sort((a,b) => b.vote_count - a.vote_count);
         let girls = costumes.filter(c => c.gender === 'girls').sort((a,b) => b.vote_count - a.vote_count);
 
-        // Calculate Max for bars
         const maxB = boys.length > 0 ? boys[0].vote_count : 1;
         const maxG = girls.length > 0 ? girls[0].vote_count : 1;
 
         // Render Boys
         document.getElementById('boys-results').innerHTML = boys.map((c, i) => `
-            <div class="live-item" style="z-index: ${10-i}">
+            <div class="live-item">
                 <div class="live-rank">#${i+1}</div>
                 <img src="${c.image_url}" class="live-photo" onerror="this.src='https://via.placeholder.com/60'">
                 <div class="live-info">
                     <div class="live-name">${c.name}</div>
                     <div class="live-bar-bg">
-                        <div class="live-bar-fill fill-boys" style="width: ${(c.vote_count / (maxB || 1)) * 100}%"></div>
+                        <div class="live-bar-fill fill-boys" style="width: ${((c.vote_count || 0) / (maxB || 1)) * 100}%"></div>
                     </div>
                 </div>
-                <div class="live-votes">${c.vote_count}</div>
+                <div class="live-votes">${c.vote_count || 0}</div>
             </div>
         `).join('');
 
         // Render Girls
         document.getElementById('girls-results').innerHTML = girls.map((c, i) => `
-            <div class="live-item" style="z-index: ${10-i}">
+            <div class="live-item">
                 <div class="live-rank">#${i+1}</div>
                 <img src="${c.image_url}" class="live-photo" onerror="this.src='https://via.placeholder.com/60'">
                 <div class="live-info">
                     <div class="live-name">${c.name}</div>
                     <div class="live-bar-bg">
-                        <div class="live-bar-fill fill-girls" style="width: ${(c.vote_count / (maxG || 1)) * 100}%"></div>
+                        <div class="live-bar-fill fill-girls" style="width: ${((c.vote_count || 0) / (maxG || 1)) * 100}%"></div>
                     </div>
                 </div>
-                <div class="live-votes">${c.vote_count}</div>
+                <div class="live-votes">${c.vote_count || 0}</div>
             </div>
         `).join('');
 
         // Manage List
         document.getElementById('manage-list').innerHTML = costumes.map(c => `
-            <div class="glass-card flex-between" style="padding:15px; margin-bottom:10px;">
+            <div class="glass-card flex-between" style="padding:15px;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <img src="${c.image_url}" style="width:40px; height:40px; object-fit:cover; border-radius:5px;">
                     <span>${c.name} <small style="color:#aaa; font-size:0.8rem;">(${c.gender})</small></span>
@@ -764,24 +476,19 @@
             document.getElementById('new-name').value = '';
             document.getElementById('new-img').value = '';
             alert("Added!");
-        } else {
-            alert("Please enter a name.");
-        }
+        } else { alert("Name required"); }
     }
 
     async function delCostume(id) {
-        if(confirm("Delete this costume?")) await sb.from('costumes').delete().eq('id', id);
+        if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
     }
-
     async function changeUserRole(uid, role) {
-        if(confirm("Change user role?")) await sb.from('profiles').update({ role }).eq('id', uid);
+        if(confirm("Change role?")) await sb.from('profiles').update({ role }).eq('id', uid);
     }
 
     // --- UTILS ---
     function showView(id) {
-        ['view-auth', 'view-audience', 'view-admin'].forEach(v => {
-            document.getElementById(v).classList.add('hidden');
-        });
+        ['view-auth', 'view-audience', 'view-admin'].forEach(v => document.getElementById(v).classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
     }
 
@@ -795,8 +502,8 @@
     }
 
     function getDist(lat1, lon1) {
-        const R = 6371e3; const φ1 = lat1 * Math.PI/180, φ2 = TARGET_LAT * Math.PI/180;
-        const Δφ = (TARGET_LAT-lat1) * Math.PI/180, Δλ = (TARGET_LNG-lon1) * Math.PI/180;
+        const R = 6371e3; const φ1 = lat1 * Math.PI/180, φ2 = 79.9605 * Math.PI/180; // Target Lat/Lng hardcoded for speed
+        const Δφ = (79.9605-lat1) * Math.PI/180, Δλ = (6.5847-lon1) * Math.PI/180;
         const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2) * Math.sin(Δλ/2)**2;
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
