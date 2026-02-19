@@ -90,12 +90,6 @@
         .input-group { margin-bottom: 20px; }
         .input-field { width: 100%; padding: 16px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; font-size: 1rem; transition: 0.3s; }
         .input-field:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); background: rgba(0, 0, 0, 0.8); }
-        
-        /* File Input Styling */
-        .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
-        .file-input-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
-        .file-input-text { width: 100%; padding: 16px; background: rgba(0, 0, 0, 0.6); border: 1px dashed var(--glass-border); border-radius: 12px; color: #aaa; text-align: center; cursor: pointer; transition: 0.3s; }
-        .file-input-text:hover { border-color: var(--primary); color: var(--primary); }
 
         /* Cards */
         .glass-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
@@ -137,8 +131,8 @@
         .live-votes { font-weight: 800; font-size: 1.3rem; width: 60px; text-align: right; font-family: 'Rajdhani', sans-serif; }
 
         /* Admin Tabs */
-        .tab-nav { display: flex; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 5px; margin-bottom: 25px; border: 1px solid var(--glass-border); }
-        .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 10px; font-family: inherit; font-weight: 600; transition: 0.3s; }
+        .tab-nav { display: flex; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 5px; margin-bottom: 25px; border: 1px solid var(--glass-border); flex-wrap: wrap; }
+        .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 10px; font-family: inherit; font-weight: 600; transition: 0.3s; min-width: 120px; }
         .tab-btn.active { background: rgba(188, 19, 254, 0.2); color: var(--secondary); box-shadow: inset 0 0 0 1px var(--secondary); }
 
         /* Toast Notifications */
@@ -160,13 +154,12 @@
         .status-success { border-color: var(--accent); color: var(--accent); }
         .status-error { border-color: #ff4081; color: #ff4081; }
         .user-header { background: linear-gradient(90deg, rgba(188,19,254,0.1), transparent); padding: 15px 25px; border-radius: 50px; margin-bottom: 30px; border: 1px solid rgba(188,19,254,0.2); display: inline-flex; }
-        .action-icon { cursor: pointer; margin-left: 10px; opacity: 0.6; transition: 0.3s; font-size: 0.9rem; }
+        .action-icon { cursor: pointer; margin-left: 10px; opacity: 0.6; transition: 0.3s; font-size: 0.9rem; color: var(--primary); }
         .action-icon:hover { opacity: 1; }
-        .edit-icon { color: var(--primary); }
         
-        /* Projector Fullscreen Button */
-        .fullscreen-btn { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: var(--secondary); border: none; color: white; padding: 10px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .fullscreen-btn:hover { transform: scale(1.1); }
+        /* Admin Setting Inputs */
+        .setting-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .setting-row .input-group { flex: 1; margin-bottom: 0; }
 
     </style>
 </head>
@@ -212,10 +205,10 @@
                 </div>
             </center>
 
+            <!-- Notification Banner -->
+            <div id="broadcast-msg" class="hidden status-box status-error text-center" style="border-color: var(--secondary); color: var(--secondary); margin-bottom: 20px;"></div>
+
             <div id="loc-status" class="status-box">📍 Detecting Location...</div>
-            
-            <!-- Broadcast Notification Area -->
-            <div id="broadcast-msg" class="hidden status-box status-error text-center" style="border-color: var(--secondary); color: var(--secondary);"></div>
 
             <div class="category-tabs">
                 <div class="cat-tab active-boys" id="tab-boys" onclick="switchCategory('boys')">Boys</div>
@@ -267,15 +260,7 @@
                     </div>
                     
                     <div class="input-group">
-                        <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Image Source</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="new-img" placeholder="Paste URL here" class="input-field" style="flex:1;">
-                            <div style="color:#555; display:flex; align-items:center;">OR</div>
-                            <div class="file-input-wrapper">
-                                <div class="file-input-text" id="file-label">📁 Upload File</div>
-                                <input type="file" id="new-file" accept="image/*" onchange="updateFileLabel(this)">
-                            </div>
-                        </div>
+                        <input type="text" id="new-img" placeholder="Image URL (Direct Link)" class="input-field">
                     </div>
 
                     <div class="input-group">
@@ -289,24 +274,48 @@
                 <div id="manage-list"></div>
             </div>
 
-            <!-- Tab: Settings (New) -->
+            <!-- Tab: Settings -->
             <div id="tab-settings" class="hidden">
                 <div class="glass-card">
-                    <h3 style="margin-bottom: 20px; color: var(--primary);">Voting Configuration</h3>
-                    
+                    <h3 style="margin-bottom: 20px; color: var(--primary);">Voting Time</h3>
                     <div class="input-group">
-                        <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Voting End Time (Set Date & Time)</label>
+                        <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Voting End Time</label>
                         <input type="datetime-local" id="end-time-input" class="input-field">
                     </div>
-                    <button onclick="saveSettings()" class="btn btn-primary">Save Timer</button>
+                    <button onclick="saveTime()" class="btn btn-primary" style="width:auto; padding:10px 30px;">Save Time</button>
                 </div>
 
                 <div class="glass-card" style="margin-top: 20px;">
-                    <h3 style="margin-bottom: 20px; color: var(--secondary);">Send Announcement</h3>
-                    <div class="input-group">
-                        <input type="text" id="announcement-msg" placeholder="Enter message (e.g., Voting Extended!)" class="input-field">
+                    <h3 style="margin-bottom: 20px; color: var(--accent);">Location Settings</h3>
+                    <p style="font-size:0.9rem; color:#aaa; margin-bottom:15px;">Set the exact location where voting is allowed.</p>
+                    
+                    <div class="setting-row">
+                        <div class="input-group">
+                            <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Latitude</label>
+                            <input type="number" step="any" id="loc-lat" class="input-field" placeholder="6.9271">
+                        </div>
+                        <div class="input-group">
+                            <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Longitude</label>
+                            <input type="number" step="any" id="loc-long" class="input-field" placeholder="79.8612">
+                        </div>
                     </div>
-                    <button onclick="sendBroadcast()" class="btn btn-primary">Send to All Users</button>
+                    
+                    <div class="input-group">
+                        <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Radius (Meters)</label>
+                        <input type="number" id="loc-radius" class="input-field" placeholder="100">
+                    </div>
+                    <button onclick="saveLocation()" class="btn btn-primary" style="width:auto; padding:10px 30px;">Save Location</button>
+                </div>
+
+                <div class="glass-card" style="margin-top: 20px;">
+                    <h3 style="margin-bottom: 20px; color: var(--secondary);">📢 Broadcast Message</h3>
+                    <div class="input-group">
+                        <input type="text" id="announcement-msg" placeholder="Enter urgent message..." class="input-field">
+                    </div>
+                    <div class="flex-between">
+                        <button onclick="saveAnnouncement()" class="btn btn-primary" style="width:auto; padding:10px 30px;">Send</button>
+                        <button onclick="clearAnnouncement()" class="btn btn-danger" style="padding:10px 30px;">Clear</button>
+                    </div>
                 </div>
             </div>
 
@@ -330,7 +339,13 @@
     let activeCategory = 'boys'; 
     let allCostumes = [];
     let myVotes = []; 
-    let endTime = new Date('2025-12-31T23:59:59').getTime(); // Default fallback
+    let settings = {
+        endTime: new Date('2025-12-31T23:59:59').getTime(),
+        lat: 0,
+        long: 0,
+        radius: 100,
+        announcement: ''
+    };
 
     // --- TOAST NOTIFICATION SYSTEM ---
     function showToast(message, type = 'info') {
@@ -353,10 +368,13 @@
 
     // --- INIT ---
     async function init() {
-        // Load settings first
-        loadSettings();
-        listenForBroadcasts();
+        // 1. Load Settings
+        await loadSettings();
         
+        // 2. Setup Realtime Listeners
+        setupRealtime();
+
+        // 3. Auth Check
         const { data: { session } } = await sb.auth.getSession();
         if (session) {
             currentUser = session.user;
@@ -371,28 +389,89 @@
         }
     }
 
-    // --- SETTINGS & COUNTDOWN ---
+    // --- SETTINGS & REALTIME ---
     async function loadSettings() {
         const { data } = await sb.from('system_settings').select('*').eq('id', 1).single();
-        if(data && data.voting_end_time) {
-            endTime = new Date(data.voting_end_time).getTime();
+        if(data) {
+            settings.endTime = new Date(data.voting_end_time).getTime();
+            settings.lat = data.target_lat || 0;
+            settings.long = data.target_long || 0;
+            settings.radius = data.radius_meters || 100;
+            settings.announcement = data.announcement || '';
+
+            // Update UI
+            updateCountdownDisplay();
+            updateAnnouncementUI();
             
-            // Update Admin Input
-            const localDate = new Date(data.voting_end_time);
-            const dateStr = localDate.toISOString().slice(0, 16);
-            if(document.getElementById('end-time-input')) {
-                document.getElementById('end-time-input').value = dateStr;
-            }
+            // Update Admin Inputs if visible
+            const timeInput = document.getElementById('end-time-input');
+            if(timeInput && data.voting_end_time) timeInput.value = new Date(data.voting_end_time).toISOString().slice(0, 16);
+            
+            const latInput = document.getElementById('loc-lat');
+            if(latInput) latInput.value = settings.lat;
+            
+            const longInput = document.getElementById('loc-long');
+            if(longInput) longInput.value = settings.long;
+            
+            const radInput = document.getElementById('loc-radius');
+            if(radInput) radInput.value = settings.radius;
         }
-        startCountdown();
     }
 
+    function setupRealtime() {
+        // Listen for settings changes
+        sb.channel('public:system_settings').on('postgres_changes', { event: 'UPDATE', schema: 'public' }, payload => {
+            const data = payload.new;
+            settings.endTime = new Date(data.voting_end_time).getTime();
+            settings.lat = data.target_lat;
+            settings.long = data.target_long;
+            settings.radius = data.radius_meters;
+            settings.announcement = data.announcement;
+            
+            updateCountdownDisplay();
+            updateAnnouncementUI();
+            
+            // If audience view is active, re-check location
+            if(document.getElementById('view-audience').classList.contains('hidden') === false) {
+                checkLocation(); 
+            }
+            
+            showToast("System Updated!", "info");
+        }).subscribe();
+
+        // Listen for votes changes
+        sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
+            if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
+        }).subscribe();
+        
+        sb.channel('public:costumes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
+             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
+        }).subscribe();
+    }
+
+    function updateCountdownDisplay() {
+        // This is called by the interval loop in startCountdown, but we reset the endtime variable here
+    }
+
+    function updateAnnouncementUI() {
+        const el = document.getElementById('broadcast-msg');
+        if(el) {
+            if(settings.announcement) {
+                el.innerText = "📢 " + settings.announcement;
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+    }
+
+    // --- COUNTDOWN LOGIC ---
     function startCountdown() {
         const timerElem = document.getElementById('countdown-timer');
         
         setInterval(() => {
             const now = new Date().getTime();
-            const distance = endTime - now;
+            const distance = settings.endTime - now; // Use dynamic settings
 
             if (distance < 0) {
                 timerElem.innerHTML = "VOTING ENDED";
@@ -410,47 +489,40 @@
         }, 1000);
     }
 
-    async function saveSettings() {
+    // --- ADMIN SAVING FUNCTIONS ---
+    async function saveTime() {
         const val = document.getElementById('end-time-input').value;
-        if(!val) return showToast("Please select a date", "error");
+        if(!val) return showToast("Please select date", "error");
+        const { error } = await sb.from('system_settings').update({ voting_end_time: val }).eq('id', 1);
+        if(error) showToast("Error", "error"); else showToast("Time Updated!", "success");
+    }
+
+    async function saveLocation() {
+        const lat = parseFloat(document.getElementById('loc-lat').value);
+        const long = parseFloat(document.getElementById('loc-long').value);
+        const radius = parseInt(document.getElementById('loc-radius').value);
         
-        const { error } = await sb.from('system_settings').upsert({ id: 1, voting_end_time: val });
-        if(error) showToast("Error saving", "error");
-        else {
-            showToast("Voting Time Updated!", "success");
-            loadSettings();
-        }
+        if(isNaN(lat) || isNaN(long)) return showToast("Invalid coordinates", "error");
+        
+        const { error } = await sb.from('system_settings').update({ 
+            target_lat: lat, 
+            target_long: long, 
+            radius_meters: radius 
+        }).eq('id', 1);
+        
+        if(error) showToast("Error", "error"); else showToast("Location Updated!", "success");
     }
 
-    // --- BROADCAST SYSTEM ---
-    function listenForBroadcasts() {
-        sb.channel('public:announcements').on('postgres_changes', { event: 'INSERT', schema: 'public' }, payload => {
-            showBanner(payload.new.message);
-        }).subscribe();
-    }
-
-    function showBanner(msg) {
-        const el = document.getElementById('broadcast-msg');
-        if(el) {
-            el.innerText = "📢 " + msg;
-            el.classList.remove('hidden');
-            showToast("New Announcement!", "info");
-        }
-    }
-
-    async function sendBroadcast() {
+    async function saveAnnouncement() {
         const msg = document.getElementById('announcement-msg').value;
-        if(!msg) return;
-        
-        // Simple logic: Delete old, insert new
-        await sb.from('announcements').delete().neq('id', 0);
-        const { error } = await sb.from('announcements').insert([{ message: msg }]);
-        
-        if(error) showToast("Error", "error");
-        else {
-            showToast("Announcement Sent!", "success");
-            document.getElementById('announcement-msg').value = '';
-        }
+        const { error } = await sb.from('system_settings').update({ announcement: msg }).eq('id', 1);
+        if(error) showToast("Error", "error"); else showToast("Announcement Sent!", "success");
+    }
+
+    async function clearAnnouncement() {
+        document.getElementById('announcement-msg').value = '';
+        await sb.from('system_settings').update({ announcement: '' }).eq('id', 1);
+        showToast("Announcement Cleared", "info");
     }
 
     // --- AUTH ---
@@ -470,7 +542,7 @@
 
         if(isRegister) {
             const { error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullname } } });
-            if(!error) showToast("Success! Check email for verification link.", "success");
+            if(!error) showToast("Success! Check email.", "success");
             else showToast(error.message, "error");
         } else {
             const { error } = await sb.auth.signInWithPassword({ email, password });
@@ -498,28 +570,40 @@
 
     // --- AUDIENCE LOGIC ---
     function initAudience() {
+        startCountdown(); // Start UI timer loop
+        checkLocation();
+    }
+
+    function checkLocation() {
+        const locDiv = document.getElementById('loc-status');
+        
+        // Check if location is set in DB
+        if(settings.lat === 0 && settings.long === 0) {
+             locDiv.innerHTML = "⏳ Waiting for Admin to set location...";
+             locDiv.className = "status-box status-error";
+             return;
+        }
+
         if(!navigator.geolocation) {
-            document.getElementById('loc-status').innerHTML = "GPS Not Supported";
-            document.getElementById('loc-status').className = "status-box status-error";
-            return loadVotingData(); 
+            locDiv.innerHTML = "GPS Not Supported";
+            locDiv.className = "status-box status-error";
+            return;
         };
         
         navigator.geolocation.getCurrentPosition(pos => {
             const dist = getDist(pos.coords.latitude, pos.coords.longitude);
-            const locDiv = document.getElementById('loc-status');
             
-            if(dist <= 50000000) { 
+            if(dist <= settings.radius) { 
                 locDiv.innerHTML = "✅ Location Verified";
                 locDiv.className = "status-box status-success";
                 loadVotingData();
             } else {
-                locDiv.innerHTML = `❌ Out of Range`;
+                locDiv.innerHTML = `❌ Out of Range (${Math.round(dist)}m away)`;
                 locDiv.className = "status-box status-error";
             }
         }, () => {
-             document.getElementById('loc-status').innerHTML = "❌ Location Permission Denied";
-             document.getElementById('loc-status').className = "status-box status-error";
-             loadVotingData(); 
+             locDiv.innerHTML = "❌ Location Permission Denied";
+             locDiv.className = "status-box status-error";
         });
     }
 
@@ -533,10 +617,8 @@
     async function loadVotingData() {
         const { data: costumes } = await sb.from('costumes').select('*');
         allCostumes = costumes || [];
-
         const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
         myVotes = votes ? votes.map(v => v.costume_id) : [];
-
         renderVotingCards();
     }
 
@@ -581,39 +663,28 @@
 
     async function castVote(id) {
         if(!confirm("Confirm Vote?")) return;
-        
-        const buttons = document.querySelectorAll('.btn-vote');
-        buttons.forEach(b => { b.disabled = true; b.innerText = "Processing..."; });
-
         const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
-        
-        if(error) {
-            showToast("Error: " + error.message, "error");
-            buttons.forEach(b => { if(!b.classList.contains('success')) { b.disabled = false; b.innerText = "Vote"; }});
-        } else {
+        if(error) showToast("Error: " + error.message, "error");
+        else {
             myVotes.push(id);
             renderVotingCards();
             celebrateVote();
-            showToast("Vote Cast Successfully!", "success");
+            showToast("Vote Cast!", "success");
         }
     }
 
     // --- ADMIN LOGIC ---
     function initAdmin() {
         loadAdminData();
-        sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
-        sb.channel('public:costumes').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
-        
-        // Load Settings for Input
-        loadSettings();
+        startCountdown(); // Start UI timer for admin
     }
 
     async function loadAdminData() {
         const { data: costumes } = await sb.from('costumes').select('*');
-        allCostumes = costumes || []; // Update global cache for export
+        allCostumes = costumes || [];
         
-        let boys = costumes.filter(c => c.gender === 'boys').sort((a,b) => b.vote_count - a.vote_count);
-        let girls = costumes.filter(c => c.gender === 'girls').sort((a,b) => b.vote_count - a.vote_count);
+        let boys = allCostumes.filter(c => c.gender === 'boys').sort((a,b) => b.vote_count - a.vote_count);
+        let girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => b.vote_count - a.vote_count);
 
         const maxB = boys.length > 0 ? boys[0].vote_count : 1;
         const maxG = girls.length > 0 ? girls[0].vote_count : 1;
@@ -647,7 +718,7 @@
         `).join('');
 
         // Manage List
-        document.getElementById('manage-list').innerHTML = costumes.map(c => `
+        document.getElementById('manage-list').innerHTML = allCostumes.map(c => `
             <div class="glass-card flex-between" style="padding:15px; margin-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:15px;">
                     <img src="${c.image_url}" style="width:50px; height:50px; object-fit:cover; border-radius:10px;">
@@ -679,56 +750,21 @@
         `).join('');
     }
 
-    // --- NEW: FILE UPLOAD HANDLING ---
-    function updateFileLabel(input) {
-        if(input.files.length > 0) {
-            document.getElementById('file-label').innerText = `🖼️ ${input.files[0].name.substring(0, 15)}`;
-            document.getElementById('new-img').value = ''; // Clear URL if file selected
-        } else {
-            document.getElementById('file-label').innerText = "📁 Upload File";
-        }
-    }
-
     async function addCostume() {
         const name = document.getElementById('new-name').value;
+        const img = document.getElementById('new-img').value;
         const gender = document.getElementById('new-gender').value;
-        const fileInput = document.getElementById('new-file');
-        let imgUrl = document.getElementById('new-img').value;
+        if(!name || !img) return showToast("Name and URL required", "error");
         
-        if(!name) return showToast("Name required", "error");
-
-        // If file selected, upload to Storage
-        if(fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random()}.${fileExt}`;
-            
-            showToast("Uploading Image...", "info");
-            
-            const { data, error } = await sb.storage.from('costume-images').upload(fileName, file);
-            if(error) {
-                showToast("Upload failed: " + error.message, "error");
-                return;
-            }
-            // Get Public URL
-            const { data: { publicUrl } } = sb.storage.from('costume-images').getPublicUrl(fileName);
-            imgUrl = publicUrl;
-        }
-
-        if(!imgUrl) return showToast("Please provide an image URL or upload a file", "error");
-
-        const { error } = await sb.from('costumes').insert([{ name, image_url: imgUrl, gender }]);
-        if(error) showToast("Error adding", "error");
+        const { error } = await sb.from('costumes').insert([{ name, image_url: img, gender }]);
+        if(error) showToast("Error", "error");
         else {
-            showToast("Contestant Added!", "success");
+            showToast("Added!", "success");
             document.getElementById('new-name').value = '';
             document.getElementById('new-img').value = '';
-            document.getElementById('new-file').value = '';
-            document.getElementById('file-label').innerText = "📁 Upload File";
         }
     }
 
-    // --- NEW: PROJECTOR MODE ---
     function openProjector() {
         const w = window.open('', '_blank');
         w.document.write(`
@@ -737,20 +773,20 @@
                 <title>Projector View</title>
                 <style>
                     body { background: #0a0a12; color: white; font-family: 'Rajdhani', sans-serif; text-align: center; padding: 20px; }
-                    h1 { color: var(--primary); font-size: 3rem; }
-                    .grid { display: flex; justify-content: center; gap: 40px; margin-top: 20px; }
-                    .section { width: 45%; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 20px; }
-                    .title { font-size: 2rem; border-bottom: 2px solid #fff; padding-bottom: 10px; margin-bottom: 20px; }
+                    h1 { color: #00f3ff; font-size: 4rem; text-transform: uppercase; }
+                    .grid { display: flex; justify-content: center; gap: 40px; margin-top: 40px; }
+                    .section { width: 45%; background: rgba(0,0,0,0.5); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+                    .title { font-size: 3rem; border-bottom: 2px solid #fff; padding-bottom: 20px; margin-bottom: 30px; font-weight: bold; }
                     .boys { color: #2979FF; border-color: #2979FF; }
                     .girls { color: #F50057; border-color: #F50057; }
-                    img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
-                    .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 10px; margin-bottom: 10px; border-radius: 10px; }
-                    .name { flex: 1; text-align: left; margin-left: 15px; font-size: 1.5rem; }
-                    .votes { font-size: 1.5rem; font-weight: bold; }
+                    img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); }
+                    .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 20px; margin-bottom: 15px; border-radius: 15px; }
+                    .name { flex: 1; text-align: left; margin-left: 20px; font-size: 2rem; font-weight: 600; }
+                    .votes { font-size: 3rem; font-weight: 800; color: #00f3ff; }
                 </style>
             </head>
             <body>
-                <h1 style="color: #00f3ff;">LIVE RESULTS</h1>
+                <h1>INCEPTRA 25 - LIVE</h1>
                 <div class="grid">
                     <div class="section">
                         <div class="title boys">BOYS</div>
@@ -762,7 +798,6 @@
                     </div>
                 </div>
                 <script>
-                    // Simple fetch loop for projector view
                     const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
                     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
                     
@@ -788,23 +823,19 @@
                                 <div class="votes">\${c.vote_count || 0}</div>
                             </div>
                         \`).join('');
-                    }, 3000);
+                    }, 2000);
                 <\/script>
             </body>
             </html>
         `);
     }
 
-    // --- EXPORT CSV ---
     function exportResults() {
         let csv = 'Rank,Name,Gender,Votes\n';
-        
         const boys = allCostumes.filter(c => c.gender === 'boys').sort((a,b) => b.vote_count - a.vote_count);
         boys.forEach((c, i) => { csv += `${i+1},"${c.name}",Boys,${c.vote_count || 0}\n`; });
-
         const girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => b.vote_count - a.vote_count);
         girls.forEach((c, i) => { csv += `${i+1},"${c.name}",Girls,${c.vote_count || 0}\n`; });
-
         var hiddenElement = document.createElement('a');
         hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
         hiddenElement.target = '_blank';
@@ -817,17 +848,12 @@
         if (newName === null) return;
         const newImg = prompt("Enter new image URL:", currentImg);
         if (newImg === null) return;
-
         const { error } = await sb.from('costumes').update({ name: newName, image_url: newImg }).eq('id', id);
-        if(error) showToast("Error updating", "error");
-        else showToast("Updated!", "success");
+        if(error) showToast("Error", "error"); else showToast("Updated", "success");
     }
 
     async function delCostume(id) {
-        if(confirm("Delete?")) {
-            await sb.from('costumes').delete().eq('id', id);
-            showToast("Deleted", "success");
-        }
+        if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
     }
     async function changeUserRole(uid, role) {
         if(confirm("Change role?")) await sb.from('profiles').update({ role }).eq('id', uid);
@@ -849,8 +875,9 @@
     }
 
     function getDist(lat1, lon1) {
-        const R = 6371e3; const φ1 = lat1 * Math.PI/180, φ2 = 79.9605 * Math.PI/180; 
-        const Δφ = (79.9605-lat1) * Math.PI/180, Δλ = (6.5847-lon1) * Math.PI/180;
+        const R = 6371e3; 
+        const φ1 = lat1 * Math.PI/180, φ2 = settings.lat * Math.PI/180; 
+        const Δφ = (settings.lat-lat1) * Math.PI/180, Δλ = (settings.long-lon1) * Math.PI/180;
         const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2) * Math.sin(Δλ/2)**2;
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
