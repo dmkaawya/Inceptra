@@ -41,7 +41,6 @@
                 radial-gradient(circle at 50% 50%, #0a0a12 0%, #050508 100%);
         }
         
-        /* Noise Texture Overlay */
         .bg-animation::after {
             content: "";
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -51,7 +50,6 @@
 
         .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
 
-        /* Header */
         .header { text-align: center; margin: 30px 0 40px; position: relative; }
         .logo-text { 
             font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
@@ -61,16 +59,6 @@
         }
         .logo-sub { font-size: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 4px; margin-top: 5px; }
 
-        /* Glass Utility */
-        .glass-box {
-            background: rgba(15, 15, 25, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-        }
-
-        /* Countdown */
         .countdown-box {
             padding: 15px 30px;
             display: inline-block;
@@ -84,129 +72,49 @@
         .countdown-timer { font-size: 2rem; font-weight: 700; color: var(--primary); letter-spacing: 2px; font-family: 'Rajdhani', sans-serif; }
         .countdown-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px; }
 
-        /* Buttons */
         .btn { 
             width: 100%; padding: 14px 28px; border: none; border-radius: 50px; 
             font-family: inherit; font-weight: 600; font-size: 1.1rem; cursor: pointer; 
             transition: all 0.3s ease; letter-spacing: 1px; position: relative; overflow: hidden;
         }
         
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-            color: #fff; 
-            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
-        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 243, 255, 0.5); }
         .btn-primary:active { transform: scale(0.98); }
         
-        .btn-danger { 
-            background: rgba(245, 0, 87, 0.15); 
-            color: var(--girls-color); 
-            border: 1px solid rgba(245, 0, 87, 0.3); 
-            padding: 8px 20px; 
-            width: auto; 
-            font-size: 0.9rem; 
-            border-radius: 50px;
-            backdrop-filter: blur(5px);
-        }
+        .btn-danger { background: rgba(245, 0, 87, 0.15); color: var(--girls-color); border: 1px solid rgba(245, 0, 87, 0.3); padding: 8px 20px; width: auto; font-size: 0.9rem; border-radius: 50px; backdrop-filter: blur(5px); }
         .btn-danger:hover { background: var(--girls-color); color: white; }
 
-        .btn-vote { 
-            background: rgba(0, 230, 118, 0.15); 
-            border: 1px solid var(--accent); 
-            color: var(--accent); 
-            border-radius: 50px; 
-            backdrop-filter: blur(5px);
-            font-size: 1rem;
-        }
+        .btn-vote { background: rgba(0, 230, 118, 0.15); border: 1px solid var(--accent); color: var(--accent); border-radius: 50px; backdrop-filter: blur(5px); font-size: 1rem; }
         .btn-vote:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px rgba(0, 230, 118, 0.4); }
-        .btn-vote:disabled { 
-            border-color: #444; 
-            color: #666; 
-            background: rgba(255,255,255,0.05); 
-            cursor: not-allowed; 
-            box-shadow: none; 
-            transform: none; 
-        }
+        .btn-vote:disabled { border-color: #444; color: #666; background: rgba(255,255,255,0.05); cursor: not-allowed; box-shadow: none; transform: none; }
 
-        .btn-action {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            width: auto;
-            padding: 10px 25px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            backdrop-filter: blur(5px);
-        }
+        .btn-action { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 10px 25px; margin-right: 10px; margin-bottom: 10px; backdrop-filter: blur(5px); }
         .btn-action:hover { background: rgba(0, 243, 255, 0.2); }
 
-        /* Inputs */
         .input-group { margin-bottom: 20px; }
-        .input-field { 
-            width: 100%; padding: 16px; 
-            background: rgba(0, 0, 0, 0.4); 
-            border: 1px solid var(--glass-border); 
-            border-radius: 12px; 
-            color: white; 
-            font-family: inherit; 
-            font-size: 1rem; 
-            transition: 0.3s;
-            backdrop-filter: blur(5px);
-        }
+        .input-field { width: 100%; padding: 16px; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; font-size: 1rem; transition: 0.3s; backdrop-filter: blur(5px); }
         .input-field:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); background: rgba(0, 0, 0, 0.6); }
-        .input-field option { background: #111; color: white; } /* Fix dropdown colors */
+        .input-field option { background: #111; color: white; }
 
-        /* Cards */
-        .glass-card { 
-            background: rgba(15, 15, 30, 0.6); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid var(--glass-border); 
-            border-radius: 24px; 
-            padding: 30px; 
-            margin-bottom: 20px; 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
-        }
+        .glass-card { background: rgba(15, 15, 30, 0.6); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
 
-        /* Category Tabs */
         .category-tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; position: relative; }
-        .cat-tab { 
-            padding: 12px 35px; 
-            background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border); 
-            border-radius: 50px; 
-            text-align: center; cursor: pointer; 
-            transition: all 0.4s ease; 
-            font-weight: 700; font-size: 1rem; 
-            color: var(--text-muted); 
-        }
+        .cat-tab { padding: 12px 35px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 50px; text-align: center; cursor: pointer; transition: all 0.4s ease; font-weight: 700; font-size: 1rem; color: var(--text-muted); }
         .cat-tab.active-boys { border-color: var(--boys-color); color: #fff; background: rgba(41, 121, 255, 0.2); box-shadow: 0 0 20px rgba(41, 121, 255, 0.3); }
         .cat-tab.active-girls { border-color: var(--girls-color); color: #fff; background: rgba(245, 0, 87, 0.2); box-shadow: 0 0 20px rgba(245, 0, 87, 0.3); }
 
-        /* Costume Grid */
         .costume-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         @media (min-width: 600px) { .costume-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); } }
         
-        .costume-card { 
-            background: rgba(10, 10, 20, 0.6); 
-            border-radius: 20px; overflow: hidden; 
-            border: 1px solid transparent; 
-            transition: all 0.4s ease; position: relative; 
-        }
+        .costume-card { background: rgba(10, 10, 20, 0.6); border-radius: 20px; overflow: hidden; border: 1px solid transparent; transition: all 0.4s ease; position: relative; }
         .costume-card:hover { transform: translateY(-8px) scale(1.02); border-color: var(--primary); box-shadow: 0 15px 40px rgba(0, 243, 255, 0.15); }
         .costume-img { width: 100%; height: 280px; object-fit: cover; transition: transform 0.5s ease; }
         .costume-card:hover .costume-img { transform: scale(1.05); }
         
-        .costume-info { 
-            padding: 20px; text-align: center; 
-            background: linear-gradient(to top, rgba(5,5,10,0.95), rgba(5,5,10,0.8), transparent); 
-            backdrop-filter: blur(4px);
-            position: absolute; bottom: 0; left: 0; right: 0; 
-        }
+        .costume-info { padding: 20px; text-align: center; background: linear-gradient(to top, rgba(5,5,10,0.95), rgba(5,5,10,0.8), transparent); backdrop-filter: blur(4px); position: absolute; bottom: 0; left: 0; right: 0; }
         .costume-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-        /* Admin Projector View */
         .projector-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
         @media(min-width: 900px) { .projector-grid { grid-template-columns: 1fr 1fr; gap: 40px; } }
         
@@ -227,12 +135,10 @@
         .fill-girls { background: linear-gradient(90deg, var(--girls-color), #FF80AB); }
         .live-votes { font-weight: 800; font-size: 1.2rem; width: 50px; text-align: right; font-family: 'Rajdhani', sans-serif; }
 
-        /* Admin Tabs */
         .tab-nav { display: flex; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 5px; margin-bottom: 25px; border: 1px solid var(--glass-border); flex-wrap: wrap; }
         .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 10px; font-family: inherit; font-weight: 600; transition: 0.3s; min-width: 100px; font-size: 0.95rem; }
         .tab-btn.active { background: rgba(188, 19, 254, 0.2); color: var(--secondary); box-shadow: inset 0 0 0 1px var(--secondary); }
 
-        /* Toast Notifications */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px; }
         .toast { padding: 14px 20px; background: rgba(20, 20, 35, 0.95); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideIn 0.5s ease forwards; backdrop-filter: blur(12px); display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
         .toast.fade-out { animation: slideOut 0.5s ease forwards; }
@@ -243,33 +149,21 @@
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
-        /* Utilities */
         .hidden { display: none !important; }
         .text-center { text-align: center; }
         .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         
-        .status-box { 
-            background: rgba(0, 0, 0, 0.4); padding: 15px; border-radius: 12px; 
-            margin-bottom: 20px; border-left: 4px solid yellow; font-size: 0.95rem; 
-            backdrop-filter: blur(8px); border: 1px solid var(--glass-border);
-        }
+        .status-box { background: rgba(0, 0, 0, 0.4); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid yellow; font-size: 0.95rem; backdrop-filter: blur(8px); border: 1px solid var(--glass-border); }
         .status-success { border-left: 4px solid var(--accent); color: var(--accent); }
         .status-error { border-left: 4px solid #ff4081; color: #ff4081; }
         
-        .user-header { 
-            background: rgba(188, 19, 254, 0.1); 
-            padding: 12px 25px; border-radius: 50px; 
-            margin-bottom: 25px; border: 1px solid rgba(188, 19, 254, 0.2); 
-            display: inline-flex; align-items: center; 
-            backdrop-filter: blur(10px);
-        }
+        .user-header { background: rgba(188, 19, 254, 0.1); padding: 12px 25px; border-radius: 50px; margin-bottom: 25px; border: 1px solid rgba(188, 19, 254, 0.2); display: inline-flex; align-items: center; backdrop-filter: blur(10px); }
         .action-icon { cursor: pointer; margin-left: 10px; opacity: 0.7; transition: 0.3s; font-size: 0.9rem; color: var(--primary); }
         .action-icon:hover { opacity: 1; }
         
         .setting-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .setting-row .input-group { flex: 1; min-width: 150px; margin-bottom: 0; }
 
-        /* Responsive Text */
         @media (max-width: 600px) {
             .header { margin-top: 20px; }
             .countdown-box { padding: 12px 20px; width: 90%; }
@@ -363,15 +257,8 @@
             <div id="tab-manage" class="hidden">
                 <div class="glass-card">
                     <h3 style="margin-bottom: 20px; color: var(--secondary);">Add New Contestant</h3>
-                    
-                    <div class="input-group">
-                        <input type="text" id="new-name" placeholder="Contestant Name" class="input-field">
-                    </div>
-                    
-                    <div class="input-group">
-                        <input type="text" id="new-img" placeholder="Image URL (Direct Link)" class="input-field">
-                    </div>
-
+                    <div class="input-group"><input type="text" id="new-name" placeholder="Contestant Name" class="input-field"></div>
+                    <div class="input-group"><input type="text" id="new-img" placeholder="Image URL (Direct Link)" class="input-field"></div>
                     <div class="input-group">
                         <select id="new-gender" class="input-field">
                             <option value="boys">Boy</option>
@@ -395,8 +282,6 @@
 
                 <div class="glass-card" style="margin-top: 20px;">
                     <h3 style="margin-bottom: 20px; color: var(--accent);">Location Settings</h3>
-                    <p style="font-size:0.9rem; color:#aaa; margin-bottom:15px;">Set the exact location where voting is allowed.</p>
-                    
                     <div class="setting-row">
                         <div class="input-group">
                             <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Latitude</label>
@@ -407,7 +292,6 @@
                             <input type="number" step="any" id="loc-long" class="input-field" placeholder="79.8612">
                         </div>
                     </div>
-                    
                     <div class="input-group">
                         <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Radius (Meters)</label>
                         <input type="number" id="loc-radius" class="input-field" placeholder="100">
@@ -431,74 +315,45 @@
                 <div id="user-list"></div>
             </div>
         </div>
-
     </div>
 
 <script>
-    // --- CONFIGURATION ---
     const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
     const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
-    // --- STATE ---
     let currentUser = null;
     let isRegister = false;
     let activeCategory = 'boys'; 
     let allCostumes = [];
     let myVotes = []; 
-    let countdownInterval; // Fixed: Global variable to prevent duplicate timers
+    let countdownInterval;
 
-    let settings = {
-        endTime: null,
-        lat: 0,
-        long: 0,
-        radius: 100,
-        announcement: ''
-    };
+    let settings = { endTime: null, lat: 0, long: 0, radius: 100, announcement: '' };
 
-    // --- TOAST NOTIFICATION SYSTEM ---
     function showToast(message, type = 'info') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         
-        let icon = 'ℹ️';
-        if(type === 'success') icon = '✅';
-        if(type === 'error') icon = '❌';
-        
+        let icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
         toast.innerHTML = `<span style="font-size:1.2rem">${icon}</span> <span>${message}</span>`;
         container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.classList.add('fade-out');
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
+        setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 500); }, 4000);
     }
 
-    // --- INIT ---
     async function init() {
-        // 1. Load Settings First
         await loadSettings();
-        
-        // 2. Setup Realtime Listeners
         setupRealtime();
-
-        // 3. Auth Check
         const { data: { session } } = await sb.auth.getSession();
         if (session) {
             currentUser = session.user;
             if(currentUser.email === 'nova.x.team001@gmail.com') {
-                showView('view-admin');
-                initAdmin();
-            } else {
-                checkRole(currentUser.id);
-            }
-        } else {
-            showView('view-auth');
-        }
+                showView('view-admin'); initAdmin();
+            } else { checkRole(currentUser.id); }
+        } else { showView('view-auth'); }
     }
 
-    // --- SETTINGS & REALTIME ---
     async function loadSettings() {
         const { data } = await sb.from('system_settings').select('*').eq('id', 1).maybeSingle();
         if(data) {
@@ -510,26 +365,18 @@
 
             updateAnnouncementUI();
             
-            // Populate Admin Inputs
             const timeInput = document.getElementById('end-time-input');
             if(timeInput && data.voting_end_time) timeInput.value = new Date(data.voting_end_time).toISOString().slice(0, 16);
-            
-            const latInput = document.getElementById('loc-lat');
-            if(latInput) latInput.value = settings.lat;
-            
-            const longInput = document.getElementById('loc-long');
-            if(longInput) longInput.value = settings.long;
-            
-            const radInput = document.getElementById('loc-radius');
-            if(radInput) radInput.value = settings.radius;
+            if(document.getElementById('loc-lat')) document.getElementById('loc-lat').value = settings.lat;
+            if(document.getElementById('loc-long')) document.getElementById('loc-long').value = settings.long;
+            if(document.getElementById('loc-radius')) document.getElementById('loc-radius').value = settings.radius;
         }
     }
 
     function setupRealtime() {
-        // Listen for settings changes
         sb.channel('public:system_settings').on('postgres_changes', { event: 'UPDATE', schema: 'public' }, payload => {
-            const data = payload.new;
-            if(data) {
+            if(payload.new) {
+                const data = payload.new;
                 settings.endTime = data.voting_end_time ? new Date(data.voting_end_time).getTime() : null;
                 settings.lat = data.target_lat || 0;
                 settings.long = data.target_long || 0;
@@ -537,16 +384,11 @@
                 settings.announcement = data.announcement || '';
                 
                 updateAnnouncementUI();
-                
-                // If audience view is active, re-check location
-                if(!document.getElementById('view-audience').classList.contains('hidden')) {
-                    checkLocation(); 
-                }
+                if(!document.getElementById('view-audience').classList.contains('hidden')) checkLocation(); 
                 showToast("System Settings Updated by Admin!", "info");
             }
         }).subscribe();
 
-        // Listen for votes changes
         sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
             if(!document.getElementById('view-admin').classList.contains('hidden')) loadAdminData();
         }).subscribe();
@@ -559,53 +401,33 @@
     function updateAnnouncementUI() {
         const el = document.getElementById('broadcast-msg');
         if(el) {
-            if(settings.announcement) {
-                el.innerText = "📢 " + settings.announcement;
-                el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
+            if(settings.announcement) { el.innerText = "📢 " + settings.announcement; el.classList.remove('hidden'); } 
+            else { el.classList.add('hidden'); }
         }
     }
 
-    // --- FIXED COUNTDOWN LOGIC ---
     function startCountdown() {
-        if(countdownInterval) clearInterval(countdownInterval); // Prevent memory leak & duplicate timers
-
+        if(countdownInterval) clearInterval(countdownInterval);
         const timerElem = document.getElementById('countdown-timer');
         
         countdownInterval = setInterval(() => {
             if(!settings.endTime) {
-                timerElem.innerHTML = "WAITING FOR ADMIN";
-                timerElem.style.color = "#aaa";
-                return;
+                timerElem.innerHTML = "WAITING FOR ADMIN"; timerElem.style.color = "#aaa"; return;
             }
-
-            const now = new Date().getTime();
-            const distance = settings.endTime - now;
-
+            const distance = settings.endTime - new Date().getTime();
             if (distance < 0) {
-                timerElem.innerHTML = "VOTING ENDED";
-                timerElem.style.color = "#ff4081";
-                clearInterval(countdownInterval);
-                return;
+                timerElem.innerHTML = "VOTING ENDED"; timerElem.style.color = "#ff4081"; clearInterval(countdownInterval); return;
             }
-
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            let timeStr = "";
-            if(days > 0) timeStr += `${days}d `;
-            timeStr += `${hours}h ${minutes}m ${seconds}s`;
-
-            timerElem.innerHTML = timeStr;
+            timerElem.innerHTML = (days > 0 ? `${days}d ` : '') + `${hours}h ${minutes}m ${seconds}s`;
             timerElem.style.color = "var(--primary)";
         }, 1000);
     }
 
-    // --- ADMIN SAVING FUNCTIONS ---
     async function saveTime() {
         const val = document.getElementById('end-time-input').value;
         if(!val) return showToast("Please select date & time", "error");
@@ -617,15 +439,8 @@
         const lat = parseFloat(document.getElementById('loc-lat').value);
         const long = parseFloat(document.getElementById('loc-long').value);
         const radius = parseInt(document.getElementById('loc-radius').value);
-        
         if(isNaN(lat) || isNaN(long) || isNaN(radius)) return showToast("Invalid coordinates", "error");
-        
-        const { error } = await sb.from('system_settings').update({ 
-            target_lat: lat, 
-            target_long: long, 
-            radius_meters: radius 
-        }).eq('id', 1);
-        
+        const { error } = await sb.from('system_settings').update({ target_lat: lat, target_long: long, radius_meters: radius }).eq('id', 1);
         if(error) showToast("Error saving location", "error"); else showToast("Location Updated!", "success");
     }
 
@@ -641,7 +456,6 @@
         showToast("Announcement Cleared", "info");
     }
 
-    // --- AUTH ---
     function toggleAuth() {
         isRegister = !isRegister;
         document.getElementById('auth-title').innerText = isRegister ? "Create Account" : "Welcome Back";
@@ -657,25 +471,18 @@
         if(!email || !password) return showToast("Please enter details!", "error");
 
         const btn = document.getElementById('btn-auth');
-        btn.disabled = true;
-        btn.innerText = "Please Wait...";
+        btn.disabled = true; btn.innerText = "Please Wait...";
 
         if(isRegister) {
             const { error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullname } } });
-            if(!error) {
-                showToast("Success! Please login.", "success");
-                toggleAuth(); 
-            } else {
-                showToast(error.message, "error");
-            }
+            if(!error) { showToast("Success! Please login.", "success"); toggleAuth(); } 
+            else { showToast(error.message, "error"); }
         } else {
             const { error } = await sb.auth.signInWithPassword({ email, password });
             if(error) showToast(error.message, "error");
         }
         
-        btn.disabled = false;
-        btn.innerText = isRegister ? "Register" : "Login";
-
+        btn.disabled = false; btn.innerText = isRegister ? "Register" : "Login";
         const { data: { session } } = await sb.auth.getSession();
         if(session && !document.getElementById('view-auth').classList.contains('hidden')) {
             setTimeout(() => window.location.reload(), 800);
@@ -684,67 +491,36 @@
 
     async function logout() { await sb.auth.signOut(); window.location.reload(); }
 
-    // --- ROLE CHECK ---
     async function checkRole(uid) {
-        // Safe check using maybeSingle()
-        const { data: profile, error } = await sb.from('profiles').select('*').eq('id', uid).maybeSingle();
-        
+        const { data: profile } = await sb.from('profiles').select('*').eq('id', uid).maybeSingle();
         if (!profile) {
-            // Fallback if DB trigger failed
             showView('view-audience');
             document.getElementById('user-name-display').innerText = currentUser.user_metadata?.full_name || "User";
-            initAudience();
-            return;
+            initAudience(); return;
         }
-
-        if(profile.role === 'admin') {
-            showView('view-admin');
-            initAdmin();
-        } else if(profile.role === 'blocked') {
-            showToast("Account Blocked!", "error"); 
-            logout();
-        } else {
-            showView('view-audience');
-            document.getElementById('user-name-display').innerText = profile.full_name || "User";
-            initAudience();
-        }
+        if(profile.role === 'admin') { showView('view-admin'); initAdmin(); } 
+        else if(profile.role === 'blocked') { showToast("Account Blocked!", "error"); logout(); } 
+        else { showView('view-audience'); document.getElementById('user-name-display').innerText = profile.full_name || "User"; initAudience(); }
     }
 
-    // --- AUDIENCE LOGIC ---
-    function initAudience() {
-        startCountdown(); 
-        checkLocation();
-    }
+    function initAudience() { startCountdown(); checkLocation(); }
 
     function checkLocation() {
         const locDiv = document.getElementById('loc-status');
-        
         if(settings.lat === 0 && settings.long === 0) {
-             locDiv.innerHTML = "⏳ Waiting for Admin to set location...";
-             locDiv.className = "status-box status-error";
-             return;
+             locDiv.innerHTML = "⏳ Waiting for Admin to set location..."; locDiv.className = "status-box status-error"; return;
         }
-
-        if(!navigator.geolocation) {
-            locDiv.innerHTML = "❌ GPS Not Supported by your Browser";
-            locDiv.className = "status-box status-error";
-            return;
-        };
+        if(!navigator.geolocation) { locDiv.innerHTML = "❌ GPS Not Supported"; locDiv.className = "status-box status-error"; return; };
         
         navigator.geolocation.getCurrentPosition(pos => {
             const dist = getDist(pos.coords.latitude, pos.coords.longitude);
-            
             if(dist <= settings.radius) { 
-                locDiv.innerHTML = "✅ Location Verified";
-                locDiv.className = "status-box status-success";
-                loadVotingData();
+                locDiv.innerHTML = "✅ Location Verified"; locDiv.className = "status-box status-success"; loadVotingData();
             } else {
-                locDiv.innerHTML = `❌ Out of Range (${Math.round(dist)}m away)`;
-                locDiv.className = "status-box status-error";
+                locDiv.innerHTML = `❌ Out of Range (${Math.round(dist)}m away)`; locDiv.className = "status-box status-error";
             }
         }, () => {
-             locDiv.innerHTML = "❌ Location Permission Denied (Please allow GPS)";
-             locDiv.className = "status-box status-error";
+             locDiv.innerHTML = "❌ Location Permission Denied"; locDiv.className = "status-box status-error";
         });
     }
 
@@ -766,27 +542,20 @@
     function renderVotingCards() {
         const list = document.getElementById('costume-list');
         list.innerHTML = '';
-
         const filtered = allCostumes.filter(c => c.gender === activeCategory);
         const votedInThisCategory = filtered.some(c => myVotes.includes(c.id));
 
         if(filtered.length === 0) {
-            list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 40px; color:#555; font-size:1.2rem;'>No candidates added yet.</p>";
-            return;
+            list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 40px; color:#555; font-size:1.2rem;'>No candidates added yet.</p>"; return;
         }
 
         filtered.forEach(c => {
             const hasVotedThis = myVotes.includes(c.id);
-            
             let btnHtml = '';
             if(votedInThisCategory) {
-                if(hasVotedThis) {
-                    btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent); box-shadow:0 0 15px rgba(0,230,118,0.3);">✓ Voted</button>`;
-                } else {
-                    btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
-                }
+                if(hasVotedThis) btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent); box-shadow:0 0 15px rgba(0,230,118,0.3);">✓ Voted</button>`;
+                else btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
             } else {
-                // Passed 'this' object directly to manipulate button state securely
                 btnHtml = `<button onclick="castVote(this, ${c.id})" class="btn btn-vote">Vote</button>`;
             }
 
@@ -802,40 +571,39 @@
         });
     }
 
-    function celebrateVote() {
-        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe', '#00e676'] });
-    }
+    function celebrateVote() { confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe', '#00e676'] }); }
 
-    // FIXED: Prevent Double Clicking and DB overlap
+    // මෙන්න වැදගත්ම වෙනස් කරපු කොටස (Frontend-only counting)
     async function castVote(btnElement, id) {
-        if(btnElement) {
-            btnElement.disabled = true;
-            btnElement.innerText = "Voting...";
-        }
+        if(btnElement) { btnElement.disabled = true; btnElement.innerText = "Voting..."; }
         
         if(!confirm("Confirm Vote? You cannot change this later.")) {
             if(btnElement) { btnElement.disabled = false; btnElement.innerText = "Vote"; }
             return;
         }
 
-        const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
+        // 1. Vote එක Insert කරනවා
+        const { error: insertErr } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
         
-        if(error) {
-            showToast("Database Error! " + error.message, "error");
+        if(insertErr) {
+            showToast("Error! " + insertErr.message, "error");
             if(btnElement) { btnElement.disabled = false; btnElement.innerText = "Vote"; }
-        } else {
-            myVotes.push(id);
-            renderVotingCards();
-            celebrateVote();
-            showToast("Vote Cast Successfully!", "success");
+            return;
         }
+
+        // 2. Count එක වැඩි කරනවා (අර Error දෙන Database Trigger එක නැතුව)
+        const target = allCostumes.find(c => c.id === id);
+        const newCount = target ? (target.vote_count || 0) + 1 : 1;
+        
+        await sb.from('costumes').update({ vote_count: newCount }).eq('id', id);
+
+        myVotes.push(id);
+        renderVotingCards();
+        celebrateVote();
+        showToast("Vote Cast Successfully!", "success");
     }
 
-    // --- ADMIN LOGIC ---
-    function initAdmin() {
-        loadAdminData();
-        startCountdown(); 
-    }
+    function initAdmin() { loadAdminData(); startCountdown(); }
 
     async function loadAdminData() {
         const { data: costumes } = await sb.from('costumes').select('*');
@@ -853,9 +621,7 @@
                 <img src="${c.image_url}" class="live-photo" onerror="this.src='https://via.placeholder.com/60'">
                 <div class="live-info">
                     <div class="live-name">${c.name}</div>
-                    <div class="live-bar-bg">
-                        <div class="live-bar-fill fill-boys" style="width: ${((c.vote_count || 0) / (maxB || 1)) * 100}%"></div>
-                    </div>
+                    <div class="live-bar-bg"><div class="live-bar-fill fill-boys" style="width: ${((c.vote_count || 0) / (maxB || 1)) * 100}%"></div></div>
                 </div>
                 <div class="live-votes">${c.vote_count || 0}</div>
             </div>
@@ -867,15 +633,12 @@
                 <img src="${c.image_url}" class="live-photo" onerror="this.src='https://via.placeholder.com/60'">
                 <div class="live-info">
                     <div class="live-name">${c.name}</div>
-                    <div class="live-bar-bg">
-                        <div class="live-bar-fill fill-girls" style="width: ${((c.vote_count || 0) / (maxG || 1)) * 100}%"></div>
-                    </div>
+                    <div class="live-bar-bg"><div class="live-bar-fill fill-girls" style="width: ${((c.vote_count || 0) / (maxG || 1)) * 100}%"></div></div>
                 </div>
                 <div class="live-votes">${c.vote_count || 0}</div>
             </div>
         `).join('');
 
-        // Manage List
         document.getElementById('manage-list').innerHTML = allCostumes.map(c => `
             <div class="glass-card flex-between" style="padding:15px; margin-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:15px;">
@@ -889,16 +652,12 @@
             </div>
         `).join('');
 
-        // User List
         const { data: users } = await sb.from('profiles').select('*');
         if(users) {
             document.getElementById('user-list').innerHTML = users.map(u => `
                 <div class="glass-card" style="padding:20px; margin-bottom:15px;">
                     <div class="flex-between">
-                        <div>
-                            <b style="font-size:1.1rem;">${u.full_name || 'No Name'}</b><br>
-                            <small style="color:#555">${u.email}</small>
-                        </div>
+                        <div><b style="font-size:1.1rem;">${u.full_name || 'No Name'}</b><br><small style="color:#555">${u.email}</small></div>
                         <select onchange="changeUserRole('${u.id}', this.value)" class="input-field" style="width:auto; padding:8px 15px; border-radius:8px;">
                             <option value="audience" ${u.role==='audience'?'selected':''}>Audience</option>
                             <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
@@ -917,12 +676,8 @@
         if(!name || !img) return showToast("Name and URL required", "error");
         
         const { error } = await sb.from('costumes').insert([{ name, image_url: img, gender }]);
-        if(error) showToast("DB Error: Verify 'gender' column exists in costumes table!", "error");
-        else {
-            showToast("Contestant Added!", "success");
-            document.getElementById('new-name').value = '';
-            document.getElementById('new-img').value = '';
-        }
+        if(error) showToast("Error adding contestant!", "error");
+        else { showToast("Contestant Added!", "success"); document.getElementById('new-name').value = ''; document.getElementById('new-img').value = ''; }
     }
 
     function openProjector() {
@@ -949,45 +704,19 @@
             <body>
                 <h1>INCEPTRA 25 - LIVE</h1>
                 <div class="grid">
-                    <div class="section">
-                        <div class="title boys">BOYS</div>
-                        <div id="boys-list">Loading...</div>
-                    </div>
-                    <div class="section">
-                        <div class="title girls">GIRLS</div>
-                        <div id="girls-list">Loading...</div>
-                    </div>
+                    <div class="section"><div class="title boys">BOYS</div><div id="boys-list">Loading...</div></div>
+                    <div class="section"><div class="title girls">GIRLS</div><div id="girls-list">Loading...</div></div>
                 </div>
                 <script>
-                    const supabaseUrl = '${supabaseUrl}';
-                    const supabaseKey = '${supabaseKey}';
-                    const sb = supabase.createClient(supabaseUrl, supabaseKey);
-                    
+                    const supabaseUrl = '${supabaseUrl}'; const supabaseKey = '${supabaseKey}'; const sb = supabase.createClient(supabaseUrl, supabaseKey);
                     async function loadData() {
-                        const { data } = await sb.from('costumes').select('*');
-                        if(!data) return;
-                        
+                        const { data } = await sb.from('costumes').select('*'); if(!data) return;
                         const boys = data.filter(c => c.gender === 'boys').sort((a,b) => b.vote_count - a.vote_count);
                         const girls = data.filter(c => c.gender === 'girls').sort((a,b) => b.vote_count - a.vote_count);
-
-                        document.getElementById('boys-list').innerHTML = boys.map(c => \`
-                            <div class="row">
-                                <img src="\${c.image_url}">
-                                <div class="name">\${c.name}</div>
-                                <div class="votes">\${c.vote_count || 0}</div>
-                            </div>
-                        \`).join('');
-
-                        document.getElementById('girls-list').innerHTML = girls.map(c => \`
-                            <div class="row">
-                                <img src="\${c.image_url}">
-                                <div class="name">\${c.name}</div>
-                                <div class="votes">\${c.vote_count || 0}</div>
-                            </div>
-                        \`).join('');
+                        document.getElementById('boys-list').innerHTML = boys.map(c => \`<div class="row"><img src="\${c.image_url}"><div class="name">\${c.name}</div><div class="votes">\${c.vote_count || 0}</div></div>\`).join('');
+                        document.getElementById('girls-list').innerHTML = girls.map(c => \`<div class="row"><img src="\${c.image_url}"><div class="name">\${c.name}</div><div class="votes">\${c.vote_count || 0}</div></div>\`).join('');
                     }
-                    loadData();
-                    setInterval(loadData, 3000); 
+                    loadData(); setInterval(loadData, 3000); 
                 <\/script>
             </body>
             </html>
@@ -1001,59 +730,43 @@
         const girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
         girls.forEach((c, i) => { csv += `${i+1},"${c.name}",Girls,${c.vote_count || 0}\n`; });
         
-        var hiddenElement = document.createElement('a');
-        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-        hiddenElement.target = '_blank';
-        hiddenElement.download = 'Inceptra25_Results.csv';
-        hiddenElement.click();
+        var hiddenElement = document.createElement('a'); hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+        hiddenElement.target = '_blank'; hiddenElement.download = 'Inceptra25_Results.csv'; hiddenElement.click();
         showToast("Downloaded CSV", "success");
     }
 
     async function editCostume(id, currentName, currentImg) {
-        const newName = prompt("Enter new name:", currentName);
-        if (newName === null) return;
-        const newImg = prompt("Enter new image URL:", currentImg);
-        if (newImg === null) return;
-        
+        const newName = prompt("Enter new name:", currentName); if (newName === null) return;
+        const newImg = prompt("Enter new image URL:", currentImg); if (newImg === null) return;
         const { error } = await sb.from('costumes').update({ name: newName, image_url: newImg }).eq('id', id);
-        if(error) showToast("Error updating: " + error.message, "error"); 
-        else showToast("Costume Updated!", "success");
+        if(error) showToast("Error updating", "error"); else showToast("Costume Updated!", "success");
     }
 
     async function delCostume(id) {
         if(confirm("Are you sure you want to delete this candidate?")) {
             const { error } = await sb.from('costumes').delete().eq('id', id);
-            if(error) showToast("Error: " + error.message, "error");
-            else showToast("Candidate Deleted!", "success");
+            if(error) showToast("Error", "error"); else showToast("Candidate Deleted!", "success");
         }
     }
     
     async function changeUserRole(uid, role) {
         if(confirm(`Change this user's role to ${role}?`)) {
             const { error } = await sb.from('profiles').update({ role }).eq('id', uid);
-            if(error) showToast("Error updating role", "error");
-            else showToast(`User role updated to ${role}`, "success");
+            if(error) showToast("Error", "error"); else showToast(`User role updated`, "success");
         }
     }
 
-    // --- UTILS ---
-    function showView(id) {
-        ['view-auth', 'view-audience', 'view-admin'].forEach(v => document.getElementById(v).classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
-
+    function showView(id) { ['view-auth', 'view-audience', 'view-admin'].forEach(v => document.getElementById(v).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
     function showTab(tab) {
         ['chart', 'manage', 'settings', 'users'].forEach(t => {
             if(document.getElementById('tab-' + t)) document.getElementById('tab-' + t).classList.add('hidden');
             if(document.getElementById('btn-tab-' + t)) document.getElementById('btn-tab-' + t).classList.remove('active');
         });
-        document.getElementById('tab-' + tab).classList.remove('hidden');
-        document.getElementById('btn-tab-' + tab).classList.add('active');
+        document.getElementById('tab-' + tab).classList.remove('hidden'); document.getElementById('btn-tab-' + tab).classList.add('active');
     }
 
     function getDist(lat1, lon1) {
-        const R = 6371e3; 
-        const φ1 = lat1 * Math.PI/180, φ2 = settings.lat * Math.PI/180; 
+        const R = 6371e3; const φ1 = lat1 * Math.PI/180, φ2 = settings.lat * Math.PI/180; 
         const Δφ = (settings.lat-lat1) * Math.PI/180, Δλ = (settings.long-lon1) * Math.PI/180;
         const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2) * Math.sin(Δλ/2)**2;
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
