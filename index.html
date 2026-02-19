@@ -207,7 +207,7 @@
 
             <div id="tab-chart" class="projector-view">
                 <h1 class="projector-title">Live Scoreboard</h1>
-                <div id="admin-chart-container"></div>
+                <div id="admin-chart-container">Loading...</div>
             </div>
 
             <div id="tab-manage" class="hidden">
@@ -351,10 +351,14 @@
                 loadVotingData();
 
                 // REALTIME SUBSCRIPTION - Fix for not showing new items
-                sb.channel('public:costumes').on('postgres_changes', { event: 'INSERT', schema: 'public' }, payload => {
-                    console.log("New Costume Added!");
-                    loadVotingData(); // Reload data when admin adds new item
-                }).subscribe();
+                // This listens for ANY change in the costumes table
+                sb.channel('public:costumes').on('postgres_changes', 
+                    { event: '*', schema: 'public' }, 
+                    payload => {
+                        console.log("Change detected:", payload);
+                        loadVotingData(); 
+                    }
+                ).subscribe();
 
             } else {
                 locDiv.innerHTML = `❌ Out of Range (${Math.round(dist/1000)}km)`;
@@ -367,12 +371,19 @@
     }
 
     async function loadVotingData() {
-        const { data: costumes } = await sb.from('costumes').select('*').order('id');
+        // Fetch Data
+        const { data: costumes, error } = await sb.from('costumes').select('*').order('id');
+        
+        // DEBUG: Check if data is coming
+        if(error) console.error("Supabase Error:", error);
+        console.log("Fetched Costumes:", costumes);
+
         const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
         
         appState.costumes = costumes || [];
         appState.votes = votes || [];
         
+        // Determine Votes
         appState.votedBoyId = null;
         appState.votedGirlId = null;
 
@@ -386,11 +397,10 @@
 
         updateMenuBadges();
         
-        // If currently inside a category view, refresh it
+        // If user is currently inside a category view, refresh that view immediately
         if(!document.getElementById('step-voting').classList.contains('hidden')) {
-            // Check which category is open by checking the title text? 
-            // Or just simpler: re-render current open category if needed. 
-            // But since we switch views, simple menu update is enough mostly.
+            const title = document.getElementById('voting-cat-title').innerText.toLowerCase();
+            renderVotingCards(title);
         }
     }
 
@@ -426,11 +436,15 @@
         const list = document.getElementById('voting-list');
         list.innerHTML = '';
 
+        // Filter correct category
         const filtered = appState.costumes.filter(c => c.category === category);
         const votedId = category === 'boys' ? appState.votedBoyId : appState.votedGirlId;
         const hasVotedInCategory = votedId ? true : false;
 
-        if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; color:#aaa;'>No contestants found in this category.</p>";
+        if(filtered.length === 0) {
+            list.innerHTML = `<p style='text-align:center; grid-column: 1/-1; color:#aaa; padding:20px;'>No contestants found in this category.<br><small>Ask Admin to add data.</small></p>`;
+            return;
+        }
 
         filtered.forEach(c => {
             const isMyVote = (c.id === votedId);
@@ -447,7 +461,7 @@
             list.innerHTML += `
                 <div class="costume-card">
                     ${isMyVote ? '<div class="voted-check" style="top:10px; right:10px;">SELECTED</div>' : ''}
-                    <img src="${c.image_url}" onerror="this.src='https://via.placeholder.com/300x200?text=Inceptra'" class="costume-img">
+                    <img src="${c.image_url}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" class="costume-img">
                     <div class="costume-info">
                         <div class="costume-name">${c.name}</div>
                         <div class="costume-desc">${c.description || ''}</div>
@@ -469,8 +483,10 @@
         if(error) {
             alert("Error! You might have already voted in this category.");
         } else {
+            // Update local state immediately for UI responsiveness
             if(category === 'boys') appState.votedBoyId = id;
             else appState.votedGirlId = id;
+            
             renderVotingCards(category);
         }
     }
@@ -478,10 +494,8 @@
     // --- ADMIN ---
     function initAdmin() {
         loadAdminData();
-        // Realtime for Votes
-        sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
-        // Realtime for Costumes (Chart update if name changes)
-        sb.channel('public:costumes_admin').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
+        // Realtime listeners
+        sb.channel('admin-votes').on('postgres_changes', { event: '*', schema: 'public' }, loadAdminData).subscribe();
         
         // File Input UX
         document.getElementById('new-img-file').addEventListener('change', function(e) {
@@ -493,10 +507,8 @@
     async function loadAdminData() {
         const { data: costumes } = await sb.from('costumes').select('*').order('vote_count', { ascending: false });
         
-        // Total Votes Calculation
         let total = 0; costumes.forEach(c => total += c.vote_count);
         
-        // Chart Rendering
         const maxVotes = costumes.length > 0 ? costumes[0].vote_count : 1;
         const chartHtml = costumes.map(c => `
             <div class="chart-row">
@@ -510,7 +522,6 @@
         
         document.getElementById('admin-chart-container').innerHTML = `<h3 style="text-align:center; margin-bottom:20px; color:#fff;">Total Votes: ${total}</h3>${chartHtml}`;
 
-        // Manage List
         document.getElementById('manage-list').innerHTML = costumes.map(c => `
             <div class="glass-card flex-between" style="padding:15px; margin-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:15px;">
@@ -524,7 +535,6 @@
             </div>
         `).join('');
 
-        // Users
         const { data: users } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
         document.getElementById('user-list').innerHTML = users.map(u => `
             <div class="glass-card" style="padding:15px; margin-bottom:10px;">
