@@ -214,7 +214,6 @@
             .countdown-timer { font-size: 1.2rem; }
             .cat-tab { padding: 8px 20px; font-size: 0.9rem; }
             .btn { padding: 12px; font-size: 0.9rem; }
-            /* Admin User List Responsive */
             .admin-user-row { flex-direction: column; gap: 10px; }
             .user-role-box { align-items: flex-start; width: 100%; }
             .user-role-box select { width: 100%; }
@@ -477,6 +476,7 @@
     }
 
     function setupRealtime() {
+        // Listen for settings changes
         sb.channel('public:system_settings').on('postgres_changes', { event: 'UPDATE', schema: 'public' }, payload => {
             const data = payload.new;
             settings.endTime = new Date(data.voting_end_time).getTime();
@@ -495,11 +495,17 @@
             showToast("System Updated!", "info");
         }).subscribe();
 
+        // Listen for votes changes
         sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
         
         sb.channel('public:costumes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
+             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
+        }).subscribe();
+
+        // FIX: Listen for profiles changes (New User Registration)
+        sb.channel('public:profiles').on('postgres_changes', { event: '*', schema: 'public' }, () => {
              if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
     }
@@ -600,15 +606,29 @@
             if(!error) {
                 // Sync to profiles table for Admin visibility
                 if(data.user) {
-                     await sb.from('profiles').upsert([{
-                        id: data.user.id,
-                        email: email,
-                        full_name: fullname,
-                        role: 'audience',
-                        created_at: new Date().toISOString()
-                     }]);
+                     try {
+                        const { error: profileError } = await sb.from('profiles').upsert([{
+                            id: data.user.id,
+                            email: email,
+                            full_name: fullname,
+                            role: 'audience',
+                            created_at: new Date().toISOString()
+                         }]);
+                         if(profileError) {
+                             console.error("Profile creation failed:", profileError);
+                             showToast("Auth success, but profile sync failed. Contact Admin.", "error");
+                         } else {
+                             showToast("Success! Check email.", "success");
+                             // Clear form
+                             document.getElementById('email').value = '';
+                             document.getElementById('password').value = '';
+                             document.getElementById('fullname').value = '';
+                         }
+                     } catch (e) {
+                         console.error(e);
+                         showToast("System error.", "error");
+                     }
                 }
-                showToast("Success! Check email.", "success");
             }
             else showToast(error.message, "error");
         } else {
@@ -820,7 +840,7 @@
         `).join('');
 
         // UPDATED USER LIST LOGIC
-        const { data: users } = await sb.from('profiles').select('*');
+        const { data: users } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
         document.getElementById('user-list').innerHTML = (users || []).map(u => `
             <div class="glass-card" style="padding: 15px; margin-bottom: 10px;">
                 <div class="admin-user-row">
