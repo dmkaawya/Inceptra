@@ -45,7 +45,7 @@
         /* Header */
         .header { text-align: center; margin: 30px 0 20px 0; position: relative; }
         .logo-text { 
-            font-size: clamp(2.5rem, 5vw, 4rem); /* Responsive Font Size */
+            font-size: clamp(2.5rem, 5vw, 4rem); 
             font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
             background: linear-gradient(to right, #fff, var(--primary), var(--secondary)); 
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
@@ -73,15 +73,14 @@
         .btn-danger { background: rgba(245, 0, 87, 0.1); color: var(--girls-color); border: 1px solid var(--girls-color); padding: 8px 16px; width: auto; font-size: 0.85rem; border-radius: 8px; }
         .btn-danger:hover { background: var(--girls-color); color: white; }
         
-        /* VOTE BUTTON STYLES FIX */
         .btn-vote { 
             background: rgba(0, 230, 118, 0.1); 
             border: 1px solid var(--accent); 
             color: var(--accent); 
             border-radius: 50px;
-            margin-top: 10px; /* Added spacing */
-            width: 90%; /* Slightly smaller to fit nicely */
-            min-height: 44px; /* Ensure consistent height */
+            margin-top: 10px; 
+            width: 90%; 
+            min-height: 44px; 
         }
         .btn-vote:hover { background: var(--accent); color: #000; box-shadow: 0 0 25px var(--accent); }
         .btn-vote:disabled { border-color: #444; color: #444; background: rgba(255,255,255,0.05); cursor: not-allowed; box-shadow: none; transform: none; }
@@ -115,7 +114,6 @@
         /* Costume Grid */
         .costume-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         
-        /* Costume Card Layout Fix */
         .costume-card { 
             background: rgba(10, 10, 20, 0.6); 
             border-radius: 20px; 
@@ -141,7 +139,7 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            min-height: 90px; /* Ensures space for text + button */
+            min-height: 90px; 
         }
         
         .costume-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); line-height: 1.2; }
@@ -198,14 +196,28 @@
         .setting-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .setting-row .input-group { flex: 1; margin-bottom: 0; }
 
+        /* USER LIST STYLES FOR ADMIN */
+        .admin-user-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+        .user-meta { flex: 1; min-width: 0; }
+        .user-role-box { display: flex; flex-direction: column; align-items: flex-end; min-width: 120px; }
+        
+        .u-name { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .u-email { color: var(--primary); font-size: 0.9rem; margin-bottom: 2px; word-break: break-all; }
+        .u-id { color: #666; font-size: 0.75rem; font-family: monospace; margin-bottom: 2px; }
+        .u-date { color: #555; font-size: 0.75rem; }
+
         /* MOBILE RESPONSIVENESS ADJUSTMENTS */
         @media (max-width: 600px) {
             .logo-text { font-size: 2.5rem; }
-            .costume-grid { grid-template-columns: 1fr; } /* Single column on mobile */
+            .costume-grid { grid-template-columns: 1fr; } 
             .costume-card { max-width: 100%; }
             .countdown-timer { font-size: 1.2rem; }
             .cat-tab { padding: 8px 20px; font-size: 0.9rem; }
             .btn { padding: 12px; font-size: 0.9rem; }
+            /* Admin User List Responsive */
+            .admin-user-row { flex-direction: column; gap: 10px; }
+            .user-role-box { align-items: flex-start; width: 100%; }
+            .user-role-box select { width: 100%; }
         }
 
     </style>
@@ -440,7 +452,6 @@
     async function loadSettings() {
         const { data } = await sb.from('system_settings').select('*').eq('id', 1).single();
         if(data) {
-            // Fix: Ensure we parse the date correctly
             const time = data.voting_end_time ? new Date(data.voting_end_time).getTime() : new Date('2025-12-31').getTime();
             settings.endTime = time;
             settings.lat = data.target_lat || 0;
@@ -448,11 +459,9 @@
             settings.radius = data.radius_meters || 100;
             settings.announcement = data.announcement || '';
 
-            // Update UI
             updateCountdownDisplay();
             updateAnnouncementUI();
             
-            // Update Admin Inputs if visible
             const timeInput = document.getElementById('end-time-input');
             if(timeInput && data.voting_end_time) timeInput.value = new Date(data.voting_end_time).toISOString().slice(0, 16);
             
@@ -468,7 +477,6 @@
     }
 
     function setupRealtime() {
-        // Listen for settings changes
         sb.channel('public:system_settings').on('postgres_changes', { event: 'UPDATE', schema: 'public' }, payload => {
             const data = payload.new;
             settings.endTime = new Date(data.voting_end_time).getTime();
@@ -480,7 +488,6 @@
             updateCountdownDisplay();
             updateAnnouncementUI();
             
-            // If audience view is active, re-check location
             if(document.getElementById('view-audience').classList.contains('hidden') === false) {
                 checkLocation(); 
             }
@@ -488,7 +495,6 @@
             showToast("System Updated!", "info");
         }).subscribe();
 
-        // Listen for votes changes
         sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
@@ -499,7 +505,7 @@
     }
 
     function updateCountdownDisplay() {
-        // Logic handled in interval
+        // Handled in interval
     }
 
     function updateAnnouncementUI() {
@@ -522,7 +528,6 @@
             const now = new Date().getTime();
             const distance = settings.endTime - now;
 
-            // Fix: Handle Time Error (NaN check)
             if (isNaN(distance) || distance < 0) {
                 timerElem.innerHTML = isNaN(distance) ? "Set Time" : "VOTING ENDED";
                 timerElem.style.color = isNaN(distance) ? "#ffaa00" : "#ff4081";
@@ -534,7 +539,6 @@
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Compact format for mobile
             timerElem.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
             timerElem.style.color = "var(--primary)";
         }, 1000);
@@ -592,8 +596,20 @@
         if(!email || !password) return showToast("Please enter details!", "error");
 
         if(isRegister) {
-            const { error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullname } } });
-            if(!error) showToast("Success! Check email.", "success");
+            const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullname } } });
+            if(!error) {
+                // Sync to profiles table for Admin visibility
+                if(data.user) {
+                     await sb.from('profiles').upsert([{
+                        id: data.user.id,
+                        email: email,
+                        full_name: fullname,
+                        role: 'audience',
+                        created_at: new Date().toISOString()
+                     }]);
+                }
+                showToast("Success! Check email.", "success");
+            }
             else showToast(error.message, "error");
         } else {
             const { error } = await sb.auth.signInWithPassword({ email, password });
@@ -606,11 +622,9 @@
 
     // --- ROLE CHECK ---
     async function checkRole(uid) {
-        // Fix: Handle missing profile gracefully
         const { data: profile, error } = await sb.from('profiles').select('*').eq('id', uid).single();
         
         if (error && error.code !== 'PGRST116') {
-            // PGRST116 is "Rows not found". Other errors are real errors.
             console.error("Profile Error:", error);
         }
 
@@ -620,7 +634,6 @@
         } else if(profile && profile.role === 'blocked') {
             showToast("Account Blocked!", "error"); logout();
         } else {
-            // If no profile found, assume 'audience' so the app doesn't crash
             showView('view-audience');
             document.getElementById('user-name-display').innerText = profile?.full_name || currentUser.user_metadata.full_name || "User";
             initAudience();
@@ -629,14 +642,13 @@
 
     // --- AUDIENCE LOGIC ---
     function initAudience() {
-        startCountdown(); // Start UI timer loop
+        startCountdown(); 
         checkLocation();
     }
 
     function checkLocation() {
         const locDiv = document.getElementById('loc-status');
         
-        // Check if location is set in DB
         if(settings.lat === 0 && settings.long === 0) {
              locDiv.innerHTML = "⏳ Waiting for Admin to set location...";
              locDiv.className = "status-box status-error";
@@ -678,7 +690,6 @@
             const { data: costumes } = await sb.from('costumes').select('*');
             allCostumes = costumes || [];
             
-            // Fix: Ensure we only get votes for THIS user to lock buttons correctly
             const { data: votes, error } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
             
             if(error) {
@@ -700,8 +711,6 @@
         list.innerHTML = '';
 
         const filtered = allCostumes.filter(c => c.gender === activeCategory);
-        
-        // Check if user has voted in THIS category
         const votedInThisCategory = filtered.some(c => myVotes.includes(c.id));
 
         if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 40px; color:#555; font-size:1.2rem;'>No candidates found.</p>";
@@ -745,7 +754,6 @@
             console.error("Vote Failed", error);
             showToast("Error: " + error.message, "error");
         } else {
-            // Fix: Update local state immediately so UI locks without refresh
             myVotes.push(id);
             renderVotingCards();
             celebrateVote();
@@ -811,20 +819,25 @@
             </div>
         `).join('');
 
-        // User List
+        // UPDATED USER LIST LOGIC
         const { data: users } = await sb.from('profiles').select('*');
         document.getElementById('user-list').innerHTML = (users || []).map(u => `
-            <div class="glass-card" style="padding:20px; margin-bottom:15px;">
-                <div class="flex-between">
-                    <div>
-                        <b style="font-size:1.1rem;">${u.full_name || 'No Name'}</b><br>
-                        <small style="color:#555">${u.id}</small>
+            <div class="glass-card" style="padding: 15px; margin-bottom: 10px;">
+                <div class="admin-user-row">
+                    <div class="user-meta">
+                        <div class="u-name">${u.full_name || 'No Name'}</div>
+                        <div class="u-email">${u.email || 'No Email on record'}</div>
+                        <div class="u-id">ID: ${u.id}</div>
+                        ${u.created_at ? `<div class="u-date">Joined: ${new Date(u.created_at).toLocaleDateString()}</div>` : ''}
                     </div>
-                    <select onchange="changeUserRole('${u.id}', this.value)" class="input-field" style="width:auto; padding:8px 15px; border-radius:8px;">
-                        <option value="audience" ${u.role==='audience'?'selected':''}>Audience</option>
-                        <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-                        <option value="blocked" ${u.role==='blocked'?'selected':''}>Blocked</option>
-                    </select>
+                    <div class="user-role-box">
+                        <div style="font-size:0.8rem; color:#888; margin-bottom:5px; text-transform:uppercase;">Role</div>
+                        <select onchange="changeUserRole('${u.id}', this.value)" class="input-field" style="width:100%; padding:8px; font-size:0.9rem;">
+                            <option value="audience" ${u.role==='audience'?'selected':''}>Audience</option>
+                            <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                            <option value="blocked" ${u.role==='blocked'?'selected':''}>Blocked</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         `).join('');
