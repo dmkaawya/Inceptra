@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inceptra25 Voting System</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
@@ -309,7 +310,7 @@
             <div class="logo-text">Inceptra25</div>
             <div class="logo-sub">Official Voting Platform</div>
             
-            <center><div class="countdown-box glass-box">
+            <center><div class="countdown-box">
                 <span class="countdown-label">Time Remaining</span>
                 <div id="countdown-timer" class="countdown-timer">Loading...</div>
             </div></center>
@@ -331,7 +332,7 @@
         <div id="view-audience" class="hidden">
             <center>
                 <div class="user-header flex-between">
-                    <div style="text-align:left; margin-right: 15px;">
+                    <div>
                         <div style="font-size:0.8rem; color:#aaa; text-transform:uppercase;">Logged in as</div>
                         <div style="font-weight:700; font-size:1.1rem;" id="user-name-display">User</div>
                     </div>
@@ -355,7 +356,7 @@
         <!-- ADMIN VIEW -->
         <div id="view-admin" class="hidden">
             <div class="flex-between" style="margin-bottom: 30px; border-bottom: 1px solid var(--glass-border); padding-bottom: 20px;">
-                <h2 style="color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 1.5rem;">Admin Dashboard</h2>
+                <h2 style="color: var(--primary); text-transform: uppercase; letter-spacing: 2px;">Admin Dashboard</h2>
                 <button onclick="logout()" class="btn-danger">Logout</button>
             </div>
 
@@ -369,8 +370,8 @@
             <!-- Tab: Chart -->
             <div id="tab-chart">
                 <div class="flex-between" style="margin-bottom: 20px;">
-                    <button onclick="exportResults()" class="btn btn-action">⬇️ Export CSV</button>
-                    <button onclick="openProjector()" class="btn btn-action" style="border-color: var(--secondary); color: var(--secondary);">🖥️ Projector</button>
+                    <button onclick="exportResults()" class="btn btn-action">⬇️ Export to CSV</button>
+                    <button onclick="openProjector()" class="btn btn-action" style="border-color: var(--secondary); color: var(--secondary);">🖥️ Projector Mode</button>
                 </div>
                 <div class="projector-grid">
                     <div class="leaderboard-section">
@@ -533,6 +534,8 @@
             settings.radius = data.radius_meters || 100;
             settings.announcement = data.announcement || '';
 
+            // Update UI
+            updateCountdownDisplay();
             updateAnnouncementUI();
             
             // Update Admin Inputs if visible
@@ -560,6 +563,7 @@
             settings.radius = data.radius_meters;
             settings.announcement = data.announcement;
             
+            updateCountdownDisplay();
             updateAnnouncementUI();
             
             // If audience view is active, re-check location
@@ -580,6 +584,10 @@
         }).subscribe();
     }
 
+    function updateCountdownDisplay() {
+        // This is called by the interval loop in startCountdown, but we reset the endtime variable here
+    }
+
     function updateAnnouncementUI() {
         const el = document.getElementById('broadcast-msg');
         if(el) {
@@ -598,7 +606,7 @@
         
         setInterval(() => {
             const now = new Date().getTime();
-            const distance = settings.endTime - now;
+            const distance = settings.endTime - now; // Use dynamic settings
 
             if (distance < 0) {
                 timerElem.innerHTML = "VOTING ENDED";
@@ -697,13 +705,14 @@
 
     // --- AUDIENCE LOGIC ---
     function initAudience() {
-        startCountdown();
+        startCountdown(); // Start UI timer loop
         checkLocation();
     }
 
     function checkLocation() {
         const locDiv = document.getElementById('loc-status');
         
+        // Check if location is set in DB
         if(settings.lat === 0 && settings.long === 0) {
              locDiv.innerHTML = "⏳ Waiting for Admin to set location...";
              locDiv.className = "status-box status-error";
@@ -761,8 +770,6 @@
             const hasVotedThis = myVotes.includes(c.id);
             
             let btnHtml = '';
-            let btnClass = "btn-vote";
-            
             if(votedInThisCategory) {
                 if(hasVotedThis) {
                     btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent); box-shadow:0 0 15px rgba(0,230,118,0.3);">✓ Voted</button>`;
@@ -770,8 +777,7 @@
                     btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
                 }
             } else {
-                // Data attributes for button state management
-                btnHtml = `<button onclick="castVote(${c.id}, this)" class="btn btn-vote" data-id="${c.id}">Vote</button>`;
+                btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote</button>`;
             }
 
             list.innerHTML += `
@@ -787,28 +793,14 @@
     }
 
     function celebrateVote() {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe', '#00e676'] });
+        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe', '#00e676'] });
     }
 
-    async function castVote(id, btn) {
-        // 1. Immediate UI Feedback to prevent double click
-        if(btn.classList.contains('loading')) return; // Already processing
-        btn.classList.add('loading');
-        
-        // 2. Double check with user
-        if(!confirm("Confirm Vote?")) {
-            btn.classList.remove('loading');
-            return;
-        }
-
-        // 3. Send to Database
+    async function castVote(id) {
+        if(!confirm("Confirm Vote?")) return;
         const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
-        
-        if(error) {
-            btn.classList.remove('loading');
-            showToast("Error: " + error.message, "error");
-        } else {
-            // 4. Update local state so UI locks immediately
+        if(error) showToast("Error: " + error.message, "error");
+        else {
             myVotes.push(id);
             renderVotingCards();
             celebrateVote();
@@ -819,7 +811,7 @@
     // --- ADMIN LOGIC ---
     function initAdmin() {
         loadAdminData();
-        startCountdown();
+        startCountdown(); // Start UI timer for admin
     }
 
     async function loadAdminData() {
