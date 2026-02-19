@@ -379,6 +379,9 @@
 
             <!-- Tab: Users -->
             <div id="tab-users" class="hidden">
+                <div style="margin-bottom: 20px;">
+                    <button onclick="loadAdminData()" class="btn btn-action">🔄 Refresh User List</button>
+                </div>
                 <div id="user-list"></div>
             </div>
         </div>
@@ -426,13 +429,9 @@
 
     // --- INIT ---
     async function init() {
-        // 1. Load Settings
         await loadSettings();
-        
-        // 2. Setup Realtime Listeners
         setupRealtime();
 
-        // 3. Auth Check
         const { data: { session } } = await sb.auth.getSession();
         if (session) {
             currentUser = session.user;
@@ -476,7 +475,6 @@
     }
 
     function setupRealtime() {
-        // Listen for settings changes
         sb.channel('public:system_settings').on('postgres_changes', { event: 'UPDATE', schema: 'public' }, payload => {
             const data = payload.new;
             settings.endTime = new Date(data.voting_end_time).getTime();
@@ -484,18 +482,12 @@
             settings.long = data.target_long;
             settings.radius = data.radius_meters;
             settings.announcement = data.announcement;
-            
             updateCountdownDisplay();
             updateAnnouncementUI();
-            
-            if(document.getElementById('view-audience').classList.contains('hidden') === false) {
-                checkLocation(); 
-            }
-            
+            if(document.getElementById('view-audience').classList.contains('hidden') === false) checkLocation(); 
             showToast("System Updated!", "info");
         }).subscribe();
 
-        // Listen for votes changes
         sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
@@ -504,16 +496,13 @@
              if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
 
-        // FIX: Listen for profiles changes (New User Registration)
+        // FIX: Profile Realtime Listener
         sb.channel('public:profiles').on('postgres_changes', { event: '*', schema: 'public' }, () => {
              if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
     }
 
-    function updateCountdownDisplay() {
-        // Handled in interval
-    }
-
+    function updateCountdownDisplay() { }
     function updateAnnouncementUI() {
         const el = document.getElementById('broadcast-msg');
         if(el) {
@@ -526,64 +515,24 @@
         }
     }
 
-    // --- COUNTDOWN LOGIC ---
+    // --- COUNTDOWN ---
     function startCountdown() {
         const timerElem = document.getElementById('countdown-timer');
-        
         setInterval(() => {
             const now = new Date().getTime();
             const distance = settings.endTime - now;
-
             if (isNaN(distance) || distance < 0) {
                 timerElem.innerHTML = isNaN(distance) ? "Set Time" : "VOTING ENDED";
                 timerElem.style.color = isNaN(distance) ? "#ffaa00" : "#ff4081";
                 return;
             }
-
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
             timerElem.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
             timerElem.style.color = "var(--primary)";
         }, 1000);
-    }
-
-    // --- ADMIN SAVING FUNCTIONS ---
-    async function saveTime() {
-        const val = document.getElementById('end-time-input').value;
-        if(!val) return showToast("Please select date", "error");
-        const { error } = await sb.from('system_settings').update({ voting_end_time: val }).eq('id', 1);
-        if(error) showToast("Error saving time", "error"); else showToast("Time Updated!", "success");
-    }
-
-    async function saveLocation() {
-        const lat = parseFloat(document.getElementById('loc-lat').value);
-        const long = parseFloat(document.getElementById('loc-long').value);
-        const radius = parseInt(document.getElementById('loc-radius').value);
-        
-        if(isNaN(lat) || isNaN(long)) return showToast("Invalid coordinates", "error");
-        
-        const { error } = await sb.from('system_settings').update({ 
-            target_lat: lat, 
-            target_long: long, 
-            radius_meters: radius 
-        }).eq('id', 1);
-        
-        if(error) showToast("Error saving location", "error"); else showToast("Location Updated!", "success");
-    }
-
-    async function saveAnnouncement() {
-        const msg = document.getElementById('announcement-msg').value;
-        const { error } = await sb.from('system_settings').update({ announcement: msg }).eq('id', 1);
-        if(error) showToast("Error sending message", "error"); else showToast("Announcement Sent!", "success");
-    }
-
-    async function clearAnnouncement() {
-        document.getElementById('announcement-msg').value = '';
-        await sb.from('system_settings').update({ announcement: '' }).eq('id', 1);
-        showToast("Announcement Cleared", "info");
     }
 
     // --- AUTH ---
@@ -602,35 +551,44 @@
         if(!email || !password) return showToast("Please enter details!", "error");
 
         if(isRegister) {
-            const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullname } } });
+            const { data, error } = await sb.auth.signUp({ 
+                email, 
+                password, 
+                options: { 
+                    data: { full_name: fullname },
+                    // If you have email confirmation disabled in Supabase, data.user will exist immediately.
+                    // If enabled, data.user will be null until confirmed.
+                } 
+            });
+
             if(!error) {
-                // Sync to profiles table for Admin visibility
                 if(data.user) {
-                     try {
-                        const { error: profileError } = await sb.from('profiles').upsert([{
-                            id: data.user.id,
-                            email: email,
-                            full_name: fullname,
-                            role: 'audience',
-                            created_at: new Date().toISOString()
-                         }]);
-                         if(profileError) {
-                             console.error("Profile creation failed:", profileError);
-                             showToast("Auth success, but profile sync failed. Contact Admin.", "error");
-                         } else {
-                             showToast("Success! Check email.", "success");
-                             // Clear form
-                             document.getElementById('email').value = '';
-                             document.getElementById('password').value = '';
-                             document.getElementById('fullname').value = '';
-                         }
-                     } catch (e) {
-                         console.error(e);
-                         showToast("System error.", "error");
-                     }
+                    // Attempt to create profile immediately
+                    const { error: profileError } = await sb.from('profiles').upsert({
+                        id: data.user.id,
+                        email: email,
+                        full_name: fullname,
+                        role: 'audience',
+                        created_at: new Date().toISOString()
+                    }, { onConflict: 'id' });
+
+                    if(profileError) {
+                        console.error("Profile creation failed:", profileError);
+                        showToast("Registration successful, but profile sync failed. Please tell Admin.", "error");
+                    } else {
+                        showToast("Success! You can login now.", "success");
+                        document.getElementById('email').value = '';
+                        document.getElementById('password').value = '';
+                        document.getElementById('fullname').value = '';
+                        setTimeout(() => window.location.reload(), 1500);
+                    }
+                } else {
+                    // Email confirmation enabled
+                    showToast("Check your email to confirm registration.", "success");
                 }
+            } else {
+                showToast(error.message, "error");
             }
-            else showToast(error.message, "error");
         } else {
             const { error } = await sb.auth.signInWithPassword({ email, password });
             if(error) showToast(error.message, "error");
@@ -643,11 +601,9 @@
     // --- ROLE CHECK ---
     async function checkRole(uid) {
         const { data: profile, error } = await sb.from('profiles').select('*').eq('id', uid).single();
-        
         if (error && error.code !== 'PGRST116') {
             console.error("Profile Error:", error);
         }
-
         if(profile && profile.role === 'admin') {
             showView('view-admin');
             initAdmin();
@@ -661,29 +617,22 @@
     }
 
     // --- AUDIENCE LOGIC ---
-    function initAudience() {
-        startCountdown(); 
-        checkLocation();
-    }
+    function initAudience() { startCountdown(); checkLocation(); }
 
     function checkLocation() {
         const locDiv = document.getElementById('loc-status');
-        
         if(settings.lat === 0 && settings.long === 0) {
              locDiv.innerHTML = "⏳ Waiting for Admin to set location...";
              locDiv.className = "status-box status-error";
              return;
         }
-
         if(!navigator.geolocation) {
             locDiv.innerHTML = "GPS Not Supported";
             locDiv.className = "status-box status-error";
             return;
         };
-        
         navigator.geolocation.getCurrentPosition(pos => {
             const dist = getDist(pos.coords.latitude, pos.coords.longitude);
-            
             if(dist <= settings.radius) { 
                 locDiv.innerHTML = "✅ Location Verified";
                 locDiv.className = "status-box status-success";
@@ -709,16 +658,9 @@
         try {
             const { data: costumes } = await sb.from('costumes').select('*');
             allCostumes = costumes || [];
-            
             const { data: votes, error } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
-            
-            if(error) {
-                console.error("Error loading votes:", error);
-                myVotes = [];
-            } else {
-                myVotes = votes ? votes.map(v => v.costume_id) : [];
-            }
-            
+            if(error) { console.error("Error loading votes:", error); myVotes = []; }
+            else { myVotes = votes ? votes.map(v => v.costume_id) : []; }
             renderVotingCards();
         } catch (e) {
             console.error("Critical load error", e);
@@ -729,7 +671,6 @@
     function renderVotingCards() {
         const list = document.getElementById('costume-list');
         list.innerHTML = '';
-
         const filtered = allCostumes.filter(c => c.gender === activeCategory);
         const votedInThisCategory = filtered.some(c => myVotes.includes(c.id));
 
@@ -737,7 +678,6 @@
 
         filtered.forEach(c => {
             const hasVotedThis = myVotes.includes(c.id);
-            
             let btnHtml = '';
             if(votedInThisCategory) {
                 if(hasVotedThis) {
@@ -748,7 +688,6 @@
             } else {
                 btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote</button>`;
             }
-
             list.innerHTML += `
                 <div class="costume-card">
                     <img src="${c.image_url}" onerror="this.src='https://via.placeholder.com/300x400?text=No+Image'" class="costume-img">
@@ -767,9 +706,7 @@
 
     async function castVote(id) {
         if(!confirm("Confirm Vote?")) return;
-        
         const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
-        
         if(error) {
             console.error("Vote Failed", error);
             showToast("Error: " + error.message, "error");
@@ -913,29 +850,13 @@
                 <script>
                     const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
                     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
-                    
                     setInterval(async () => {
                         const res = await fetch(supabaseUrl + '/rest/v1/costumes?select=*', { headers: { apikey: supabaseKey, 'Authorization': 'Bearer ' + supabaseKey } });
                         const data = await res.json();
-                        
                         const boys = data.filter(c => c.gender === 'boys').sort((a,b) => (b.vote_count||0) - (a.vote_count||0));
                         const girls = data.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count||0) - (a.vote_count||0));
-
-                        document.getElementById('boys-list').innerHTML = boys.map(c => \`
-                            <div class="row">
-                                <img src="\${c.image_url}" onerror="this.src='https://via.placeholder.com/80'">
-                                <div class="name">\${c.name}</div>
-                                <div class="votes">\${c.vote_count || 0}</div>
-                            </div>
-                        \`).join('');
-
-                        document.getElementById('girls-list').innerHTML = girls.map(c => \`
-                            <div class="row">
-                                <img src="\${c.image_url}" onerror="this.src='https://via.placeholder.com/80'">
-                                <div class="name">\${c.name}</div>
-                                <div class="votes">\${c.vote_count || 0}</div>
-                            </div>
-                        \`).join('');
+                        document.getElementById('boys-list').innerHTML = boys.map(c => \`<div class="row"><img src="\${c.image_url}" onerror="this.src='https://via.placeholder.com/80'"><div class="name">\${c.name}</div><div class="votes">\${c.vote_count || 0}</div></div>\`).join('');
+                        document.getElementById('girls-list').innerHTML = girls.map(c => \`<div class="row"><img src="\${c.image_url}" onerror="this.src='https://via.placeholder.com/80'"><div class="name">\${c.name}</div><div class="votes">\${c.vote_count || 0}</div></div>\`).join('');
                     }, 2000);
                 <\/script>
             </body>
@@ -995,7 +916,6 @@
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
-    // Start the app
     init();
 </script>
 </body>
