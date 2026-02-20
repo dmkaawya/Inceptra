@@ -45,28 +45,70 @@
         /* Header */
         .header { text-align: center; margin: 20px 0; position: relative; }
         
-        /* Logo Image Styling */
-        .logo-img {
-            max-width: 320px; /* Adjust width as needed */
-            width: 90%;
-            height: auto;
-            filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.5));
-            margin-bottom: 5px;
-            transition: transform 0.3s ease;
+        /* Logo Container - Holds both Image and CSS Fallback */
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 10px;
         }
-        .logo-img:hover { transform: scale(1.02); }
 
-        /* Fallback Text if image fails */
-        .logo-text-fallback { 
-            font-size: 3rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-            background: linear-gradient(to right, #fff, var(--primary), var(--secondary)); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            text-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
-            line-height: 1.2;
-            display: none; /* Hidden by default */
+        /* The PNG Image (If available) */
+        .logo-img {
+            max-width: 300px;
+            width: 85%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4));
+        }
+
+        /* CSS Based Logo Fallback (If image missing/broken) */
+        .logo-css-fallback {
+            position: relative;
+            padding: 20px 40px;
+            background: radial-gradient(circle, rgba(30,30,40,1) 0%, rgba(0,0,0,1) 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            display: none; /* Hidden by default, shown via JS if image fails */
+        }
+        /* Circular pattern background for fallback */
+        .logo-css-fallback::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle, rgba(188,19,254,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.5;
         }
         
-        .logo-sub { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; }
+        .logo-main-text {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #fff, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 1;
+            line-height: 1.1;
+        }
+
+        .logo-tagline-box {
+            margin-top: 10px;
+            display: inline-block;
+            padding: 5px 20px;
+            border: 1px solid var(--secondary);
+            background: rgba(188, 19, 254, 0.1);
+            border-radius: 4px;
+            position: relative;
+            z-index: 1;
+        }
+        .logo-tagline-text {
+            font-size: 0.9rem;
+            color: #fff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
 
         /* Countdown */
         .countdown-box {
@@ -77,28 +119,44 @@
             display: inline-block;
             margin-bottom: 20px;
             backdrop-filter: blur(10px);
+            min-width: 200px;
         }
-        .countdown-timer { font-size: 1.8rem; font-weight: 700; color: var(--primary); letter-spacing: 1px; font-family: 'Rajdhani', sans-serif; }
+        .countdown-timer { 
+            font-size: 1.8rem; 
+            font-weight: 700; 
+            color: var(--primary); 
+            letter-spacing: 1px; 
+            font-family: 'Rajdhani', sans-serif; 
+            transition: all 0.3s;
+        }
         
-        /* Pulse Animation for ending */
         .ending-soon {
-            color: #ff0000 !important;
-            animation: pulse-red 1s infinite;
-            font-size: 2.5rem !important;
+            color: #ff3333 !important;
+            animation: pulse-red 0.8s infinite;
+            font-size: 2rem !important;
             text-shadow: 0 0 20px red;
         }
         @keyframes pulse-red {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .countdown-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px; }
+        
+        /* Sync Status Indicator */
+        .sync-status {
+            font-size: 0.65rem;
+            color: #666;
+            display: block;
+            margin-top: 2px;
+        }
+        .sync-ok { color: var(--accent); }
 
         /* Buttons */
         .btn { width: 100%; padding: 12px 20px; border: none; border-radius: 50px; font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; letter-spacing: 1px; }
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 4px 20px rgba(0, 243, 255, 0.3); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 243, 255, 0.5); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 243, 255, 0.5); }
         .btn-danger { background: rgba(245, 0, 87, 0.1); color: var(--girls-color); border: 1px solid var(--girls-color); padding: 8px 15px; width: auto; font-size: 0.8rem; border-radius: 8px; }
         .btn-danger:hover { background: var(--girls-color); color: white; }
         .btn-vote { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent); color: var(--accent); border-radius: 50px; }
@@ -204,8 +262,6 @@
         .status-success { border-color: var(--accent); color: var(--accent); }
         .status-error { border-color: #ff4081; color: #ff4081; }
         .user-header { background: linear-gradient(90deg, rgba(188,19,254,0.1), transparent); padding: 10px 20px; border-radius: 50px; margin-bottom: 20px; border: 1px solid rgba(188,19,254,0.2); display: inline-flex; width: 100%; justify-content: space-between; }
-        .action-icon { cursor: pointer; margin-left: 10px; opacity: 0.6; transition: 0.3s; font-size: 0.9rem; color: var(--primary); }
-        .action-icon:hover { opacity: 1; }
         
         /* Admin Setting Inputs */
         .setting-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
@@ -213,13 +269,10 @@
 
         /* Mobile Media Queries */
         @media (max-width: 600px) {
-            .logo-img { max-width: 220px; }
-            .countdown-timer { font-size: 1.4rem; }
+            .logo-main-text { font-size: 2.5rem; }
+            .countdown-timer { font-size: 1.5rem; }
             .costume-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-            .costume-card { height: 100%; }
             .costume-img { height: 180px; }
-            .costume-name { font-size: 0.9rem; }
-            .btn-vote { font-size: 0.8rem; padding: 8px 15px; }
             .tab-nav { flex-direction: column; }
         }
     </style>
@@ -233,15 +286,24 @@
         
         <!-- Header -->
         <div class="header">
-            <!-- Updated Logo Section -->
-            <img src="inceptra dp-1.png" alt="Inceptra Logo" class="logo-img" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='block';">
-            <div id="fallback-logo" class="logo-text-fallback">Inceptra25</div>
-            
-            <div class="logo-sub">Where beginnings becomes legacy</div>
+            <div class="logo-container">
+                <!-- Attempt to load user image -->
+                <img src="inceptra dp-1.png" alt="Inceptra Logo" class="logo-img" 
+                     onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='block';">
+                
+                <!-- CSS Fallback Logo (Matches Description) -->
+                <div id="fallback-logo" class="logo-css-fallback">
+                    <div class="logo-main-text">Inceptra -25</div>
+                    <div class="logo-tagline-box">
+                        <span class="logo-tagline-text">Where beginnings becomes legacy</span>
+                    </div>
+                </div>
+            </div>
             
             <center><div class="countdown-box">
                 <span class="countdown-label">Time Remaining</span>
                 <div id="countdown-timer" class="countdown-timer">Loading...</div>
+                <span id="sync-indicator" class="sync-status">Synchronizing...</span>
             </div></center>
         </div>
 
@@ -267,9 +329,7 @@
                 <button onclick="logout()" class="btn-danger">Logout</button>
             </div>
 
-            <!-- Notification Banner -->
             <div id="broadcast-msg" class="hidden status-box status-error text-center" style="border-color: var(--secondary); color: var(--secondary); margin-bottom: 15px;"></div>
-
             <div id="loc-status" class="status-box">📍 Detecting Location...</div>
 
             <div class="category-tabs">
@@ -286,7 +346,6 @@
             <p class="thank-you-msg">Thank you for voting! Here are the winners:</p>
             
             <div class="winner-container">
-                <!-- Boy Winner -->
                 <div class="winner-card boys">
                     <div class="crown-icon">👑</div>
                     <h2 style="color: var(--boys-color);">MR. INCEPTRA</h2>
@@ -295,7 +354,6 @@
                     <div class="winner-votes" id="winner-boy-votes">0 Votes</div>
                 </div>
 
-                <!-- Girl Winner -->
                 <div class="winner-card girls">
                     <div class="crown-icon">👑</div>
                     <h2 style="color: var(--girls-color);">MISS. INCEPTRA</h2>
@@ -324,7 +382,6 @@
                 <button onclick="showTab('users')" class="tab-btn" id="btn-tab-users">Users</button>
             </div>
 
-            <!-- Tab: Chart -->
             <div id="tab-chart">
                 <div class="flex-between" style="margin-bottom: 20px;">
                     <button onclick="exportResults()" class="btn btn-action">⬇️ Export CSV</button>
@@ -342,7 +399,6 @@
                 </div>
             </div>
 
-            <!-- Tab: Manage -->
             <div id="tab-manage" class="hidden">
                 <div class="glass-card">
                     <h3 style="margin-bottom: 15px; color: var(--secondary);">Add New Costume</h3>
@@ -359,12 +415,11 @@
                 <div id="manage-list"></div>
             </div>
 
-            <!-- Tab: Settings -->
             <div id="tab-settings" class="hidden">
                 <div class="glass-card">
                     <h3 style="margin-bottom: 15px; color: var(--primary);">Voting Time</h3>
                     <div class="input-group">
-                        <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:5px;">End Time (Local Device Time)</label>
+                        <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:5px;">End Time</label>
                         <input type="datetime-local" id="end-time-input" class="input-field">
                     </div>
                     <button onclick="saveTime()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save</button>
@@ -401,7 +456,6 @@
                 </div>
             </div>
 
-            <!-- Tab: Users -->
             <div id="tab-users" class="hidden">
                 <div id="user-list"></div>
             </div>
@@ -422,7 +476,7 @@
     let allCostumes = [];
     let myVotes = []; 
     let countdownInterval = null; 
-    let globalTimeOffset = 0; // For time synchronization
+    let globalTimeOffset = 0; // Difference between server and device time
     let settings = {
         endTime: new Date('2025-12-31T23:59:59').getTime(),
         lat: 0,
@@ -431,44 +485,43 @@
         announcement: ''
     };
 
-    // --- TOAST NOTIFICATION SYSTEM ---
+    // --- TOAST SYSTEM ---
     function showToast(message, type = 'info') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        
-        let icon = 'ℹ️';
-        if(type === 'success') icon = '✅';
-        if(type === 'error') icon = '❌';
-        
+        let icon = 'ℹ️'; if(type === 'success') icon = '✅'; if(type === 'error') icon = '❌';
         toast.innerHTML = `<span style="font-size:1.2rem">${icon}</span> <span>${message}</span>`;
         container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.classList.add('fade-out');
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
+        setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 500); }, 4000);
     }
 
-    // --- TIME SYNC ---
-    // Calculates the difference between device time and real-world time
+    // --- TIME SYNC (To fix device time issues) ---
     async function syncTime() {
+        const indicator = document.getElementById('sync-indicator');
         try {
+            // Using WorldTimeAPI to get real time
             const response = await fetch('https://worldtimeapi.org/api/ip');
             const data = await response.json();
             const serverTime = new Date(data.datetime).getTime();
             const localTime = Date.now();
+            
+            // Calculate offset
             globalTimeOffset = serverTime - localTime;
+            
+            indicator.innerText = "Time Synced ✓";
+            indicator.className = "sync-status sync-ok";
             console.log("Time Synced. Offset:", globalTimeOffset);
         } catch (e) {
-            console.warn("Time sync failed, using device time.");
-            globalTimeOffset = 0;
+            console.warn("Time sync failed, using device time.", e);
+            indicator.innerText = "Sync failed (Local Time)";
+            indicator.className = "sync-status";
         }
     }
 
     // --- INIT ---
     async function init() {
-        // Sync time first to ensure accurate countdown
+        // 1. Sync Time First
         await syncTime();
         
         await loadSettings();
@@ -480,25 +533,13 @@
             const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
             
             if (!profile) {
-                await sb.from('profiles').insert([{ 
-                    id: currentUser.id, 
-                    email: currentUser.email, 
-                    full_name: currentUser.user_metadata.full_name || 'User', 
-                    role: 'audience' 
-                }]);
+                await sb.from('profiles').insert([{ id: currentUser.id, email: currentUser.email, full_name: currentUser.user_metadata.full_name || 'User', role: 'audience' }]);
                 showView('view-audience');
                 initAudience();
             } else {
-                if(profile.role === 'admin') {
-                    showView('view-admin');
-                    initAdmin();
-                } else if(profile.role === 'blocked') {
-                    showToast("Account Blocked!", "error"); logout();
-                } else {
-                    showView('view-audience');
-                    document.getElementById('user-name-display').innerText = profile?.full_name || "User";
-                    initAudience();
-                }
+                if(profile.role === 'admin') { showView('view-admin'); initAdmin(); }
+                else if(profile.role === 'blocked') { showToast("Account Blocked!", "error"); logout(); }
+                else { showView('view-audience'); document.getElementById('user-name-display').innerText = profile?.full_name || "User"; initAudience(); }
             }
         } else {
             showView('view-auth');
@@ -515,9 +556,6 @@
             settings.radius = data.radius_meters || 100;
             settings.announcement = data.announcement || '';
 
-            updateCountdownDisplay();
-            updateAnnouncementUI();
-            
             const timeInput = document.getElementById('end-time-input');
             if(timeInput && data.voting_end_time) {
                 const d = new Date(data.voting_end_time);
@@ -525,16 +563,12 @@
                 timeInput.value = localISOTime;
             }
             
-            const latInput = document.getElementById('loc-lat');
-            if(latInput) latInput.value = settings.lat;
-            
-            const longInput = document.getElementById('loc-long');
-            if(longInput) longInput.value = settings.long;
-            
-            const radInput = document.getElementById('loc-radius');
-            if(radInput) radInput.value = settings.radius;
+            const latInput = document.getElementById('loc-lat'); if(latInput) latInput.value = settings.lat;
+            const longInput = document.getElementById('loc-long'); if(longInput) longInput.value = settings.long;
+            const radInput = document.getElementById('loc-radius'); if(radInput) radInput.value = settings.radius;
         }
         startCountdown();
+        updateAnnouncementUI();
     }
 
     function setupRealtime() {
@@ -546,15 +580,11 @@
             settings.radius = data.radius_meters;
             settings.announcement = data.announcement;
             
-            updateCountdownDisplay();
+            startCountdown();
             updateAnnouncementUI();
-            startCountdown(); // Restart countdown with new time
             
-            if(document.getElementById('view-audience').classList.contains('hidden') === false) {
-                checkLocation(); 
-            }
-            
-            showToast("System Updated!", "info");
+            if(document.getElementById('view-audience').classList.contains('hidden') === false) checkLocation(); 
+            showToast("Settings Updated!", "info");
         }).subscribe();
 
         sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
@@ -566,17 +596,11 @@
         }).subscribe();
     }
 
-    function updateCountdownDisplay() { }
-    
     function updateAnnouncementUI() {
         const el = document.getElementById('broadcast-msg');
         if(el) {
-            if(settings.announcement) {
-                el.innerText = "📢 " + settings.announcement;
-                el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
+            if(settings.announcement) { el.innerText = "📢 " + settings.announcement; el.classList.remove('hidden'); } 
+            else { el.classList.add('hidden'); }
         }
     }
 
@@ -586,8 +610,8 @@
         const timerElem = document.getElementById('countdown-timer');
         
         const updateTimer = () => {
-            // Apply time offset to correct device clock differences
-            const now = new Date().getTime() + globalTimeOffset;
+            // CRITICAL FIX: Apply offset to device time
+            const now = Date.now() + globalTimeOffset;
             const distance = settings.endTime - now;
 
             if (distance < 0) {
@@ -599,12 +623,8 @@
                 return;
             }
 
-            // Pulse Effect in last 10 seconds
-            if (distance < 10000) {
-                timerElem.classList.add('ending-soon');
-            } else {
-                timerElem.classList.remove('ending-soon');
-            }
+            if (distance < 10000) timerElem.classList.add('ending-soon');
+            else timerElem.classList.remove('ending-soon');
 
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -622,9 +642,7 @@
     // --- END GAME LOGIC ---
     async function endGame() {
         if(countdownInterval) clearInterval(countdownInterval);
-        
         if(!document.getElementById('view-audience').classList.contains('hidden') || !document.getElementById('view-admin').classList.contains('hidden')) {
-            
             if(allCostumes.length === 0) {
                 const { data } = await sb.from('costumes').select('*');
                 allCostumes = data || [];
@@ -656,10 +674,8 @@
     async function saveTime() {
         const val = document.getElementById('end-time-input').value;
         if(!val) return showToast("Select date", "error");
-
         const localDate = new Date(val);
         const isoString = localDate.toISOString();
-
         const { error } = await sb.from('system_settings').update({ voting_end_time: isoString }).eq('id', 1);
         if(error) showToast("Error", "error"); else showToast("Time Updated!", "success");
     }
@@ -668,15 +684,8 @@
         const lat = parseFloat(document.getElementById('loc-lat').value);
         const long = parseFloat(document.getElementById('loc-long').value);
         const radius = parseInt(document.getElementById('loc-radius').value);
-        
         if(isNaN(lat) || isNaN(long)) return showToast("Invalid coords", "error");
-        
-        const { error } = await sb.from('system_settings').update({ 
-            target_lat: lat, 
-            target_long: long, 
-            radius_meters: radius 
-        }).eq('id', 1);
-        
+        const { error } = await sb.from('system_settings').update({ target_lat: lat, target_long: long, radius_meters: radius }).eq('id', 1);
         if(error) showToast("Error", "error"); else showToast("Location Updated!", "success");
     }
 
@@ -709,12 +718,8 @@
 
         if(isRegister) {
             const { error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullname } } });
-            if(!error) {
-                showToast("Registered! Please Login.", "success");
-                toggleAuth();
-            } else {
-                showToast(error.message, "error");
-            }
+            if(!error) { showToast("Registered! Please Login.", "success"); toggleAuth(); }
+            else showToast(error.message, "error");
         } else {
             const { error } = await sb.auth.signInWithPassword({ email, password });
             if(error) showToast(error.message, "error");
@@ -741,7 +746,6 @@
              locDiv.className = "status-box status-error";
              return;
         }
-
         if(!navigator.geolocation) {
             locDiv.innerHTML = "❌ GPS Not Supported";
             locDiv.className = "status-box status-error";
@@ -778,7 +782,6 @@
     async function loadVotingData() {
         const { data: costumes } = await sb.from('costumes').select('*');
         allCostumes = costumes || [];
-        
         const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
         myVotes = votes ? votes.map(v => v.costume_id) : [];
         renderVotingCards();
@@ -789,10 +792,7 @@
         list.innerHTML = '';
 
         const filtered = allCostumes.filter(c => c.gender === activeCategory);
-        
-        const hasVotedInThisCategory = allCostumes.some(c => 
-            c.gender === activeCategory && myVotes.includes(c.id)
-        );
+        const hasVotedInThisCategory = allCostumes.some(c => c.gender === activeCategory && myVotes.includes(c.id));
 
         if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 20px; color:#555;'>No candidates.</p>";
 
@@ -801,11 +801,8 @@
             let btnHtml = '';
 
             if (hasVotedInThisCategory) {
-                if (isThisOneVoted) {
-                    btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent);">✓ Voted</button>`;
-                } else {
-                    btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
-                }
+                if (isThisOneVoted) btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent);">✓ Voted</button>`;
+                else btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
             } else {
                 btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote</button>`;
             }
@@ -822,29 +819,21 @@
         });
     }
 
-    function celebrateVote() {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe'] });
-    }
+    function celebrateVote() { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe'] }); }
 
     async function castVote(id) {
         const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
-        if(error) {
-            showToast("Error: " + error.message, "error");
-        } else {
+        if(error) showToast("Error: " + error.message, "error");
+        else {
             myVotes.push(id);
             celebrateVote();
-            showToast("Voted! You can vote in the other category.", "success");
-            await loadVotingData(); 
-            checkLocation();       
-            renderVotingCards();    
+            showToast("Voted!", "success");
+            await loadVotingData(); checkLocation(); renderVotingCards();
         }
     }
 
     // --- ADMIN LOGIC ---
-    function initAdmin() {
-        loadAdminData();
-        startCountdown(); 
-    }
+    function initAdmin() { loadAdminData(); startCountdown(); }
 
     async function loadAdminData() {
         const { data: costumes } = await sb.from('costumes').select('*');
@@ -857,9 +846,7 @@
             <div class="live-item">
                 <div class="live-rank">#${i+1}</div>
                 <img src="${c.image_url}" class="live-photo">
-                <div class="live-info">
-                    <div class="live-name">${c.name}</div>
-                </div>
+                <div class="live-info"><div class="live-name">${c.name}</div></div>
                 <div class="live-votes">${c.vote_count || 0}</div>
             </div>
         `).join('');
@@ -868,9 +855,7 @@
             <div class="live-item">
                 <div class="live-rank">#${i+1}</div>
                 <img src="${c.image_url}" class="live-photo">
-                <div class="live-info">
-                    <div class="live-name">${c.name}</div>
-                </div>
+                <div class="live-info"><div class="live-name">${c.name}</div></div>
                 <div class="live-votes">${c.vote_count || 0}</div>
             </div>
         `).join('');
@@ -910,150 +895,70 @@
         const img = document.getElementById('new-img').value;
         const gender = document.getElementById('new-gender').value;
         if(!name || !img) return showToast("Name & URL required", "error");
-        
         const { error } = await sb.from('costumes').insert([{ name, image_url: img, gender }]);
-        if(error) showToast("Error", "error");
-        else {
-            showToast("Added!", "success");
-            document.getElementById('new-name').value = '';
-            document.getElementById('new-img').value = '';
-        }
+        if(error) showToast("Error", "error"); else { showToast("Added!", "success"); document.getElementById('new-name').value = ''; document.getElementById('new-img').value = ''; }
     }
 
     async function changeUserRole(uid, role) {
         const { error } = await sb.from('profiles').update({ role }).eq('id', uid);
-        if(error) {
-            console.error(error);
-            showToast("Failed to update role", "error");
-        } else {
-            showToast("Role Updated", "success");
-        }
+        if(error) showToast("Failed", "error"); else showToast("Role Updated", "success");
     }
 
-    // --- SUPER PROJECTOR MODE ---
     function openProjector() {
         const w = window.open('', '_blank');
         w.document.write(`
-            <html>
-            <head>
-                <title>Projector</title>
-                <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
-                <style>
-                    body { background: #0a0a12; color: white; font-family: 'Rajdhani', sans-serif; text-align: center; padding: 0; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
-                    h1 { color: #00f3ff; font-size: 5vw; margin: 2vh 0; text-shadow: 0 0 20px cyan; }
-                    .grid { display: flex; flex: 1; gap: 2vw; padding: 2vw; }
-                    .col { flex: 1; display: flex; flex-direction: column; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; }
-                    .title { font-size: 3rem; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid white; padding-bottom: 10px; }
-                    .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 15px; border-radius: 10px; }
-                    img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
-                    .name { flex: 1; text-align: left; font-size: 2rem; margin-left: 20px; }
-                    .votes { font-size: 3rem; font-weight: 800; color: #00f3ff; min-width: 80px; text-align: right; }
-                    
-                    /* WINNER STYLES */
-                    .winner-view { display: none; flex: 1; align-items: center; justify-content: center; gap: 50px; background: radial-gradient(circle, rgba(188,19,254,0.2), transparent); }
-                    .winner-card { text-align: center; animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-                    .w { font-size: 5rem; }
-                    .w-img { width: 250px; height: 250px; border-radius: 50%; border: 5px solid gold; box-shadow: 0 0 50px gold; object-fit: cover; margin: 20px auto; }
-                    .w-name { font-size: 3rem; font-weight: 800; text-shadow: 0 5px 10px black; }
-                    .w-votes { font-size: 2rem; color: #aaa; }
-                    
-                    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-                </style>
-            </head>
+            <html><head><title>Projector</title>
+            <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+            <style>
+                body { background: #0a0a12; color: white; font-family: 'Rajdhani', sans-serif; text-align: center; padding: 0; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+                h1 { color: #00f3ff; font-size: 5vw; margin: 2vh 0; text-shadow: 0 0 20px cyan; }
+                .grid { display: flex; flex: 1; gap: 2vw; padding: 2vw; }
+                .col { flex: 1; display: flex; flex-direction: column; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; }
+                .title { font-size: 3rem; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid white; padding-bottom: 10px; }
+                .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 15px; border-radius: 10px; }
+                img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
+                .name { flex: 1; text-align: left; font-size: 2rem; margin-left: 20px; }
+                .votes { font-size: 3rem; font-weight: 800; color: #00f3ff; min-width: 80px; text-align: right; }
+                .winner-view { display: none; flex: 1; align-items: center; justify-content: center; gap: 50px; background: radial-gradient(circle, rgba(188,19,254,0.2), transparent); }
+                .winner-card { text-align: center; animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                .w { font-size: 5rem; } .w-img { width: 250px; height: 250px; border-radius: 50%; border: 5px solid gold; box-shadow: 0 0 50px gold; object-fit: cover; margin: 20px auto; }
+                .w-name { font-size: 3rem; font-weight: 800; text-shadow: 0 5px 10px black; } .w-votes { font-size: 2rem; color: #aaa; }
+                @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+            </style></head>
             <body>
-                <div id="live-view">
-                    <h1>INCEPTRA 25 - LIVE</h1>
-                    <div class="grid">
-                        <div class="col"><div class="title" style="color: #2979FF; border-color: #2979FF;">BOYS</div><div id="boys-list"></div></div>
-                        <div class="col"><div class="title" style="color: #F50057; border-color: #F50057;">GIRLS</div><div id="girls-list"></div></div>
-                    </div>
-                </div>
-
+                <div id="live-view"><h1>INCEPTRA 25 - LIVE</h1><div class="grid">
+                    <div class="col"><div class="title" style="color: #2979FF; border-color: #2979FF;">BOYS</div><div id="boys-list"></div></div>
+                    <div class="col"><div class="title" style="color: #F50057; border-color: #F50057;">GIRLS</div><div id="girls-list"></div></div>
+                </div></div>
                 <div id="winner-view" class="winner-view">
-                    <div class="winner-card">
-                        <div class="w" style="color: #2979FF;">MR. INCEPTRA</div>
-                        <img id="w-boy-img" class="w-img">
-                        <div id="w-boy-name" class="w-name"></div>
-                        <div id="w-boy-votes" class="w-votes"></div>
-                    </div>
-                    <div class="winner-card">
-                        <div class="w" style="color: #F50057;">MISS. INCEPTRA</div>
-                        <img id="w-girl-img" class="w-img">
-                        <div id="w-girl-name" class="w-name"></div>
-                        <div id="w-girl-votes" class="w-votes"></div>
-                    </div>
+                    <div class="winner-card"><div class="w" style="color: #2979FF;">MR. INCEPTRA</div><img id="w-boy-img" class="w-img"><div id="w-boy-name" class="w-name"></div><div id="w-boy-votes" class="w-votes"></div></div>
+                    <div class="winner-card"><div class="w" style="color: #F50057;">MISS. INCEPTRA</div><img id="w-girl-img" class="w-img"><div id="w-girl-name" class="w-name"></div><div id="w-girl-votes" class="w-votes"></div></div>
                 </div>
-
                 <script>
-                    const supabaseUrl = '${supabaseUrl}';
-                    const supabaseKey = '${supabaseKey}';
+                    const supabaseUrl = '${supabaseUrl}'; const supabaseKey = '${supabaseKey}';
                     const apiEndpoint = supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc';
-                    const headers = { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey, 'Content-Type': 'application/json' };
-                    
-                    let endTime = ${settings.endTime}; 
-                    let offset = 0;
-
-                    // Sync time for projector
-                    fetch('https://worldtimeapi.org/api/ip')
-                        .then(res => res.json())
-                        .then(data => {
-                            offset = new Date(data.datetime).getTime() - Date.now();
-                        });
-
+                    const headers = { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey };
+                    let endTime = ${settings.endTime}; let offset = 0;
+                    fetch('https://worldtimeapi.org/api/ip').then(r=>r.json()).then(d=>offset=new Date(d.datetime).getTime()-Date.now());
                     async function fetchData() {
-                        const res = await fetch(apiEndpoint, { headers: headers });
-                        const data = await res.json();
-                        const boys = data.filter(c => c.gender === 'boys');
-                        const girls = data.filter(c => c.gender === 'girls');
-
-                        const now = Date.now() + offset;
-                        
-                        if(now > endTime) {
-                            document.getElementById('live-view').style.display = 'none';
-                            document.getElementById('winner-view').style.display = 'flex';
-                            
-                            if(boys[0]) {
-                                document.getElementById('w-boy-img').src = boys[0].image_url;
-                                document.getElementById('w-boy-name').innerText = boys[0].name;
-                                document.getElementById('w-boy-votes').innerText = boys[0].vote_count + " Votes";
-                            }
-                            if(girls[0]) {
-                                document.getElementById('w-girl-img').src = girls[0].image_url;
-                                document.getElementById('w-girl-name').innerText = girls[0].name;
-                                document.getElementById('w-girl-votes').innerText = girls[0].vote_count + " Votes";
-                            }
+                        const res = await fetch(apiEndpoint, { headers: headers }); const data = await res.json();
+                        const boys = data.filter(c => c.gender === 'boys'); const girls = data.filter(c => c.gender === 'girls');
+                        if(Date.now()+offset > endTime) {
+                            document.getElementById('live-view').style.display = 'none'; document.getElementById('winner-view').style.display = 'flex';
+                            if(boys[0]) { document.getElementById('w-boy-img').src = boys[0].image_url; document.getElementById('w-boy-name').innerText = boys[0].name; document.getElementById('w-boy-votes').innerText = boys[0].vote_count + " Votes"; }
+                            if(girls[0]) { document.getElementById('w-girl-img').src = girls[0].image_url; document.getElementById('w-girl-name').innerText = girls[0].name; document.getElementById('w-girl-votes').innerText = girls[0].vote_count + " Votes"; }
                         } else {
-                            document.getElementById('live-view').style.display = 'block';
-                            document.getElementById('winner-view').style.display = 'none';
-
-                            document.getElementById('boys-list').innerHTML = boys.map(c => \`
-                                <div class="row">
-                                    <img src="\${c.image_url}">
-                                    <div class="name">\${c.name}</div>
-                                    <div class="votes">\${c.vote_count || 0}</div>
-                                </div>
-                            \`).join('');
-                            document.getElementById('girls-list').innerHTML = girls.map(c => \`
-                                <div class="row">
-                                    <img src="\${c.image_url}">
-                                    <div class="name">\${c.name}</div>
-                                    <div class="votes">\${c.vote_count || 0}</div>
-                                </div>
-                            \`).join('');
+                            document.getElementById('boys-list').innerHTML = boys.map(c => \'<div class="row"><img src="\'+c.image_url+\'"><div class="name">\'+c.name+\'</div><div class="votes">\'+(c.vote_count||0)+\'</div></div>\').join(\'\');
+                            document.getElementById('girls-list').innerHTML = girls.map(c => \'<div class="row"><img src="\'+c.image_url+\'"><div class="name">\'+c.name+\'</div><div class="votes">\'+(c.vote_count||0)+\'</div></div>\').join(\'\');
                         }
                     }
-
-                    setInterval(fetchData, 3000);
-                    fetchData();
+                    setInterval(fetchData, 3000); fetchData();
                 <\/script>
-            </body>
-            </html>
+            </body></html>
         `);
     }
 
-    async function delCostume(id) {
-        if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
-    }
+    async function delCostume(id) { if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id); }
 
     function exportResults() {
         let csv = 'Rank,Name,Gender,Votes\n';
@@ -1083,8 +988,7 @@
     }
 
     function getDist(lat1, lon1) {
-        const R = 6371e3; 
-        const φ1 = lat1 * Math.PI/180, φ2 = settings.lat * Math.PI/180; 
+        const R = 6371e3; const φ1 = lat1 * Math.PI/180, φ2 = settings.lat * Math.PI/180;
         const Δφ = (settings.lat-lat1) * Math.PI/180, Δλ = (settings.long-lon1) * Math.PI/180;
         const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2) * Math.sin(Δλ/2)**2;
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
