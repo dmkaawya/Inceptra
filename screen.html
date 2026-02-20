@@ -539,6 +539,12 @@ if(timeInput && data.voting_end_time) {
             } else {
                 el.classList.add('hidden');
             }
+            // setupRealtime එක ඇතුළට මේකත් දාන්න
+sb.channel('public:system_settings').on('postgres_changes', { event: 'UPDATE', schema: 'public' }, payload => {
+    // ... දැනට තියෙන code ...
+    loadSettings(); // Settings ආයෙත් reload කරගන්න
+    startCountdown(); // Countdown එක අලුත් settings එක්ක restart කරන්න
+}).subscribe();
         }
     }
 
