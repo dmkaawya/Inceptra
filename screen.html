@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,15 +102,6 @@
             font-size: 0.9rem;
         }
         .btn-action:hover { background: var(--primary); color: #000; }
-
-        .auth-logo {
-    width: 100%;
-    max-width: 280px; /* පින්තූරයේ ලොකු කුඩා බව වෙනස් කරන්න ඕන නම් මේ ගාණ වෙනස් කරන්න */
-    height: auto;
-    margin: 0 auto 15px auto;
-    display: block;
-    filter: drop-shadow(0 0 15px rgba(0, 243, 255, 0.2)); /* පොඩි glow effect එකක් පින්තූරය වටේට */
-}
 
         /* Inputs */
         .input-group { margin-bottom: 15px; }
@@ -225,11 +217,9 @@
     <div class="container">
         
         <div class="header">
-            <div id="view-auth" class="hidden glass-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
-    
-    <img src="1000220347.png" alt="Inceptra 25" class="auth-logo">
-
-            
+            <div class="logo-text">Inceptra25</div>
+            <div class="logo-sub">Where beginnings becomes Legacy</div>
+            <br>
             <center><div class="countdown-box">
                 <span class="countdown-label">Time Remaining</span>
                 <div id="countdown-timer" class="countdown-timer">Loading...</div>
@@ -242,7 +232,7 @@
             <div class="input-group"><input type="email" id="email" placeholder="Email Address" class="input-field"></div>
             <div class="input-group"><input type="password" id="password" placeholder="Password" class="input-field"></div>
             <button onclick="handleAuth()" class="btn btn-primary" id="btn-auth">Login</button>
-            <p onclick="toggleAuth()" style="color:#8FECF1; cursor:pointer; margin-top:20px; text-align:center; font-size:0.9rem;">
+            <p onclick="toggleAuth()" style="color:#666; cursor:pointer; margin-top:20px; text-align:center; font-size:0.9rem;">
                 <span id="text-toggle">New here? Create Account</span>
             </p>
         </div>
