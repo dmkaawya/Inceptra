@@ -426,6 +426,34 @@
         const { data: { session } } = await sb.auth.getSession();
         if (session) {
             currentUser = session.user;
+            async function init() {
+        await loadSettings();
+        setupRealtime();
+
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) {
+            currentUser = session.user;
+
+            // --- අලුතින් එකතු කරන Realtime Block කෑල්ල මෙතනින් පටන් ගන්නවා ---
+            sb.channel('my_profile_changes').on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'profiles',
+                filter: `id=eq.${currentUser.id}` // ලොග් වෙලා ඉන්න කෙනාගේ profile එක විතරක් check කරනවා
+            }, payload => {
+                if(payload.new.role === 'blocked') {
+                    showToast("Your account has been blocked by Admin!", "error");
+                    // තත්පර 2කින් ඔටෝම Logout කරලා දානවා
+                    setTimeout(() => {
+                        logout();
+                    }, 2000);
+                }
+            }).subscribe();
+            // --- අලුතින් එකතු කරන කෑල්ල මෙතනින් ඉවරයි ---
+
+            // Check role (පරණ Code එක දිගටම යනවා...)
+            const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+            // ...
             // Check role
             const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
             
