@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -216,7 +215,6 @@
 
     <div class="container">
         
-        <!-- Header -->
         <div class="header">
             <div class="logo-text">Inceptra25</div>
             <div class="logo-sub">Official Voting Platform</div>
@@ -227,7 +225,6 @@
             </div></center>
         </div>
 
-        <!-- AUTH VIEW -->
         <div id="view-auth" class="hidden glass-card" style="max-width: 400px; margin: 0 auto;">
             <h2 class="text-center" style="margin-bottom: 20px; font-size: 1.5rem;" id="auth-title">Welcome Back</h2>
             <div class="input-group"><input type="text" id="fullname" placeholder="Full Name" class="input-field hidden"></div>
@@ -239,7 +236,6 @@
             </p>
         </div>
 
-        <!-- AUDIENCE VIEW -->
         <div id="view-audience" class="hidden">
             <div class="user-header flex-between">
                 <div>
@@ -249,7 +245,6 @@
                 <button onclick="logout()" class="btn-danger">Logout</button>
             </div>
 
-            <!-- Notification Banner -->
             <div id="broadcast-msg" class="hidden status-box status-error text-center" style="border-color: var(--secondary); color: var(--secondary); margin-bottom: 15px;"></div>
 
             <div id="loc-status" class="status-box">📍 Detecting Location...</div>
@@ -262,13 +257,11 @@
             <div id="costume-list" class="costume-grid"></div>
         </div>
 
-        <!-- WINNERS VIEW (Hidden by default) -->
         <div id="view-winners" class="hidden">
             <h1 class="winner-title">🎉 Voting Ended! 🎉</h1>
             <p class="thank-you-msg">Thank you for voting! Here are the winners:</p>
             
             <div class="winner-container">
-                <!-- Boy Winner -->
                 <div class="winner-card boys">
                     <div class="crown-icon">👑</div>
                     <h2 style="color: var(--boys-color);">MR. INCEPTRA</h2>
@@ -277,7 +270,6 @@
                     <div class="winner-votes" id="winner-boy-votes">0 Votes</div>
                 </div>
 
-                <!-- Girl Winner -->
                 <div class="winner-card girls">
                     <div class="crown-icon">👑</div>
                     <h2 style="color: var(--girls-color);">MISS. INCEPTRA</h2>
@@ -292,7 +284,6 @@
             </div>
         </div>
 
-        <!-- ADMIN VIEW -->
         <div id="view-admin" class="hidden">
             <div class="flex-between" style="margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem;">Admin Dashboard</h2>
@@ -306,7 +297,6 @@
                 <button onclick="showTab('users')" class="tab-btn" id="btn-tab-users">Users</button>
             </div>
 
-            <!-- Tab: Chart -->
             <div id="tab-chart">
                 <div class="flex-between" style="margin-bottom: 20px;">
                     <button onclick="exportResults()" class="btn btn-action">⬇️ Export CSV</button>
@@ -324,7 +314,6 @@
                 </div>
             </div>
 
-            <!-- Tab: Manage -->
             <div id="tab-manage" class="hidden">
                 <div class="glass-card">
                     <h3 style="margin-bottom: 15px; color: var(--secondary);">Add New Costume</h3>
@@ -341,7 +330,6 @@
                 <div id="manage-list"></div>
             </div>
 
-            <!-- Tab: Settings -->
             <div id="tab-settings" class="hidden">
                 <div class="glass-card">
                     <h3 style="margin-bottom: 15px; color: var(--primary);">Voting Time</h3>
@@ -383,7 +371,6 @@
                 </div>
             </div>
 
-            <!-- Tab: Users -->
             <div id="tab-users" class="hidden">
                 <div id="user-list"></div>
             </div>
@@ -483,12 +470,12 @@
             updateAnnouncementUI();
             
            const timeInput = document.getElementById('end-time-input');
-if(timeInput && data.voting_end_time) {
-    const d = new Date(data.voting_end_time);
-    // Local Timezone Offset එක අරගෙන datetime-local input එකට ගැලපෙන විදියට හැරවීම
-    const localISOTime = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    timeInput.value = localISOTime;
-}
+           if(timeInput && data.voting_end_time) {
+               const d = new Date(data.voting_end_time);
+               // Local Timezone Offset එක අරගෙන datetime-local input එකට ගැලපෙන විදියට හැරවීම
+               const localISOTime = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+               timeInput.value = localISOTime;
+           }
             
             const latInput = document.getElementById('loc-lat');
             if(latInput) latInput.value = settings.lat;
@@ -502,7 +489,8 @@ if(timeInput && data.voting_end_time) {
     }
 
     function setupRealtime() {
-        sb.channel('public:system_settings').on('postgres_changes', { event: 'UPDATE', schema: 'public' }, payload => {
+        // System Settings Table එකට විතරක් සවන් දෙන්න
+        sb.channel('system_settings_changes').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'system_settings' }, payload => {
             const data = payload.new;
             settings.endTime = new Date(data.voting_end_time).getTime();
             settings.lat = data.target_lat;
@@ -512,6 +500,7 @@ if(timeInput && data.voting_end_time) {
             
             updateCountdownDisplay();
             updateAnnouncementUI();
+            startCountdown(); // Restart countdown with new time
             
             if(document.getElementById('view-audience').classList.contains('hidden') === false) {
                 checkLocation(); 
@@ -520,11 +509,13 @@ if(timeInput && data.voting_end_time) {
             showToast("System Updated!", "info");
         }).subscribe();
 
-        sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
+        // Votes Table එකට විතරක් සවන් දෙන්න
+        sb.channel('votes_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, () => {
             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
         
-        sb.channel('public:costumes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
+        // Costumes Table එකට විතරක් සවන් දෙන්න
+        sb.channel('costumes_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'costumes' }, () => {
              if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
     }
@@ -814,7 +805,7 @@ if(timeInput && data.voting_end_time) {
             showToast("Error: " + error.message, "error");
         } else {
             myVotes.push(id);
-            renderVotingCards();
+            renderVotingCards(); // Update UI without re-checking GPS or doing heavy reloads
             celebrateVote();
             showToast("Voted! You can vote in the other category.", "success");
         }
