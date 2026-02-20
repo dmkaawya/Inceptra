@@ -426,13 +426,6 @@
         const { data: { session } } = await sb.auth.getSession();
         if (session) {
             currentUser = session.user;
-            async function init() {
-        await loadSettings();
-        setupRealtime();
-
-        const { data: { session } } = await sb.auth.getSession();
-        if (session) {
-            currentUser = session.user;
             // Check role
             const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
             
