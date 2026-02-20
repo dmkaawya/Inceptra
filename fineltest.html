@@ -673,7 +673,7 @@
         checkLocation();
     }
 
-    function checkLocation() {
+   function checkLocation() {
         const locDiv = document.getElementById('loc-status');
         if(settings.lat === 0 && settings.long === 0) {
              locDiv.innerHTML = "⏳ Admin setting location...";
@@ -700,14 +700,17 @@
                 locDiv.className = "status-box status-error";
             }
         }, (err) => {
-             let msg = "❌ Location Error";
-             if(err.code === 1) msg = "❌ Permission Denied";
-             else if(err.code === 2) msg = "❌ GPS Unavailable (Turn on Location)";
-             else if(err.code === 3) msg = "❌ Location Timeout (Try again)";
-             
-             locDiv.innerHTML = msg;
-             locDiv.className = "status-box status-error";
-        }, { timeout: 20000, enableHighAccuracy: false }); // මේ පේළිය තමයි වෙනස් කළේ
+             // Timeout හෝ GPS අවුලක් ආවොත් ටෙස්ට් කිරීම සඳහා ඇතුළට යාමට අවසර දීම
+             if(err.code === 1) {
+                 locDiv.innerHTML = "❌ Permission Denied";
+                 locDiv.className = "status-box status-error";
+             } else {
+                 locDiv.innerHTML = "⚠️ Location Timeout (Bypassed for Testing)";
+                 locDiv.className = "status-box status-success";
+                 locDiv.style.borderColor = "orange"; // පොඩි වෙනසක් පේන්න
+                 loadVotingData(); // අනිවාර්යයෙන්ම Voting Cards ටික ලෝඩ් කරනවා
+             }
+        }, { timeout: 10000, enableHighAccuracy: false }); 
     }
     function switchCategory(cat) {
         activeCategory = cat;
