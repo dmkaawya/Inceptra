@@ -734,151 +734,167 @@
     }
 
     // --- THE ANIMATED PROJECTOR WINDOW ---
-    function openProjector() {
-        const w = window.open('', '_blank');
-        w.document.write(`
-            <html>
-            <head>
-                <title>Projector - Live View</title>
-                <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
-                <style>
-                    body { background: #0a0a12; color: white; font-family: 'Rajdhani', sans-serif; text-align: center; margin: 0; overflow: hidden; height: 100vh; display:flex; flex-direction:column;}
-                    
-                    /* Animations */
-                    .fade-in { animation: fadeIn 1s forwards; }
-                    @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-                    .glitch { font-size: 8rem; color: #ff0055; text-shadow: 0 0 20px red; animation: shake 0.5s infinite; }
-                    @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 100% { transform: translateX(0); } }
-                    .pulse { font-size: 6rem; color: #bc13fe; text-shadow: 0 0 30px #bc13fe; animation: heartbeat 1s infinite; }
-                    @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-                    
-                    /* Panels */
-                    .screen-panel { display: none; width: 100%; height: 100%; align-items: center; justify-content: center; flex-direction: column; background: radial-gradient(circle, rgba(0,243,255,0.1), transparent); }
-                    .active-panel { display: flex !important; }
-                    
-                    /* Live Grid */
-                    .grid { display: flex; width: 100%; gap: 2vw; padding: 2vw; box-sizing: border-box; }
-                    .col { flex: 1; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; }
-                    .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 15px; border-radius: 10px; transition: 0.5s; }
-                    .row img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
-                    .name { flex: 1; text-align: left; font-size: 2rem; margin-left: 20px; }
-                    .votes { font-size: 3rem; font-weight: 800; color: #00f3ff; }
-
-                    /* Winner Cards */
-                    .win-container { display: flex; gap: 50px; justify-content: center; width: 100%; margin-top: 30px; }
-                    .w-card { background: rgba(0,0,0,0.8); border: 2px solid; border-radius: 20px; padding: 30px; width: 400px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-                    .w-img { width: 250px; height: 250px; border-radius: 50%; object-fit: cover; border: 5px solid white; margin-bottom: 20px; }
-                    .w-title { font-size: 2.5rem; margin-bottom: 10px; text-transform: uppercase; }
-                </style>
-            </head>
-            <body>
-                <div id="panel-live" class="screen-panel active-panel">
-                    <h1 style="color:#00f3ff; font-size: 4rem; margin:20px;">LIVE VOTING RESULTS</h1>
-                    <div class="grid">
-                        <div class="col"><h2 style="color:#2979FF; font-size:3rem;">BOYS</h2><div id="live-boys"></div></div>
-                        <div class="col"><h2 style="color:#F50057; font-size:3rem;">GIRLS</h2><div id="live-girls"></div></div>
-                    </div>
-                </div>
-
-                <div id="panel-time_up" class="screen-panel">
-                    <div class="glitch">TIME IS UP!</div>
-                    <h2 style="font-size: 3rem; color: #aaa;">Voting is officially closed.</h2>
-                </div>
-
-                <div id="panel-suspense" class="screen-panel">
-                    <div class="pulse">ANALYZING RESULTS...</div>
-                    <h2 style="font-size: 3rem; color: #00f3ff; margin-top:20px;">Who will be the winner?</h2>
-                </div>
-
-                <div id="panel-3rd" class="screen-panel">
-                    <h1 style="color:#cd7f32; font-size: 5rem; text-shadow: 0 0 30px #cd7f32;">🥉 3RD PLACE 🥉</h1>
-                    <div class="win-container fade-in" id="box-3rd"></div>
-                </div>
-
-                <div id="panel-2nd" class="screen-panel">
-                    <h1 style="color:#c0c0c0; font-size: 6rem; text-shadow: 0 0 30px #c0c0c0;">🥈 2ND PLACE 🥈</h1>
-                    <div class="win-container fade-in" id="box-2nd"></div>
-                </div>
-
-                <div id="panel-1st" class="screen-panel" style="background: radial-gradient(circle, rgba(255,215,0,0.2), transparent);">
-                    <h1 style="color:#ffd700; font-size: 7rem; text-shadow: 0 0 50px #ffd700; margin-bottom:0;">👑 WINNERS 👑</h1>
-                    <div class="win-container fade-in" id="box-1st"></div>
-                </div>
-
-                <div id="panel-thanks" class="screen-panel">
-                    <h1 style="color:var(--primary); font-size: 6rem;">THANK YOU FOR VOTING!</h1>
-                    <h2 style="font-size: 3rem; color: #aaa;">Inceptra 25</h2>
-                </div>
-
-                <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"><\/script>
-                <script>
-                    const supabaseUrl = '${supabaseUrl}';
-                    const supabaseKey = '${supabaseKey}';
-                    const apiEndpoint = supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc';
-                    const setEndpoint = supabaseUrl + '/rest/v1/system_settings?select=projector_state&eq=id.1';
-                    const headers = { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey };
-                    let lastState = '';
-
-                    async function updateScreen() {
-                        try {
-                            // Fetch State from Admin
-                            const resSet = await fetch(setEndpoint, { headers });
-                            const setState = await resSet.json();
-                            const currentState = setState[0].projector_state || 'live';
-
-                            // Fetch Votes
-                            const resData = await fetch(apiEndpoint, { headers });
-                            const data = await resData.json();
-                            const boys = data.filter(c => c.gender === 'boys');
-                            const girls = data.filter(c => c.gender === 'girls');
-
-                            // Update Live HTML
-                            document.getElementById('live-boys').innerHTML = boys.map((c,i) => \`<div class="row"><div style="font-size:2rem; width:50px;">#\${i+1}</div><img src="\${c.image_url}"><div class="name">\${c.name}</div><div class="votes">\${c.vote_count||0}</div></div>\`).join('');
-                            document.getElementById('live-girls').innerHTML = girls.map((c,i) => \`<div class="row"><div style="font-size:2rem; width:50px;">#\${i+1}</div><img src="\${c.image_url}"><div class="name">\${c.name}</div><div class="votes">\${c.vote_count||0}</div></div>\`).join('');
-
-                            // Populate Winners (Safely check if they exist)
-                            if(boys[2] && girls[2]) document.getElementById('box-3rd').innerHTML = buildCard(boys[2], girls[2], '#cd7f32');
-                            if(boys[1] && girls[1]) document.getElementById('box-2nd').innerHTML = buildCard(boys[1], girls[1], '#c0c0c0');
-                            if(boys[0] && girls[0]) document.getElementById('box-1st').innerHTML = buildCard(boys[0], girls[0], '#ffd700');
-
-                            // Switch Panels
-                            if(currentState !== lastState) {
-                                document.querySelectorAll('.screen-panel').forEach(p => p.classList.remove('active-panel'));
-                                document.getElementById('panel-' + currentState).classList.add('active-panel');
-                                
-                                if(currentState === '1st') {
-                                    confetti({ particleCount: 300, spread: 150, origin: { y: 0.1 } });
-                                    setTimeout(()=>confetti({ particleCount: 200, spread: 100, origin: { y: 0.3 } }), 1000);
-                                }
-                                lastState = currentState;
-                            }
-                        } catch (e) { console.error(e); }
-                    }
-
-                    function buildCard(boy, girl, color) {
-                        return \`
-                            <div class="w-card" style="border-color:#2979FF">
-                                <div class="w-title" style="color:#2979FF">BOY</div>
-                                <img src="\${boy.image_url}" class="w-img" style="border-color:\${color}">
-                                <h2 style="font-size:3rem; margin:0;">\${boy.name}</h2>
-                                <p style="font-size:2rem; color:#aaa;">\${boy.vote_count} Votes</p>
-                            </div>
-                            <div class="w-card" style="border-color:#F50057">
-                                <div class="w-title" style="color:#F50057">GIRL</div>
-                                <img src="\${girl.image_url}" class="w-img" style="border-color:\${color}">
-                                <h2 style="font-size:3rem; margin:0;">\${girl.name}</h2>
-                                <p style="font-size:2rem; color:#aaa;">\${girl.vote_count} Votes</p>
-                            </div>
-                        \`;
-                    }
-
-                    setInterval(updateScreen, 2000); // Polling every 2 secs
-                    updateScreen();
-                <\/script>
-            </body>
-            </html>
-        `);
+    // --- THE ANIMATED PROJECTOR WINDOW (FIXED) ---
+function openProjector() {
+    const w = window.open('', '_blank');
+    
+    // Popup Blocker එකක් ඇත්නම් Alert එකක් මඟින් දැනුම් දීම
+    if (!w) {
+        alert("Pop-up blocked! කරුණාකර ඔබගේ Browser එකේ Pop-ups Allow කරන්න.");
+        return;
     }
+
+    w.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Projector - Live View</title>
+            <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+            <style>
+                body { background: #0a0a12; color: white; font-family: 'Rajdhani', sans-serif; text-align: center; margin: 0; overflow: hidden; height: 100vh; display:flex; flex-direction:column;}
+                
+                /* Animations */
+                .fade-in { animation: fadeIn 1s forwards; }
+                @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+                .glitch { font-size: 8rem; color: #ff0055; text-shadow: 0 0 20px red; animation: shake 0.5s infinite; }
+                @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 100% { transform: translateX(0); } }
+                .pulse { font-size: 6rem; color: #bc13fe; text-shadow: 0 0 30px #bc13fe; animation: heartbeat 1s infinite; }
+                @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+                
+                /* Panels */
+                .screen-panel { display: none; width: 100%; height: 100%; align-items: center; justify-content: center; flex-direction: column; background: radial-gradient(circle, rgba(0,243,255,0.1), transparent); }
+                .active-panel { display: flex !important; }
+                
+                /* Live Grid */
+                .grid { display: flex; width: 100%; gap: 2vw; padding: 2vw; box-sizing: border-box; }
+                .col { flex: 1; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; }
+                .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 15px; border-radius: 10px; transition: 0.5s; }
+                .row img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
+                .name { flex: 1; text-align: left; font-size: 2rem; margin-left: 20px; }
+                .votes { font-size: 3rem; font-weight: 800; color: #00f3ff; }
+
+                /* Winner Cards */
+                .win-container { display: flex; gap: 50px; justify-content: center; width: 100%; margin-top: 30px; }
+                .w-card { background: rgba(0,0,0,0.8); border: 2px solid; border-radius: 20px; padding: 30px; width: 400px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+                .w-img { width: 250px; height: 250px; border-radius: 50%; object-fit: cover; border: 5px solid white; margin-bottom: 20px; }
+                .w-title { font-size: 2.5rem; margin-bottom: 10px; text-transform: uppercase; }
+            </style>
+        </head>
+        <body>
+            <div id="panel-live" class="screen-panel active-panel">
+                <h1 style="color:#00f3ff; font-size: 4rem; margin:20px;">LIVE VOTING RESULTS</h1>
+                <div class="grid">
+                    <div class="col"><h2 style="color:#2979FF; font-size:3rem;">BOYS</h2><div id="live-boys"></div></div>
+                    <div class="col"><h2 style="color:#F50057; font-size:3rem;">GIRLS</h2><div id="live-girls"></div></div>
+                </div>
+            </div>
+
+            <div id="panel-time_up" class="screen-panel">
+                <div class="glitch">TIME IS UP!</div>
+                <h2 style="font-size: 3rem; color: #aaa;">Voting is officially closed.</h2>
+            </div>
+
+            <div id="panel-suspense" class="screen-panel">
+                <div class="pulse">ANALYZING RESULTS...</div>
+                <h2 style="font-size: 3rem; color: #00f3ff; margin-top:20px;">Who will be the winner?</h2>
+            </div>
+
+            <div id="panel-3rd" class="screen-panel">
+                <h1 style="color:#cd7f32; font-size: 5rem; text-shadow: 0 0 30px #cd7f32;">🥉 3RD PLACE 🥉</h1>
+                <div class="win-container fade-in" id="box-3rd"></div>
+            </div>
+
+            <div id="panel-2nd" class="screen-panel">
+                <h1 style="color:#c0c0c0; font-size: 6rem; text-shadow: 0 0 30px #c0c0c0;">🥈 2ND PLACE 🥈</h1>
+                <div class="win-container fade-in" id="box-2nd"></div>
+            </div>
+
+            <div id="panel-1st" class="screen-panel" style="background: radial-gradient(circle, rgba(255,215,0,0.2), transparent);">
+                <h1 style="color:#ffd700; font-size: 7rem; text-shadow: 0 0 50px #ffd700; margin-bottom:0;">👑 WINNERS 👑</h1>
+                <div class="win-container fade-in" id="box-1st"></div>
+            </div>
+
+            <div id="panel-thanks" class="screen-panel">
+                <h1 style="color:var(--primary); font-size: 6rem;">THANK YOU FOR VOTING!</h1>
+                <h2 style="font-size: 3rem; color: #aaa;">Inceptra 25</h2>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"><\/script>
+            <script>
+                const supabaseUrl = '${supabaseUrl}';
+                const supabaseKey = '${supabaseKey}';
+                const apiEndpoint = supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc';
+                
+                // BUG FIX: මෙතන 'eq=id.1' වෙනුවට 'id=eq.1' යොදා ඇත.
+                const setEndpoint = supabaseUrl + '/rest/v1/system_settings?select=projector_state&id=eq.1';
+                const headers = { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey };
+                let lastState = '';
+
+                async function updateScreen() {
+                    try {
+                        const resSet = await fetch(setEndpoint, { headers });
+                        const setState = await resSet.json();
+                        const currentState = (setState && setState[0]) ? setState[0].projector_state : 'live';
+
+                        const resData = await fetch(apiEndpoint, { headers });
+                        const data = await resData.json();
+                        const boys = data.filter(c => c.gender === 'boys');
+                        const girls = data.filter(c => c.gender === 'girls');
+
+                        document.getElementById('live-boys').innerHTML = boys.map((c,i) => \`<div class="row"><div style="font-size:2rem; width:50px; color:#555;">#\${i+1}</div><img src="\${c.image_url}"><div class="name">\${c.name}</div><div class="votes">\${c.vote_count||0}</div></div>\`).join('');
+                        document.getElementById('live-girls').innerHTML = girls.map((c,i) => \`<div class="row"><div style="font-size:2rem; width:50px; color:#555;">#\${i+1}</div><img src="\${c.image_url}"><div class="name">\${c.name}</div><div class="votes">\${c.vote_count||0}</div></div>\`).join('');
+
+                        if(boys[2] || girls[2]) document.getElementById('box-3rd').innerHTML = buildCard(boys[2], girls[2], '#cd7f32');
+                        if(boys[1] || girls[1]) document.getElementById('box-2nd').innerHTML = buildCard(boys[1], girls[1], '#c0c0c0');
+                        if(boys[0] || girls[0]) document.getElementById('box-1st').innerHTML = buildCard(boys[0], girls[0], '#ffd700');
+
+                        if(currentState !== lastState) {
+                            document.querySelectorAll('.screen-panel').forEach(p => p.classList.remove('active-panel'));
+                            const activePanel = document.getElementById('panel-' + currentState);
+                            if(activePanel) activePanel.classList.add('active-panel');
+                            
+                            if(currentState === '1st') {
+                                confetti({ particleCount: 300, spread: 150, origin: { y: 0.1 } });
+                                setTimeout(()=>confetti({ particleCount: 200, spread: 100, origin: { y: 0.3 } }), 1000);
+                            }
+                            lastState = currentState;
+                        }
+                    } catch (e) { console.error("Projector update error: ", e); }
+                }
+
+                function buildCard(boy, girl, color) {
+                    let html = '';
+                    if(boy) {
+                        html += \`
+                        <div class="w-card" style="border-color:#2979FF">
+                            <div class="w-title" style="color:#2979FF">MR. INCEPTRA</div>
+                            <img src="\${boy.image_url}" class="w-img" style="border-color:\${color}">
+                            <h2 style="font-size:3rem; margin:0;">\${boy.name}</h2>
+                            <p style="font-size:2rem; color:#aaa;">\${boy.vote_count || 0} Votes</p>
+                        </div>\`;
+                    }
+                    if(girl) {
+                        html += \`
+                        <div class="w-card" style="border-color:#F50057">
+                            <div class="w-title" style="color:#F50057">MISS. INCEPTRA</div>
+                            <img src="\${girl.image_url}" class="w-img" style="border-color:\${color}">
+                            <h2 style="font-size:3rem; margin:0;">\${girl.name}</h2>
+                            <p style="font-size:2rem; color:#aaa;">\${girl.vote_count || 0} Votes</p>
+                        </div>\`;
+                    }
+                    return html;
+                }
+
+                setInterval(updateScreen, 2000); 
+                updateScreen();
+            <\/script>
+        </body>
+        </html>
+    `);
+    
+    // BUG FIX: HTML Document එක සම්පූර්ණයෙන්ම Load වීමට අනිවාර්යයෙන් අවශ්‍ය වේ.
+    w.document.close();
+}
 
     // UTILS
     function showTab(tab) {
