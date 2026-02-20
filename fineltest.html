@@ -482,8 +482,13 @@
             updateCountdownDisplay();
             updateAnnouncementUI();
             
-            const timeInput = document.getElementById('end-time-input');
-            if(timeInput && data.voting_end_time) timeInput.value = new Date(data.voting_end_time).toISOString().slice(0, 16);
+           const timeInput = document.getElementById('end-time-input');
+if(timeInput && data.voting_end_time) {
+    const d = new Date(data.voting_end_time);
+    // Local Timezone Offset එක අරගෙන datetime-local input එකට ගැලපෙන විදියට හැරවීම
+    const localISOTime = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    timeInput.value = localISOTime;
+}
             
             const latInput = document.getElementById('loc-lat');
             if(latInput) latInput.value = settings.lat;
@@ -611,11 +616,16 @@
 
     // --- ADMIN SAVING FUNCTIONS ---
     async function saveTime() {
-        const val = document.getElementById('end-time-input').value;
-        if(!val) return showToast("Select date", "error");
-        const { error } = await sb.from('system_settings').update({ voting_end_time: val }).eq('id', 1);
-        if(error) showToast("Error", "error"); else showToast("Time Updated!", "success");
-    }
+    const val = document.getElementById('end-time-input').value;
+    if(!val) return showToast("Select date", "error");
+
+    // Local time එක හඳුනාගෙන ඒක Database එකට ගැලපෙන ISO (UTC) format එකට හැරවීම
+    const localDate = new Date(val);
+    const isoString = localDate.toISOString();
+
+    const { error } = await sb.from('system_settings').update({ voting_end_time: isoString }).eq('id', 1);
+    if(error) showToast("Error", "error"); else showToast("Time Updated!", "success");
+}
 
     async function saveLocation() {
         const lat = parseFloat(document.getElementById('loc-lat').value);
