@@ -73,7 +73,7 @@
         .btn-danger:hover { background: var(--girls-color); color: white; }
         .btn-vote { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent); color: var(--accent); border-radius: 50px; }
         .btn-vote:hover { background: var(--accent); color: #000; box-shadow: 0 0 25px var(--accent); }
-        .btn-vote:disabled { border-color: #444; color: #444; background: rgba(255,255,255,0.05); cursor: not-allowed; box-shadow: none; transform: none; }
+        .btn-vote:disabled { border-color: #444; color: #666; background: rgba(255,255,255,0.05); cursor: not-allowed; box-shadow: none; transform: none; }
         
         .btn-action {
             background: rgba(255, 255, 255, 0.1);
@@ -338,8 +338,8 @@
     let isRegister = false;
     let activeCategory = 'boys'; 
     let allCostumes = [];
-    let myVotes = []; 
-    let countdownInterval = null; // Fix: Store interval ID to prevent duplicates
+    let myVotes = []; // Stores IDs of all costumes user has voted for
+    let countdownInterval = null; 
     let settings = {
         endTime: new Date('2025-12-31T23:59:59').getTime(),
         lat: 0,
@@ -369,13 +369,9 @@
 
     // --- INIT ---
     async function init() {
-        // 1. Load Settings
         await loadSettings();
-        
-        // 2. Setup Realtime Listeners
         setupRealtime();
 
-        // 3. Auth Check
         const { data: { session } } = await sb.auth.getSession();
         if (session) {
             currentUser = session.user;
@@ -400,11 +396,9 @@
             settings.radius = data.radius_meters || 100;
             settings.announcement = data.announcement || '';
 
-            // Update UI
             updateCountdownDisplay();
             updateAnnouncementUI();
             
-            // Update Admin Inputs if visible
             const timeInput = document.getElementById('end-time-input');
             if(timeInput && data.voting_end_time) timeInput.value = new Date(data.voting_end_time).toISOString().slice(0, 16);
             
@@ -420,7 +414,6 @@
     }
 
     function setupRealtime() {
-        // Listen for settings changes
         sb.channel('public:system_settings').on('postgres_changes', { event: 'UPDATE', schema: 'public' }, payload => {
             const data = payload.new;
             settings.endTime = new Date(data.voting_end_time).getTime();
@@ -432,7 +425,6 @@
             updateCountdownDisplay();
             updateAnnouncementUI();
             
-            // If audience view is active, re-check location
             if(document.getElementById('view-audience').classList.contains('hidden') === false) {
                 checkLocation(); 
             }
@@ -440,7 +432,6 @@
             showToast("System Updated!", "info");
         }).subscribe();
 
-        // Listen for votes changes (Assuming DB trigger updates costumes.vote_count)
         sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
@@ -450,10 +441,7 @@
         }).subscribe();
     }
 
-    function updateCountdownDisplay() {
-        // Logic handled in startCountdown
-    }
-
+    function updateCountdownDisplay() { }
     function updateAnnouncementUI() {
         const el = document.getElementById('broadcast-msg');
         if(el) {
@@ -468,12 +456,9 @@
 
     // --- COUNTDOWN LOGIC ---
     function startCountdown() {
-        // Fix: Clear existing interval to prevent multiple timers
         if(countdownInterval) clearInterval(countdownInterval);
-        
         const timerElem = document.getElementById('countdown-timer');
         
-        // Immediate update
         const updateTimer = () => {
             const now = new Date().getTime();
             const distance = settings.endTime - now;
@@ -493,7 +478,7 @@
             timerElem.style.color = "var(--primary)";
         };
 
-        updateTimer(); // run once immediately
+        updateTimer();
         countdownInterval = setInterval(updateTimer, 1000);
     }
 
@@ -589,7 +574,6 @@
     function checkLocation() {
         const locDiv = document.getElementById('loc-status');
         
-        // Check if location is set in DB
         if(settings.lat === 0 && settings.long === 0) {
              locDiv.innerHTML = "⏳ Waiting for Admin to set location...";
              locDiv.className = "status-box status-error";
@@ -644,26 +628,36 @@
         renderVotingCards();
     }
 
+    // --- UPDATED VOTING LOGIC ---
     function renderVotingCards() {
         const list = document.getElementById('costume-list');
         list.innerHTML = '';
 
         const filtered = allCostumes.filter(c => c.gender === activeCategory);
-        const votedInThisCategory = filtered.some(c => myVotes.includes(c.id));
+        
+        // Check if user has voted in THIS category
+        // We look through allCostumes to find the gender of the items in myVotes
+        const hasVotedInThisCategory = allCostumes.some(c => 
+            c.gender === activeCategory && myVotes.includes(c.id)
+        );
 
         if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 40px; color:#555; font-size:1.2rem;'>No candidates.</p>";
 
         filtered.forEach(c => {
-            const hasVotedThis = myVotes.includes(c.id);
-            
+            const isThisOneVoted = myVotes.includes(c.id);
             let btnHtml = '';
-            if(votedInThisCategory) {
-                if(hasVotedThis) {
+
+            if (hasVotedInThisCategory) {
+                // Logic: If user voted in this category, lock everything
+                if (isThisOneVoted) {
+                    // This specific card was voted for
                     btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent); box-shadow:0 0 15px rgba(0,230,118,0.3);">✓ Voted</button>`;
                 } else {
+                    // Another card in this category was voted for, so lock this one
                     btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
                 }
             } else {
+                // Logic: User hasn't voted in this category yet. Allow voting.
                 btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote</button>`;
             }
 
@@ -684,14 +678,32 @@
     }
 
     async function castVote(id) {
+        // Get the category of the costume being voted for
+        const costume = allCostumes.find(c => c.id === id);
+        if (!costume) return;
+
+        // Check again: Has this user already voted in this specific category?
+        const alreadyVotedInCategory = allCostumes.some(c => 
+            c.gender === costume.gender && myVotes.includes(c.id)
+        );
+
+        if (alreadyVotedInCategory) {
+            showToast("You have already voted in this category!", "error");
+            // Refresh UI just in case
+            renderVotingCards();
+            return;
+        }
+
         if(!confirm("Confirm Vote?")) return;
+        
         const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
-        if(error) showToast("Error: " + error.message, "error");
-        else {
+        if(error) {
+            showToast("Error: " + error.message, "error");
+        } else {
             myVotes.push(id);
             renderVotingCards();
             celebrateVote();
-            showToast("Vote Cast!", "success");
+            showToast("Vote Cast! You can still vote in the other category.", "success");
         }
     }
 
@@ -792,8 +804,6 @@
     // --- FIXED PROJECTOR MODE ---
     function openProjector() {
         const w = window.open('', '_blank');
-        // Inject HTML using template literals
-        // We use native fetch to avoid needing to load the Supabase library in the popup
         w.document.write(`
             <html>
             <head>
@@ -883,7 +893,7 @@
                     }
 
                     fetchData();
-                    setInterval(fetchData, 3000); // Refresh every 3 seconds
+                    setInterval(fetchData, 3000); 
                 <\/script>
             </body>
             </html>
