@@ -102,6 +102,15 @@
         }
         .btn-action:hover { background: var(--primary); color: #000; }
 
+        .auth-logo {
+    width: 100%;
+    max-width: 280px; /* පින්තූරයේ ලොකු කුඩා බව වෙනස් කරන්න ඕන නම් මේ ගාණ වෙනස් කරන්න */
+    height: auto;
+    margin: 0 auto 15px auto;
+    display: block;
+    filter: drop-shadow(0 0 15px rgba(0, 243, 255, 0.2)); /* පොඩි glow effect එකක් පින්තූරය වටේට */
+}
+
         /* Inputs */
         .input-group { margin-bottom: 15px; }
         .input-field { width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; font-size: 1rem; transition: 0.3s; }
@@ -216,8 +225,10 @@
     <div class="container">
         
         <div class="header">
-            <div class="logo-text">Inceptra25</div>
-            <div class="logo-sub">Official Voting Platform</div>
+            <div id="view-auth" class="hidden glass-card" style="max-width: 400px; margin: 0 auto; text-align: center;">
+    
+    <img src="1000220347 (1).png" alt="Inceptra 25" class="auth-logo">
+
             
             <center><div class="countdown-box">
                 <span class="countdown-label">Time Remaining</span>
