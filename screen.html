@@ -791,34 +791,22 @@ if(timeInput && data.voting_end_time) {
     }
 
     async function castVote(id) {
-        // Double check DB state to prevent refresh exploit
-        const { data: currentVotes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
-        const currentIds = currentVotes ? currentVotes.map(v => v.costume_id) : [];
+    // ... කලින් තිබුණ code කොටස ...
+
+    const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
+    if(error) {
+        showToast("Error: " + error.message, "error");
+    } else {
+        myVotes.push(id);
+        celebrateVote();
+        showToast("Voted! You can vote in the other category.", "success");
         
-        const costume = allCostumes.find(c => c.id === id);
-        if (!costume) return;
-
-        // Check if already voted in this category in DB
-        const alreadyVoted = allCostumes.some(c => c.gender === costume.gender && currentIds.includes(c.id));
-
-        if (alreadyVoted) {
-            showToast("Already voted in this category!", "error");
-            loadVotingData(); // Sync UI
-            return;
-        }
-
-        if(!confirm("Confirm Vote?")) return;
-        
-        const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
-        if(error) {
-            showToast("Error: " + error.message, "error");
-        } else {
-            myVotes.push(id);
-            renderVotingCards();
-            celebrateVote();
-            showToast("Voted! You can vote in the other category.", "success");
-        }
+        // මේ කොටස update කරන්න:
+        await loadVotingData(); // දත්ත ටික reload කරනවා
+        checkLocation();        // Location එක ආයෙත් check කරනවා
+        renderVotingCards();    // UI එක අඳිනවා
     }
+}
 
     // --- ADMIN LOGIC ---
     function initAdmin() {
