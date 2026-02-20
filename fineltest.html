@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -215,6 +216,7 @@
 
     <div class="container">
         
+        <!-- Header -->
         <div class="header">
             <div class="logo-text">Inceptra25</div>
             <div class="logo-sub">Official Voting Platform</div>
@@ -225,6 +227,7 @@
             </div></center>
         </div>
 
+        <!-- AUTH VIEW -->
         <div id="view-auth" class="hidden glass-card" style="max-width: 400px; margin: 0 auto;">
             <h2 class="text-center" style="margin-bottom: 20px; font-size: 1.5rem;" id="auth-title">Welcome Back</h2>
             <div class="input-group"><input type="text" id="fullname" placeholder="Full Name" class="input-field hidden"></div>
@@ -236,6 +239,7 @@
             </p>
         </div>
 
+        <!-- AUDIENCE VIEW -->
         <div id="view-audience" class="hidden">
             <div class="user-header flex-between">
                 <div>
@@ -245,6 +249,7 @@
                 <button onclick="logout()" class="btn-danger">Logout</button>
             </div>
 
+            <!-- Notification Banner -->
             <div id="broadcast-msg" class="hidden status-box status-error text-center" style="border-color: var(--secondary); color: var(--secondary); margin-bottom: 15px;"></div>
 
             <div id="loc-status" class="status-box">📍 Detecting Location...</div>
@@ -257,11 +262,13 @@
             <div id="costume-list" class="costume-grid"></div>
         </div>
 
+        <!-- WINNERS VIEW (Hidden by default) -->
         <div id="view-winners" class="hidden">
             <h1 class="winner-title">🎉 Voting Ended! 🎉</h1>
             <p class="thank-you-msg">Thank you for voting! Here are the winners:</p>
             
             <div class="winner-container">
+                <!-- Boy Winner -->
                 <div class="winner-card boys">
                     <div class="crown-icon">👑</div>
                     <h2 style="color: var(--boys-color);">MR. INCEPTRA</h2>
@@ -270,6 +277,7 @@
                     <div class="winner-votes" id="winner-boy-votes">0 Votes</div>
                 </div>
 
+                <!-- Girl Winner -->
                 <div class="winner-card girls">
                     <div class="crown-icon">👑</div>
                     <h2 style="color: var(--girls-color);">MISS. INCEPTRA</h2>
@@ -284,6 +292,7 @@
             </div>
         </div>
 
+        <!-- ADMIN VIEW -->
         <div id="view-admin" class="hidden">
             <div class="flex-between" style="margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem;">Admin Dashboard</h2>
@@ -297,6 +306,7 @@
                 <button onclick="showTab('users')" class="tab-btn" id="btn-tab-users">Users</button>
             </div>
 
+            <!-- Tab: Chart -->
             <div id="tab-chart">
                 <div class="flex-between" style="margin-bottom: 20px;">
                     <button onclick="exportResults()" class="btn btn-action">⬇️ Export CSV</button>
@@ -314,6 +324,7 @@
                 </div>
             </div>
 
+            <!-- Tab: Manage -->
             <div id="tab-manage" class="hidden">
                 <div class="glass-card">
                     <h3 style="margin-bottom: 15px; color: var(--secondary);">Add New Costume</h3>
@@ -330,6 +341,7 @@
                 <div id="manage-list"></div>
             </div>
 
+            <!-- Tab: Settings -->
             <div id="tab-settings" class="hidden">
                 <div class="glass-card">
                     <h3 style="margin-bottom: 15px; color: var(--primary);">Voting Time</h3>
@@ -371,6 +383,7 @@
                 </div>
             </div>
 
+            <!-- Tab: Users -->
             <div id="tab-users" class="hidden">
                 <div id="user-list"></div>
             </div>
@@ -426,9 +439,11 @@
         const { data: { session } } = await sb.auth.getSession();
         if (session) {
             currentUser = session.user;
+            // Check role
             const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
             
             if (!profile) {
+                // FIX: If profile is missing (new user), create it as Audience
                 await sb.from('profiles').insert([{ 
                     id: currentUser.id, 
                     email: currentUser.email, 
@@ -467,12 +482,8 @@
             updateCountdownDisplay();
             updateAnnouncementUI();
             
-            // FIX: Timezone Issue resolved here
             const timeInput = document.getElementById('end-time-input');
-            if(timeInput && data.voting_end_time) {
-                const d = new Date(data.voting_end_time);
-                timeInput.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-            }
+            if(timeInput && data.voting_end_time) timeInput.value = new Date(data.voting_end_time).toISOString().slice(0, 16);
             
             const latInput = document.getElementById('loc-lat');
             if(latInput) latInput.value = settings.lat;
@@ -500,14 +511,17 @@
             if(document.getElementById('view-audience').classList.contains('hidden') === false) {
                 checkLocation(); 
             }
+            
             showToast("System Updated!", "info");
         }).subscribe();
 
-        // FIX: Only Admin subscribes to live vote streams to prevent 250+ concurrent connection crash
-        if(document.getElementById('view-admin').classList.contains('hidden') === false) {
-            sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, () => { loadAdminData(); }).subscribe();
-            sb.channel('public:costumes').on('postgres_changes', { event: '*', schema: 'public' }, () => { loadAdminData(); }).subscribe();
-        }
+        sb.channel('public:votes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
+            if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
+        }).subscribe();
+        
+        sb.channel('public:costumes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
+             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
+        }).subscribe();
     }
 
     function updateCountdownDisplay() { }
@@ -536,10 +550,11 @@
                 timerElem.innerHTML = "VOTING ENDED";
                 timerElem.style.color = "#ff4081";
                 timerElem.classList.remove('ending-soon');
-                endGame(); 
+                endGame(); // Trigger End Game
                 return;
             }
 
+            // Pulse Effect in last 5 seconds
             if (distance < 5000) {
                 timerElem.classList.add('ending-soon');
             } else {
@@ -563,7 +578,10 @@
     async function endGame() {
         if(countdownInterval) clearInterval(countdownInterval);
         
+        // If audience, show winners
         if(!document.getElementById('view-audience').classList.contains('hidden')) {
+            // Calculate winners from local data (or fetch fresh if needed)
+            // We use the allCostumes array if populated, else fetch
             if(allCostumes.length === 0) {
                 const { data } = await sb.from('costumes').select('*');
                 allCostumes = data || [];
@@ -595,11 +613,7 @@
     async function saveTime() {
         const val = document.getElementById('end-time-input').value;
         if(!val) return showToast("Select date", "error");
-        
-        // FIX: Timezone conversion back to UTC for database
-        const isoString = new Date(val).toISOString();
-        
-        const { error } = await sb.from('system_settings').update({ voting_end_time: isoString }).eq('id', 1);
+        const { error } = await sb.from('system_settings').update({ voting_end_time: val }).eq('id', 1);
         if(error) showToast("Error", "error"); else showToast("Time Updated!", "success");
     }
 
@@ -673,7 +687,7 @@
         checkLocation();
     }
 
-   function checkLocation() {
+    function checkLocation() {
         const locDiv = document.getElementById('loc-status');
         if(settings.lat === 0 && settings.long === 0) {
              locDiv.innerHTML = "⏳ Admin setting location...";
@@ -700,18 +714,13 @@
                 locDiv.className = "status-box status-error";
             }
         }, (err) => {
-             // Timeout හෝ GPS අවුලක් ආවොත් ටෙස්ට් කිරීම සඳහා ඇතුළට යාමට අවසර දීම
-             if(err.code === 1) {
-                 locDiv.innerHTML = "❌ Permission Denied";
-                 locDiv.className = "status-box status-error";
-             } else {
-                 locDiv.innerHTML = "⚠️ Location Timeout (Bypassed for Testing)";
-                 locDiv.className = "status-box status-success";
-                 locDiv.style.borderColor = "orange"; // පොඩි වෙනසක් පේන්න
-                 loadVotingData(); // අනිවාර්යයෙන්ම Voting Cards ටික ලෝඩ් කරනවා
-             }
-        }, { timeout: 10000, enableHighAccuracy: false }); 
+             let msg = "❌ Location Error";
+             if(err.code === 1) msg = "❌ Permission Denied";
+             locDiv.innerHTML = msg;
+             locDiv.className = "status-box status-error";
+        }, { timeout: 10000, enableHighAccuracy: true });
     }
+
     function switchCategory(cat) {
         activeCategory = cat;
         document.getElementById('tab-boys').className = cat === 'boys' ? 'cat-tab active-boys' : 'cat-tab';
@@ -722,6 +731,7 @@
     async function loadVotingData() {
         const { data: costumes } = await sb.from('costumes').select('*');
         allCostumes = costumes || [];
+        // Fetch MY votes specifically to prevent refresh bug
         const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
         myVotes = votes ? votes.map(v => v.costume_id) : [];
         renderVotingCards();
@@ -733,6 +743,7 @@
 
         const filtered = allCostumes.filter(c => c.gender === activeCategory);
         
+        // Check against DB data (myVotes)
         const hasVotedInThisCategory = allCostumes.some(c => 
             c.gender === activeCategory && myVotes.includes(c.id)
         );
@@ -750,8 +761,7 @@
                     btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
                 }
             } else {
-                // FIX: Passed 'event' to handle button disable state properly
-                btnHtml = `<button onclick="castVote(event, ${c.id})" class="btn btn-vote">Vote</button>`;
+                btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote</button>`;
             }
 
             list.innerHTML += `
@@ -770,36 +780,28 @@
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe'] });
     }
 
-    async function castVote(event, id) {
+    async function castVote(id) {
+        // Double check DB state to prevent refresh exploit
         const { data: currentVotes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
         const currentIds = currentVotes ? currentVotes.map(v => v.costume_id) : [];
         
         const costume = allCostumes.find(c => c.id === id);
         if (!costume) return;
 
+        // Check if already voted in this category in DB
         const alreadyVoted = allCostumes.some(c => c.gender === costume.gender && currentIds.includes(c.id));
 
         if (alreadyVoted) {
             showToast("Already voted in this category!", "error");
-            loadVotingData(); 
+            loadVotingData(); // Sync UI
             return;
         }
 
         if(!confirm("Confirm Vote?")) return;
         
-        // FIX: Spam Protection (Button Disable)
-        const btn = event.target;
-        const originalText = btn.innerText;
-        btn.disabled = true;
-        btn.innerText = "Voting...";
-        btn.style.opacity = "0.7";
-        
         const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
         if(error) {
             showToast("Error: " + error.message, "error");
-            btn.disabled = false;
-            btn.innerText = originalText;
-            btn.style.opacity = "1";
         } else {
             myVotes.push(id);
             renderVotingCards();
@@ -891,6 +893,7 @@
     }
 
     async function changeUserRole(uid, role) {
+        // FIX: Ensure proper update
         const { error } = await sb.from('profiles').update({ role }).eq('id', uid);
         if(error) {
             console.error(error);
@@ -958,57 +961,50 @@
                     const supabaseUrl = '${supabaseUrl}';
                     const supabaseKey = '${supabaseKey}';
                     const apiEndpoint = supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc';
-                    // FIX: Realtime end time check
-                    const settingsEndpoint = supabaseUrl + '/rest/v1/system_settings?select=voting_end_time&id=eq.1';
                     const headers = { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey, 'Content-Type': 'application/json' };
+                    
+                    let endTime = ${settings.endTime}; // Initial load
 
                     async function fetchData() {
-                        try {
-                            const resSettings = await fetch(settingsEndpoint, { headers: headers });
-                            const settingsData = await resSettings.json();
-                            const liveEndTime = new Date(settingsData[0].voting_end_time).getTime();
+                        const res = await fetch(apiEndpoint, { headers: headers });
+                        const data = await res.json();
+                        const boys = data.filter(c => c.gender === 'boys');
+                        const girls = data.filter(c => c.gender === 'girls');
 
-                            const res = await fetch(apiEndpoint, { headers: headers });
-                            const data = await res.json();
-                            const boys = data.filter(c => c.gender === 'boys');
-                            const girls = data.filter(c => c.gender === 'girls');
-
-                            const now = new Date().getTime();
-                            if(now > liveEndTime) {
-                                document.getElementById('live-view').style.display = 'none';
-                                document.getElementById('winner-view').style.display = 'flex';
-                                
-                                if(boys[0]) {
-                                    document.getElementById('w-boy-img').src = boys[0].image_url;
-                                    document.getElementById('w-boy-name').innerText = boys[0].name;
-                                    document.getElementById('w-boy-votes').innerText = boys[0].vote_count + " Votes";
-                                }
-                                if(girls[0]) {
-                                    document.getElementById('w-girl-img').src = girls[0].image_url;
-                                    document.getElementById('w-girl-name').innerText = girls[0].name;
-                                    document.getElementById('w-girl-votes').innerText = girls[0].vote_count + " Votes";
-                                }
-                            } else {
-                                document.getElementById('live-view').style.display = 'block';
-                                document.getElementById('winner-view').style.display = 'none';
-
-                                document.getElementById('boys-list').innerHTML = boys.map(c => \`
-                                    <div class="row">
-                                        <img src="\${c.image_url}">
-                                        <div class="name">\${c.name}</div>
-                                        <div class="votes">\${c.vote_count || 0}</div>
-                                    </div>
-                                \`).join('');
-                                document.getElementById('girls-list').innerHTML = girls.map(c => \`
-                                    <div class="row">
-                                        <img src="\${c.image_url}">
-                                        <div class="name">\${c.name}</div>
-                                        <div class="votes">\${c.vote_count || 0}</div>
-                                    </div>
-                                \`).join('');
+                        // Check Time
+                        const now = new Date().getTime();
+                        if(now > endTime) {
+                            document.getElementById('live-view').style.display = 'none';
+                            document.getElementById('winner-view').style.display = 'flex';
+                            
+                            if(boys[0]) {
+                                document.getElementById('w-boy-img').src = boys[0].image_url;
+                                document.getElementById('w-boy-name').innerText = boys[0].name;
+                                document.getElementById('w-boy-votes').innerText = boys[0].vote_count + " Votes";
                             }
-                        } catch (e) {
-                            console.error(e);
+                            if(girls[0]) {
+                                document.getElementById('w-girl-img').src = girls[0].image_url;
+                                document.getElementById('w-girl-name').innerText = girls[0].name;
+                                document.getElementById('w-girl-votes').innerText = girls[0].vote_count + " Votes";
+                            }
+                        } else {
+                            document.getElementById('live-view').style.display = 'block';
+                            document.getElementById('winner-view').style.display = 'none';
+
+                            document.getElementById('boys-list').innerHTML = boys.map(c => \`
+                                <div class="row">
+                                    <img src="\${c.image_url}">
+                                    <div class="name">\${c.name}</div>
+                                    <div class="votes">\${c.vote_count || 0}</div>
+                                </div>
+                            \`).join('');
+                            document.getElementById('girls-list').innerHTML = girls.map(c => \`
+                                <div class="row">
+                                    <img src="\${c.image_url}">
+                                    <div class="name">\${c.name}</div>
+                                    <div class="votes">\${c.vote_count || 0}</div>
+                                </div>
+                            \`).join('');
                         }
                     }
 
@@ -1018,7 +1014,6 @@
             </body>
             </html>
         `);
-        w.document.close();
     }
 
     async function delCostume(id) {
