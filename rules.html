@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Guidelines - INCEPTRA 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-purple: #a855f7;
+            --accent-blue: #3b82f6;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --danger: #ef4444;
+            --bg-dark: #050505;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.7;
+        }
+
+        /* Ambient Background Glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 15% 15%, rgba(106, 17, 203, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 85%, rgba(37, 117, 252, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            padding: 3rem 0 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 3rem;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #fff, #a855f7);
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Rules Grid Layout */
+        .rules-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        /* Rule Card Styling */
+        .rule-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rule-card:hover {
+            border-color: rgba(168, 85, 247, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Accent line at top of card */
+        .rule-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        .rule-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 0.8rem;
+        }
+
+        .section-number {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--accent-purple);
+            font-weight: 700;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* List Styling */
+        .rules-list {
+            list-style: none;
+        }
+
+        .rules-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            color: #d1d5db;
+        }
+
+        .rules-list li::before {
+            content: '•';
+            color: var(--accent-purple);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Emphasis Styles */
+        strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .warning-text {
+            color: #f87171;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer-note {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.8; transform: scale(1); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .rule-card { padding: 1.2rem; }
+            .card-title { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="header-icon"><i class="fas fa-balance-scale"></i></div>
+            <h1>Official Voting Guidelines</h1>
+            <div class="subtitle">Terms of Service & Regulations</div>
+        </header>
+
+        <div class="rules-grid">
+
+            <!-- Section 1 -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-number">1</div>
+                    <h2 class="card-title">Voting Eligibility & Timeframe</h2>
+                </div>
+                <ul class="rules-list">
+                    <li><strong>Designated Voting Window:</strong> Voting is strictly permitted only during the officially scheduled timeframe.</li>
+                    <li><strong>Strict Deadlines:</strong> The system will automatically reject any votes attempted before the official start time or after the closing deadline.</li>
+                    <li><strong>Attendee Exclusivity:</strong> Voting is open only to verified participants and attendees of the event.</li>
+                </ul>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-number">2</div>
+                    <h2 class="card-title">Voting Limits & Categories</h2>
+                </div>
+                <ul class="rules-list">
+                    <li><strong>Category Restriction (Boys):</strong> Each voter is entitled to cast exactly one (1) vote for a candidate in the Boys' category.</li>
+                    <li><strong>Category Restriction (Girls):</strong> Each voter is entitled to cast exactly one (1) vote for a candidate in the Girls' category.</li>
+                    <li><strong>Maximum Vote Limit:</strong> A single user can cast a maximum of two votes in total across the entire platform.</li>
+                    <li><strong>Irreversible Submissions:</strong> Once a vote is successfully submitted, it is final. Votes cannot be changed, edited, or canceled under any circumstances.</li>
+                </ul>
+            </div>
+
+            <!-- Section 3 -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-number">3</div>
+                    <h2 class="card-title">Location & Geofencing (Premises Rule)</h2>
+                </div>
+                <ul class="rules-list">
+                    <li><strong>Physical Presence Required:</strong> Voting is strictly geofenced. You must be physically located within the designated event premises to access the voting portal.</li>
+                    <li><strong>Location Services:</strong> Voters must grant location access on their devices to verify their presence inside the event boundaries.</li>
+                    <li class="warning-text"><i class="fas fa-exclamation-triangle"></i> No Location Spoofing: The use of VPNs, proxies, or fake GPS applications to bypass the location restriction is strictly prohibited and will result in an instant ban.</li>
+                </ul>
+            </div>
+
+            <!-- Section 4 -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-number">4</div>
+                    <h2 class="card-title">Account & Email Verification</h2>
+                </div>
+                <ul class="rules-list">
+                    <li><strong>Valid Email Requirement:</strong> All voters must register using a valid, active, and personal email address.</li>
+                    <li><strong>No Fake Accounts:</strong> The use of disposable, temporary, or bot-generated email accounts is strictly forbidden.</li>
+                    <li><strong>Mandatory Verification:</strong> Votes will only be counted after the user verifies their identity (e.g., clicking a confirmation link sent to their email or entering an OTP).</li>
+                    <li><strong>Single Identity:</strong> Voting on behalf of someone else or using another person’s email address/device is not allowed.</li>
+                </ul>
+            </div>
+
+            <!-- Section 5 -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-number">5</div>
+                    <h2 class="card-title">Anti-Fraud & Security Measures</h2>
+                </div>
+                <ul class="rules-list">
+                    <li class="warning-text"><strong>Zero Tolerance for Bots:</strong> The use of automated scripts, bots, or third-party software to generate votes will trigger automatic deletion of those votes.</li>
+                    <li><strong>IP & Device Monitoring:</strong> The system will actively monitor IP addresses and device IDs. Suspicious mass voting from a single device or network will be flagged and voided.</li>
+                    <li><strong>System Integrity:</strong> Any malicious attempts to hack, manipulate, or overload the voting servers will result in an immediate ban and potential disciplinary action.</li>
+                    <li><strong>Audit Rights:</strong> The organizing committee reserves the right to audit the voting logs to identify and remove fraudulent activity before declaring the winners.</li>
+                </ul>
+            </div>
+
+            <!-- Section 6 -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-number">6</div>
+                    <h2 class="card-title">Code of Conduct & Fair Play</h2>
+                </div>
+                <ul class="rules-list">
+                    <li><strong>Candidate Disqualification:</strong> If a candidate or their campaign is found guilty of utilizing fake emails, bots, or location spoofing, the candidate will face immediate disqualification.</li>
+                    <li><strong>No Bribery:</strong> Offering money, gifts, or any other incentives in exchange for votes is strictly a violation of fair play rules.</li>
+                    <li><strong>No Coercion:</strong> Forcing, intimidating, or harassing other attendees to vote for a specific candidate is strictly prohibited.</li>
+                </ul>
+            </div>
+
+            <!-- Section 7 -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-number">7</div>
+                    <h2 class="card-title">Privacy, Technicalities & Final Authority</h2>
+                </div>
+                <ul class="rules-list">
+                    <li><strong>Data Privacy:</strong> Your email address and location data are strictly confidential. They are collected solely for vote authentication and will never be shared with third parties.</li>
+                    <li><strong>Technical Disclaimers:</strong> The organizers are not responsible for votes that fail to submit due to personal device malfunctions, poor cellular data, or local internet connectivity issues.</li>
+                    <li><strong>Result Confidentiality:</strong> Live voting tallies will remain hidden from the public to maintain fairness and excitement.</li>
+                    <li><strong>Final Authority:</strong> The organizing committee holds the ultimate authority over the voting process. Their decisions regarding disputes, rule violations, and final results are binding and final.</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer-note">
+            <p>By participating in the voting process, you agree to abide by all the rules and regulations stated above.</p>
+            <p style="margin-top: 0.5rem; color: #555;">© 2025 INCEPTRA Organizing Committee. All Rights Reserved.</p>
+        </div>
+    </div>
+
+</body>
+</html>
