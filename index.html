@@ -198,75 +198,49 @@
         /* ANIMATED FOOTER STYLES (FIXED FOR MOBILE) */
         /* ========================================== */
         /* FOOTER STYLES */
-        .footer-wrapper {
-            position: relative;
-            overflow: hidden;
-            margin-top: auto; 
-            flex-shrink: 0;
-            background: transparent; 
-        }
-        .mesh-lines {
-            position: absolute;
-            inset: 0;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 1;
-            opacity: 0.5;
-        }
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(50px);
-            opacity: 0.4;
-            animation: float 10s ease-in-out infinite;
-            pointer-events: none;
-        }
-        .orb-1 { width: 150px; height: 150px; background: var(--primary); top: -50px; left: 5%; }
-        .orb-2 { width: 120px; height: 120px; background: var(--secondary); bottom: -40px; right: 10%; animation-delay: -3s; }
-        @keyframes float { 0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; } 50% { transform: translateY(-15px) scale(1.05); opacity: 0.5; } }
-        .footer-content {
-            position: relative;
-            z-index: 10;
-            padding: 40px 20px 30px;
-            border-top: 1px solid var(--glass-border);
-            background: linear-gradient(to top, rgba(10,10,18,0.9), rgba(10,10,18,0.4));
-        }
-        .footer-inner { max-width: 1200px; margin: 0 auto; }
-        .footer-top { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); margin-bottom: 20px; }
-        .brand-logo { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
-        .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--primary); }
-        .social-links { display: flex; gap: 12px; }
-        .social-link { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.3s ease; text-decoration: none; }
-        .social-link:hover { color: var(--primary); border-color: var(--primary); transform: translateY(-2px); }
-        .social-link svg { width: 18px; height: 18px; fill: currentColor; }
-        .footer-middle { display: flex; flex-direction: column; align-items: center; gap: 15px; padding-bottom: 20px; margin-bottom: 15px; }
-        .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 20px; }
-        .footer-link { color: var(--text-muted); text-decoration: none; font-size: 13px; transition: color 0.3s; }
-        .footer-link:hover { color: var(--text-main); }
-        .footer-bottom { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
-        .copyright { color: #666; font-size: 12px; }
-        .copyright span { color: #aaa; font-weight: 500; }
-        .forwarded-by { display: inline-flex; align-items: center; gap: 6px; padding: 8px 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 20px; font-size: 11px; color: #666; }
-        .forwarded-by a { color: var(--primary); text-decoration: none; font-weight: 600; }
-        
-        /* MOBILE RESPONSIVE FIXES FOR FOOTER */
-        @media (max-width: 600px) {
-            .footer-content { padding: 30px 15px 20px; }
-            .footer-top { gap: 15px; padding-bottom: 15px; margin-bottom: 15px; }
-            .footer-middle { padding-bottom: 15px; margin-bottom: 10px; }
-            .brand-logo { font-size: 20px; }
-            .logo-icon { width: 26px; height: 26px; }
-            .social-link { width: 36px; height: 36px; }
-            .footer-links { font-size: 12px; }
-            .orb { opacity: 0.2; }
-        }
-        @media (min-width: 768px) {
-            .footer-top { flex-direction: row; justify-content: space-between; }
-            .footer-middle { flex-direction: row; justify-content: space-between; }
-            .footer-bottom { flex-direction: row; justify-content: space-between; }
-        }
+       /* Minimal Footer Styles */
+.footer-wrapper {
+    position: relative;
+    width: 100%;
+    /* Dark background ekak awashya nam danna */
+    background-color: #000; 
+    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Hini irak (thin line) */
+}
+
+.footer-mini-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px 20px; /* Hiniyata thiyenna padding adu karala thiyenne */
+    display: flex;
+    justify-content: space-between; /* Eka peliyata (one row) ganna */
+    align-items: center;
+    font-size: 13px;
+    color: #a0a0a0;
+}
+
+.footer-links-mini a, .forwarded-mini a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links-mini a:hover, .forwarded-mini a:hover {
+    color: #3b82f6; /* Hover weddi color eka wenas wenna */
+}
+
+.footer-links-mini .divider {
+    margin: 0 10px;
+    opacity: 0.5;
+}
+
+/* Mobile waladi thibiya yuthu widiha */
+@media (max-width: 768px) {
+    .footer-mini-inner {
+        flex-direction: column; /* Phone eke peli 3kata wetenna */
+        gap: 10px;
+        text-align: center;
+    }
+}
 
         /* Other Mobile Fixes */
         @media (max-width: 600px) {
