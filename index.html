@@ -1159,15 +1159,16 @@
                     img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
                     .name { flex: 1; text-align: left; font-size: 2rem; margin-left: 20px; }
                     .votes { font-size: 3rem; font-weight: 800; color: #00f3ff; min-width: 80px; text-align: right; }
+                    
+                    /* WINNER STYLES */
                     .winner-view { display: none; flex: 1; align-items: center; justify-content: center; gap: 50px; background: radial-gradient(circle, rgba(188,19,254,0.2), transparent); }
                     .winner-card { text-align: center; animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
                     .w { font-size: 5rem; }
                     .w-img { width: 250px; height: 250px; border-radius: 50%; border: 5px solid gold; box-shadow: 0 0 50px gold; object-fit: cover; margin: 20px auto; }
                     .w-name { font-size: 3rem; font-weight: 800; text-shadow: 0 5px 10px black; }
                     .w-votes { font-size: 2rem; color: #aaa; }
-                    .thanks-footer { position: absolute; bottom: 20px; width: 100%; text-align: center; font-size: 2rem; color: #bc13fe; text-shadow: 0 0 10px rgba(188,19,254,0.5); animation: blink 2s infinite; }
+                    
                     @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-                    @keyframes blink { 50% { opacity: 0.6; } }
                 </style>
             </head>
             <body>
@@ -1177,8 +1178,8 @@
                         <div class="col"><div class="title" style="color: #2979FF; border-color: #2979FF;">BOYS</div><div id="boys-list"></div></div>
                         <div class="col"><div class="title" style="color: #F50057; border-color: #F50057;">GIRLS</div><div id="girls-list"></div></div>
                     </div>
-                    <div class="thanks-footer">Thank you for your votes!</div>
                 </div>
+
                 <div id="winner-view" class="winner-view">
                     <div class="winner-card">
                         <div class="w" style="color: #2979FF;">MR. INCEPTRA</div>
@@ -1193,35 +1194,66 @@
                         <div id="w-girl-votes" class="w-votes"></div>
                     </div>
                 </div>
+
                 <script>
                     const supabaseUrl = '${supabaseUrl}';
                     const supabaseKey = '${supabaseKey}';
                     const apiEndpoint = supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc';
                     const headers = { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey, 'Content-Type': 'application/json' };
-                    let endTime = ${settings.endTime}; 
+                    
+                    let endTime = ${settings.endTime}; // Initial load
+
                     async function fetchData() {
                         const res = await fetch(apiEndpoint, { headers: headers });
                         const data = await res.json();
                         const boys = data.filter(c => c.gender === 'boys');
                         const girls = data.filter(c => c.gender === 'girls');
+
+                        // Check Time
                         const now = new Date().getTime();
                         if(now > endTime) {
                             document.getElementById('live-view').style.display = 'none';
                             document.getElementById('winner-view').style.display = 'flex';
-                            if(boys[0]) { document.getElementById('w-boy-img').src = boys[0].image_url; document.getElementById('w-boy-name').innerText = boys[0].name; document.getElementById('w-boy-votes').innerText = boys[0].vote_count + " Votes"; }
-                            if(girls[0]) { document.getElementById('w-girl-img').src = girls[0].image_url; document.getElementById('w-girl-name').innerText = girls[0].name; document.getElementById('w-girl-votes').innerText = girls[0].vote_count + " Votes"; }
+                            
+                            if(boys[0]) {
+                                document.getElementById('w-boy-img').src = boys[0].image_url;
+                                document.getElementById('w-boy-name').innerText = boys[0].name;
+                                document.getElementById('w-boy-votes').innerText = boys[0].vote_count + " Votes";
+                            }
+                            if(girls[0]) {
+                                document.getElementById('w-girl-img').src = girls[0].image_url;
+                                document.getElementById('w-girl-name').innerText = girls[0].name;
+                                document.getElementById('w-girl-votes').innerText = girls[0].vote_count + " Votes";
+                            }
                         } else {
-                            document.getElementById('live-view').style.display = 'flex'; document.getElementById('winner-view').style.display = 'none';
-                            document.getElementById('boys-list').innerHTML = boys.map(c => \`<div class="row"><img src="\${c.image_url}"><div class="name">\${c.name}</div><div class="votes">\${c.vote_count || 0}</div></div>\`).join('');
-                            document.getElementById('girls-list').innerHTML = girls.map(c => \`<div class="row"><img src="\${c.image_url}"><div class="name">\${c.name}</div><div class="votes">\${c.vote_count || 0}</div></div>\`).join('');
+                            document.getElementById('live-view').style.display = 'block';
+                            document.getElementById('winner-view').style.display = 'none';
+
+                            document.getElementById('boys-list').innerHTML = boys.map(c => \`
+                                <div class="row">
+                                    <img src="\${c.image_url}">
+                                    <div class="name">\${c.name}</div>
+                                    <div class="votes">\${c.vote_count || 0}</div>
+                                </div>
+                            \`).join('');
+                            document.getElementById('girls-list').innerHTML = girls.map(c => \`
+                                <div class="row">
+                                    <img src="\${c.image_url}">
+                                    <div class="name">\${c.name}</div>
+                                    <div class="votes">\${c.vote_count || 0}</div>
+                                </div>
+                            \`).join('');
                         }
                     }
-                    setInterval(fetchData, 3000); fetchData();
+
+                    setInterval(fetchData, 3000);
+                    fetchData();
                 <\/script>
             </body>
             </html>
         `);
     }
+
 
     async function delCostume(id) {
         if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
