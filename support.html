@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - INCEPTRA 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: #6a11cb;
+            border-radius: 3px;
+        }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        .team-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        .card-image {
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+        .card-content {
+            padding: 1.5rem;
+        }
+        .member-name {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+        .member-position {
+            font-size: 0.9rem;
+            color: #6a11cb;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .member-description {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 1rem;
+            min-height: 60px;
+        }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .social-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+        .social-icon:hover {
+            transform: scale(1.2);
+        }
+        .facebook { background: #1877f2; }
+        .instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .linkedin { background: #0a66c2; }
+        .contact-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        .contact-item {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        .contact-item:hover {
+            background: #e9ecef;
+            transform: translateY(-5px);
+        }
+        .contact-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #6a11cb;
+        }
+        .contact-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .contact-value {
+            font-size: 1rem;
+            color: #666;
+        }
+        .hotline-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.7rem 1.5rem;
+            background: #2575fc;
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .hotline-link:hover {
+            background: #6a11cb;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+        }
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        footer a {
+            color: #2575fc;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 1.5rem;
+            }
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>INCEPTRA 2025 Support</h1>
+        <p>අපගේ කණ්ඩායම ඔබට උදව් කිරීමට සූදානම්</p>
+    </header>
+
+    <div class="container">
+        <section class="team-section">
+            <h2 class="section-title">Our Team</h2>
+            <div class="team-grid">
+                <!-- Team Member 1 -->
+                <div class="team-card">
+                    <div class="card-image">👨‍💼</div>
+                    <div class="card-content">
+                        <h3 class="member-name">Name 1</h3>
+                        <p class="member-position">Position 1</p>
+                        <p class="member-description">Description for team member 1. Add their role, responsibilities and brief bio here.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon facebook" title="Facebook">F</a>
+                            <a href="#" class="social-icon instagram" title="Instagram">I</a>
+                            <a href="#" class="social-icon linkedin" title="LinkedIn">L</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 2 -->
+                <div class="team-card">
+                    <div class="card-image">👩‍💼</div>
+                    <div class="card-content">
+                        <h3 class="member-name">Name 2</h3>
+                        <p class="member-position">Position 2</p>
+                        <p class="member-description">Description for team member 2. Add their role, responsibilities and brief bio here.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon facebook" title="Facebook">F</a>
+                            <a href="#" class="social-icon instagram" title="Instagram">I</a>
+                            <a href="#" class="social-icon linkedin" title="LinkedIn">L</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 3 -->
+                <div class="team-card">
+                    <div class="card-image">👨‍💻</div>
+                    <div class="card-content">
+                        <h3 class="member-name">Name 3</h3>
+                        <p class="member-position">Position 3</p>
+                        <p class="member-description">Description for team member 3. Add their role, responsibilities and brief bio here.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon facebook" title="Facebook">F</a>
+                            <a href="#" class="social-icon instagram" title="Instagram">I</a>
+                            <a href="#" class="social-icon linkedin" title="LinkedIn">L</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 4 -->
+                <div class="team-card">
+                    <div class="card-image">👩‍🎓</div>
+                    <div class="card-content">
+                        <h3 class="member-name">Name 4</h3>
+                        <p class="member-position">Position 4</p>
+                        <p class="member-description">Description for team member 4. Add their role, responsibilities and brief bio here.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon facebook" title="Facebook">F</a>
+                            <a href="#" class="social-icon instagram" title="Instagram">I</a>
+                            <a href="#" class="social-icon linkedin" title="LinkedIn">L</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 5 -->
+                <div class="team-card">
+                    <div class="card-image">👨‍🎨</div>
+                    <div class="card-content">
+                        <h3 class="member-name">Name 5</h3>
+                        <p class="member-position">Position 5</p>
+                        <p class="member-description">Description for team member 5. Add their role, responsibilities and brief bio here.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon facebook" title="Facebook">F</a>
+                            <a href="#" class="social-icon instagram" title="Instagram">I</a>
+                            <a href="#" class="social-icon linkedin" title="LinkedIn">L</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 6 -->
+                <div class="team-card">
+                    <div class="card-image">👩‍🔬</div>
+                    <div class="card-content">
+                        <h3 class="member-name">Name 6</h3>
+                        <p class="member-position">Position 6</p>
+                        <p class="member-description">Description for team member 6. Add their role, responsibilities and brief bio here.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon facebook" title="Facebook">F</a>
+                            <a href="#" class="social-icon instagram" title="Instagram">I</a>
+                            <a href="#" class="social-icon linkedin" title="LinkedIn">L</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 7 -->
+                <div class="team-card">
+                    <div class="card-image">👨‍🏫</div>
+                    <div class="card-content">
+                        <h3 class="member-name">Name 7</h3>
+                        <p class="member-position">Position 7</p>
+                        <p class="member-description">Description for team member 7. Add their role, responsibilities and brief bio here.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon facebook" title="Facebook">F</a>
+                            <a href="#" class="social-icon instagram" title="Instagram">I</a>
+                            <a href="#" class="social-icon linkedin" title="LinkedIn">L</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 8 -->
+                <div class="team-card">
+                    <div class="card-image">👩‍💼</div>
+                    <div class="card-content">
+                        <h3 class="member-name">Name 8</h3>
+                        <p class="member-position">Position 8</p>
+                        <p class="member-description">Description for team member 8. Add their role, responsibilities and brief bio here.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon facebook" title="Facebook">F</a>
+                            <a href="#" class="social-icon instagram" title="Instagram">I</a>
+                            <a href="#" class="social-icon linkedin" title="LinkedIn">L</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 9 -->
+                <div class="team-card">
+                    <div class="card-image">👨‍🔧</div>
+                    <div class="card-content">
+                        <h3 class="member-name">Name 9</h3>
+                        <p class="member-position">Position 9</p>
+                        <p class="member-description">Description for team member 9. Add their role, responsibilities and brief bio here.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon facebook" title="Facebook">F</a>
+                            <a href="#" class="social-icon instagram" title="Instagram">I</a>
+                            <a href="#" class="social-icon linkedin" title="LinkedIn">L</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 10 -->
+                <div class="team-card">
+                    <div class="card-image">👩‍🎤</div>
+                    <div class="card-content">
+                        <h3 class="member-name">Name 10</h3>
+                        <p class="member-position">Position 10</p>
+                        <p class="member-description">Description for team member 10. Add their role, responsibilities and brief bio here.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon facebook" title="Facebook">F</a>
+                            <a href="#" class="social-icon instagram" title="Instagram">I</a>
+                            <a href="#" class="social-icon linkedin" title="LinkedIn">L</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-section">
+            <h2 class="section-title">Contact Information</h2>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-icon">📞</div>
+                    <p class="contact-label">Hotline Number</p>
+                    <p class="contact-value">+94 77 123 4567</p>
+                    <a href="tel:+94771234567" class="hotline-link">Call Now</a>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">📘</div>
+                    <p class="contact-label">Facebook Page</p>
+                    <p class="contact-value">INCEPTRA 2025</p>
+                    <a href="https://www.facebook.com/inceptrafest" class="hotline-link" target="_blank">Visit Page</a>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <p class="contact-label">Email</p>
+                    <p class="contact-value">support@inceptra25.com</p>
+                    <a href="mailto:support@inceptra25.com" class="hotline-link">Send Email</a>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">📍</div>
+                    <p class="contact-label">Location</p>
+                    <p class="contact-value">Rajagiri College of Management & Applied Sciences</p>
+                    <a href="https://maps.google.com" class="hotline-link" target="_blank">Get Directions</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2026 INCEPTRA 2025. All rights reserved. | <a href="https://inceptra25.vercel.app">inceptra25.vercel.app</a></p>
+    </footer>
+</body>
+</html>
