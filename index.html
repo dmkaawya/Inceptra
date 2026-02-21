@@ -1,18 +1,13 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Inceptra25 Voting System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #00f3ff;
@@ -36,6 +31,8 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .bg-animation {
@@ -46,30 +43,33 @@
                 var(--bg-dark);
         }
 
-        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 15px; position: relative; z-index: 1; }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 15px; position: relative; z-index: 1; flex: 1; }
 
         /* Header */
         .header { text-align: center; margin: 20px 0; position: relative; }
         .logo-text { 
-            font-size: 3rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-            background: linear-gradient(to right, #fff, var(--primary), var(--secondary)); 
+            font-size: 3.5rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            /* Gradient matching the image description: Purple/Blue/Cyan */
+            background: linear-gradient(135deg, #fff 0%, #a78bfa 40%, #22d3ee 80%, #fff 100%); 
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
             text-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
             line-height: 1.2;
+            font-family: 'Rajdhani', sans-serif;
         }
-        .logo-sub { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; }
+        .logo-sub { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; margin-top: 5px; }
 
         /* Countdown */
         .countdown-box {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
-            padding: 10px 20px;
+            padding: 15px 30px;
             display: inline-block;
             margin-bottom: 20px;
             backdrop-filter: blur(10px);
+            min-width: 250px;
         }
-        .countdown-timer { font-size: 1.5rem; font-weight: 700; color: var(--primary); letter-spacing: 1px; font-family: 'Rajdhani', sans-serif; }
+        .countdown-timer { font-size: 1.8rem; font-weight: 700; color: var(--primary); letter-spacing: 2px; font-family: 'Rajdhani', sans-serif; }
         
         /* Pulse Animation for ending */
         .ending-soon {
@@ -80,11 +80,37 @@
         }
         @keyframes pulse-red {
             0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
+            50% { transform: scale(1.15); }
             100% { transform: scale(1); }
         }
 
-        .countdown-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .countdown-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px; letter-spacing: 1px; }
+
+        /* Wait Screen */
+        #view-waiting {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .wait-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+        .wait-title { font-size: 1.5rem; color: var(--primary); margin-bottom: 10px; }
+        .wait-msg { color: var(--text-muted); font-size: 1rem; margin-bottom: 30px; }
+        .wait-timer-container {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--secondary);
+            border-radius: 15px;
+            padding: 20px;
+            display: inline-block;
+        }
 
         /* Buttons */
         .btn { width: 100%; padding: 12px 20px; border: none; border-radius: 50px; font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; letter-spacing: 1px; }
@@ -202,75 +228,43 @@
         .setting-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .setting-row .input-group { flex: 1; margin-bottom: 0; min-width: 140px; }
 
-        /* Mobile Media Queries */
-        @media (max-width: 600px) {
-            .logo-text { font-size: 2.2rem; }
-            .costume-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-            .costume-card { height: 100%; }
-            .costume-img { height: 180px; }
-            .costume-name { font-size: 0.9rem; }
-            .btn-vote { font-size: 0.8rem; padding: 8px 15px; }
-            .tab-nav { flex-direction: column; }
+        /* ========================================== */
+        /* NEW FOOTER STYLES */
+        /* ========================================== */
+        .footer-wrapper {
+            position: relative;
+            overflow: hidden;
+            margin-top: auto; /* Push to bottom */
         }
 
-         
-       /* Floating orbs */
-        .orb {
+        .footer-bg {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(40px);
-            opacity: 0.5;
-            animation: float 8s ease-in-out infinite;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.1), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(167, 139, 250, 0.08), transparent),
+                linear-gradient(180deg, #0a0a0f 0%, #0f0f18 100%);
+            z-index: 0;
         }
 
-        .orb-1 {
-            width: 200px;
-            height: 200px;
-            background: var(--accent);
-            top: -100px;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .orb-2 {
-            width: 150px;
-            height: 150px;
-            background: var(--accent-secondary);
-            bottom: -50px;
-            right: 15%;
-            animation-delay: -4s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
-            50% { transform: translateY(-20px) scale(1.1); opacity: 0.5; }
-        }
-
-        /* Main footer content */
         .footer-content {
             position: relative;
             z-index: 10;
             padding: 60px 20px 40px;
         }
 
-        .footer-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Top section with logo and social */
         .footer-top {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 30px;
             padding-bottom: 40px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--glass-border);
             margin-bottom: 30px;
         }
 
         .brand-logo {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Rajdhani', sans-serif;
             font-size: 28px;
             font-weight: 700;
             color: var(--fg);
@@ -283,7 +277,7 @@
         .logo-icon {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -292,8 +286,8 @@
         }
 
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.4); }
-            50% { box-shadow: 0 0 20px 5px rgba(34, 211, 238, 0.2); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.4); }
+            50% { box-shadow: 0 0 15px 5px rgba(0, 243, 255, 0.2); }
         }
 
         .social-links {
@@ -305,41 +299,33 @@
             width: 44px;
             height: 44px;
             border-radius: 12px;
-            background: var(--card);
-            border: 1px solid var(--border);
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--muted);
+            color: var(--text-muted);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            text-decoration: none;
         }
 
         .social-link:hover {
-            color: var(--accent);
-            border-color: var(--accent);
+            color: var(--primary);
+            border-color: var(--primary);
             transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(34, 211, 238, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 243, 255, 0.2);
         }
 
-        .social-link:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-        }
+        .social-link svg { width: 20px; height: 20px; fill: currentColor; }
 
-        .social-link svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Middle section */
         .footer-middle {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 20px;
             padding-bottom: 30px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--glass-border);
             margin-bottom: 30px;
         }
 
@@ -351,7 +337,7 @@
         }
 
         .footer-link {
-            color: var(--muted);
+            color: var(--text-muted);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
@@ -367,25 +353,13 @@
             left: 0;
             width: 0;
             height: 2px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             transition: width 0.3s ease;
         }
 
-        .footer-link:hover {
-            color: var(--fg);
-        }
+        .footer-link:hover { color: var(--text-main); }
+        .footer-link:hover::after { width: 100%; }
 
-        .footer-link:hover::after {
-            width: 100%;
-        }
-
-        .footer-link:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 4px;
-            border-radius: 2px;
-        }
-
-        /* Bottom section */
         .footer-bottom {
             display: flex;
             flex-direction: column;
@@ -394,134 +368,44 @@
             text-align: center;
         }
 
-        .copyright {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .copyright span {
-            color: var(--fg);
-            font-weight: 500;
-        }
-
-        .divider {
-            color: var(--border);
-            margin: 0 4px;
-        }
-
+        .copyright { color: var(--text-muted); font-size: 13px; }
+        .copyright span { color: var(--text-main); font-weight: 500; }
+        
         .forwarded-by {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 10px 20px;
-            background: var(--card);
-            border: 1px solid var(--border);
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
             border-radius: 30px;
             font-size: 12px;
-            color: var(--muted);
+            color: var(--text-muted);
             transition: all 0.3s ease;
         }
 
         .forwarded-by a {
-            color: var(--accent);
+            color: var(--primary);
             text-decoration: none;
             font-weight: 600;
-            position: relative;
-        }
-
-        .forwarded-by a::before {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background: currentColor;
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .forwarded-by a:hover::before {
-            transform: scaleX(1);
         }
 
         .forwarded-by:hover {
-            border-color: rgba(34, 211, 238, 0.3);
-            box-shadow: 0 4px 20px rgba(34, 211, 238, 0.1);
+            border-color: rgba(0, 243, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 243, 255, 0.1);
         }
 
-        /* Animated arrow */
-        .external-icon {
-            display: inline-flex;
-            transition: transform 0.3s ease;
+        /* Mobile Media Queries */
+        @media (max-width: 600px) {
+            .logo-text { font-size: 2.5rem; }
+            .costume-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .costume-card { height: 100%; }
+            .costume-img { height: 180px; }
+            .costume-name { font-size: 0.9rem; }
+            .btn-vote { font-size: 0.8rem; padding: 8px 15px; }
+            .tab-nav { flex-direction: column; }
+            .footer-top { flex-direction: column; }
         }
-
-        .forwarded-by:hover .external-icon {
-            transform: translate(2px, -2px);
-        }
-
-        /* Reveal animation */
-        .reveal {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: reveal 0.6s ease forwards;
-        }
-
-        .reveal-1 { animation-delay: 0.1s; }
-        .reveal-2 { animation-delay: 0.2s; }
-        .reveal-3 { animation-delay: 0.3s; }
-
-        @keyframes reveal {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
-        @media (min-width: 768px) {
-            .footer-content {
-                padding: 80px 40px 50px;
-            }
-
-            .footer-top {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-
-            .footer-middle {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-
-            .footer-bottom {
-                flex-direction: row;
-                justify-content: space-between;
-                text-align: left;
-            }
-
-            .footer-links {
-                justify-content: flex-start;
-            }
-        }
-
-        /* Reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-            .orb, .mesh-lines, .logo-icon {
-                animation: none;
-            }
-            
-            .reveal {
-                animation: none;
-                opacity: 1;
-                transform: none;
-            }
-
-            .social-link:hover {
-                transform: none;
-            }
-        }
-    
     </style>
 </head>
 <body>
@@ -532,11 +416,11 @@
     <div class="container">
         
         <div class="header">
-            <div class="logo-text">Inceptra25</div>
+            <div class="logo-text">Inceptra 25</div>
             <div class="logo-sub">Where beginnings becomes Legacy</div>
             <br>
-            <center><div class="countdown-box">
-                <span class="countdown-label">Time Remaining</span>
+            <center><div class="countdown-box" id="main-countdown-box">
+                <span class="countdown-label" id="countdown-label-text">Time Remaining</span>
                 <div id="countdown-timer" class="countdown-timer">Loading...</div>
             </div></center>
         </div>
@@ -550,6 +434,20 @@
             <p onclick="toggleAuth()" style="color:#8FECF1; cursor:pointer; margin-top:20px; text-align:center; font-size:0.9rem;">
                 <span id="text-toggle">New here? Create Account</span>
             </p>
+        </div>
+
+        <!-- WAITING VIEW (Before Voting Starts) -->
+        <div id="view-waiting" class="hidden">
+            <div class="glass-card text-center" style="max-width: 500px; margin: 0 auto;">
+                <div class="wait-icon"><i class="fas fa-hourglass-half"></i></div>
+                <h2 class="wait-title">Voting Hasn't Started Yet</h2>
+                <p class="wait-msg">You are successfully registered! Please wait until the voting begins.</p>
+                
+                <div class="wait-timer-container">
+                    <span class="countdown-label">Voting Starts In</span>
+                    <div id="wait-timer" style="font-size: 2rem; color: var(--secondary); font-weight: 700;">--:--:--</div>
+                </div>
+            </div>
         </div>
 
         <div id="view-audience" class="hidden">
@@ -648,12 +546,19 @@
 
             <div id="tab-settings" class="hidden">
                 <div class="glass-card">
-                    <h3 style="margin-bottom: 15px; color: var(--primary);">Voting Time</h3>
-                    <div class="input-group">
-                        <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:5px;">End Time</label>
-                        <input type="datetime-local" id="end-time-input" class="input-field">
+                    <h3 style="margin-bottom: 15px; color: var(--primary);">Event Timeline</h3>
+                    
+                    <div class="setting-row">
+                        <div class="input-group">
+                            <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:5px;">Start Time</label>
+                            <input type="datetime-local" id="start-time-input" class="input-field">
+                        </div>
+                        <div class="input-group">
+                            <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:5px;">End Time</label>
+                            <input type="datetime-local" id="end-time-input" class="input-field">
+                        </div>
                     </div>
-                    <button onclick="saveTime()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save</button>
+                    <button onclick="saveTime()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save Timeline</button>
                 </div>
 
                 <div class="glass-card" style="margin-top: 15px;">
@@ -693,86 +598,48 @@
         </div>
     </div>
 
-      <!-- Footer -->
+    <!-- NEW FOOTER -->
     <footer class="footer-wrapper">
-        <!-- Background effects -->
         <div class="footer-bg"></div>
-        <div class="mesh-lines"></div>
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-
-        <!-- Content -->
         <div class="footer-content">
-            <div class="footer-inner">
-                <!-- Top section -->
+            <div style="max-width: 1200px; margin: 0 auto;">
                 <div class="footer-top">
-                    <div class="brand-logo reveal reveal-1">
+                    <div class="brand-logo">
                         <div class="logo-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                                <polyline points="2 17 12 22 22 17"></polyline>
-                                <polyline points="2 12 12 17 22 12"></polyline>
-                            </svg>
+                            <i class="fas fa-vote-yea" style="color: white; font-size: 18px;"></i>
                         </div>
-                        Inceptra
+                        Inceptra 25
                     </div>
 
-                    <div class="social-links reveal reveal-1">
-                        <a href="#" class="social-link" aria-label="GitHub">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Twitter">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="LinkedIn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                                <rect x="2" y="9" width="4" height="12"></rect>
-                                <circle cx="4" cy="4" r="2"></circle>
-                            </svg>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
                         </a>
                         <a href="#" class="social-link" aria-label="Instagram">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                            </svg>
+                            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
                         </a>
                     </div>
                 </div>
 
-                <!-- Middle section -->
                 <div class="footer-middle">
-                    <nav class="footer-links reveal reveal-2">
-                        <a href="rules.html" class="footer-link">Privacy Policy</a>
+                    <nav class="footer-links">
                         <a href="rules.html" class="footer-link">Terms of Service</a>
-                        <a href="#" class="footer-link">About Us</a>
-                        <a href="#" class="footer-link">Contact</a>
                         <a href="#" class="footer-link">Support</a>
                     </nav>
                 </div>
 
-                <!-- Bottom section -->
                 <div class="footer-bottom">
-                    <p class="copyright reveal reveal-3">
+                    <p class="copyright">
                         &copy; 2026 <span>Inceptra Team</span>. All rights reserved.
                     </p>
 
-                    <div class="forwarded-by reveal reveal-3">
+                    <div class="forwarded-by">
                         Forwarded by 
                         <a href="https://dmkaawya.vercel.app" target="_blank" rel="noopener noreferrer">
                             DMC Group
-                            <span class="external-icon">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                    <polyline points="15 3 21 3 21 9"></polyline>
-                                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                                </svg>
-                            </span>
                         </a>
                     </div>
                 </div>
@@ -794,6 +661,7 @@
     let myVotes = []; 
     let countdownInterval = null; 
     let settings = {
+        startTime: new Date().getTime(), // Default to now
         endTime: new Date('2025-12-31T23:59:59').getTime(),
         lat: 0,
         long: 0,
@@ -828,29 +696,26 @@
         const { data: { session } } = await sb.auth.getSession();
         if (session) {
             currentUser = session.user;
-            // Check role
             const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
             
             if (!profile) {
-                // FIX: If profile is missing (new user), create it as Audience
                 await sb.from('profiles').insert([{ 
                     id: currentUser.id, 
                     email: currentUser.email, 
                     full_name: currentUser.user_metadata.full_name || 'User', 
                     role: 'audience' 
                 }]);
-                showView('view-audience');
-                initAudience();
+                // No need to restart, just assume audience
+                decideView(); 
             } else {
                 if(profile.role === 'admin') {
                     showView('view-admin');
                     initAdmin();
                 } else if(profile.role === 'blocked') {
-                    showToast("Account Blocked!", "error"); logout();
+                    showToast("Account Blocked!", "error"); 
+                    logout();
                 } else {
-                    showView('view-audience');
-                    document.getElementById('user-name-display').innerText = profile?.full_name || "User";
-                    initAudience();
+                    decideView(); // Logic to decide if user sees WAIT screen or VOTING screen
                 }
             }
         } else {
@@ -858,10 +723,63 @@
         }
     }
 
+    // Decides if the user should see Waiting Screen or Voting Screen based on time
+    function decideView() {
+        const now = new Date().getTime();
+        if (now < settings.startTime) {
+            // Voting hasn't started
+            showView('view-waiting');
+            startWaitCountdown();
+        } else if (now >= settings.startTime && now < settings.endTime) {
+            // Voting active
+            showView('view-audience');
+            document.getElementById('user-name-display').innerText = currentUser.user_metadata.full_name || "User";
+            initAudience();
+        } else {
+            // Voting ended
+            endGame();
+        }
+    }
+
+    // Countdown for Waiting Screen
+    function startWaitCountdown() {
+        if(countdownInterval) clearInterval(countdownInterval);
+        const timerElem = document.getElementById('wait-timer');
+        
+        const updateTimer = () => {
+            const now = new Date().getTime();
+            const distance = settings.startTime - now;
+
+            if (distance <= 0) {
+                timerElem.innerHTML = "Starting Now!";
+                // Switch to voting view automatically
+                showView('view-audience');
+                document.getElementById('user-name-display').innerText = currentUser.user_metadata.full_name || "User";
+                initAudience();
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            timerElem.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        };
+
+        updateTimer();
+        countdownInterval = setInterval(updateTimer, 1000);
+    }
+
     // --- SETTINGS & REALTIME ---
     async function loadSettings() {
         const { data } = await sb.from('system_settings').select('*').eq('id', 1).single();
         if(data) {
+            // Handle Start Time
+            if(data.voting_start_time) {
+                settings.startTime = new Date(data.voting_start_time).getTime();
+            }
+            
             settings.endTime = new Date(data.voting_end_time).getTime();
             settings.lat = data.target_lat || 0;
             settings.long = data.target_long || 0;
@@ -871,12 +789,17 @@
             updateCountdownDisplay();
             updateAnnouncementUI();
             
+            // Populate Admin Inputs
+           const startInput = document.getElementById('start-time-input');
+           if(startInput && data.voting_start_time) {
+               const d = new Date(data.voting_start_time);
+               startInput.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+           }
+
            const timeInput = document.getElementById('end-time-input');
            if(timeInput && data.voting_end_time) {
                const d = new Date(data.voting_end_time);
-               // Local Timezone Offset එක අරගෙන datetime-local input එකට ගැලපෙන විදියට හැරවීම
-               const localISOTime = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-               timeInput.value = localISOTime;
+               timeInput.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
            }
             
             const latInput = document.getElementById('loc-lat');
@@ -891,32 +814,32 @@
     }
 
     function setupRealtime() {
-        // System Settings Table එකට විතරක් සවන් දෙන්න
         sb.channel('system_settings_changes').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'system_settings' }, payload => {
             const data = payload.new;
+            
+            if(data.voting_start_time) settings.startTime = new Date(data.voting_start_time).getTime();
             settings.endTime = new Date(data.voting_end_time).getTime();
             settings.lat = data.target_lat;
             settings.long = data.target_long;
             settings.radius = data.radius_meters;
             settings.announcement = data.announcement;
             
-            updateCountdownDisplay();
-            updateAnnouncementUI();
-            startCountdown(); // Restart countdown with new time
-            
-            if(document.getElementById('view-audience').classList.contains('hidden') === false) {
-                checkLocation(); 
+            // Re-evaluate view based on new time
+            // Only re-check if not admin
+            if(!document.getElementById('view-admin').classList.contains('hidden')) {
+                 // Admin just updates fields
+                 updateCountdownDisplay();
+            } else {
+                 decideView(); 
             }
             
             showToast("System Updated!", "info");
         }).subscribe();
 
-        // Votes Table එකට විතරක් සවන් දෙන්න
         sb.channel('votes_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, () => {
             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
         
-        // Costumes Table එකට විතරක් සවන් දෙන්න
         sb.channel('costumes_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'costumes' }, () => {
              if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
         }).subscribe();
@@ -935,10 +858,11 @@
         }
     }
 
-    // --- COUNTDOWN LOGIC ---
+    // --- COUNTDOWN LOGIC (Active Voting) ---
     function startCountdown() {
         if(countdownInterval) clearInterval(countdownInterval);
         const timerElem = document.getElementById('countdown-timer');
+        const labelElem = document.getElementById('countdown-label-text');
         
         const updateTimer = () => {
             const now = new Date().getTime();
@@ -948,11 +872,10 @@
                 timerElem.innerHTML = "VOTING ENDED";
                 timerElem.style.color = "#ff4081";
                 timerElem.classList.remove('ending-soon');
-                endGame(); // Trigger End Game
+                endGame();
                 return;
             }
 
-            // Pulse Effect in last 5 seconds
             if (distance < 5000) {
                 timerElem.classList.add('ending-soon');
             } else {
@@ -966,6 +889,7 @@
 
             timerElem.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
             timerElem.style.color = "var(--primary)";
+            labelElem.innerText = "Time Remaining";
         };
 
         updateTimer();
@@ -976,10 +900,7 @@
     async function endGame() {
         if(countdownInterval) clearInterval(countdownInterval);
         
-        // If audience, show winners
-        if(!document.getElementById('view-audience').classList.contains('hidden')) {
-            // Calculate winners from local data (or fetch fresh if needed)
-            // We use the allCostumes array if populated, else fetch
+        if(!document.getElementById('view-audience').classList.contains('hidden') || !document.getElementById('view-waiting').classList.contains('hidden')) {
             if(allCostumes.length === 0) {
                 const { data } = await sb.from('costumes').select('*');
                 allCostumes = data || [];
@@ -1009,16 +930,17 @@
 
     // --- ADMIN SAVING FUNCTIONS ---
     async function saveTime() {
-    const val = document.getElementById('end-time-input').value;
-    if(!val) return showToast("Select date", "error");
+        const startVal = document.getElementById('start-time-input').value;
+        const endVal = document.getElementById('end-time-input').value;
+        
+        if(!endVal) return showToast("End time required", "error");
 
-    // Local time එක හඳුනාගෙන ඒක Database එකට ගැලපෙන ISO (UTC) format එකට හැරවීම
-    const localDate = new Date(val);
-    const isoString = localDate.toISOString();
+        const payload = { voting_end_time: new Date(endVal).toISOString() };
+        if(startVal) payload.voting_start_time = new Date(startVal).toISOString();
 
-    const { error } = await sb.from('system_settings').update({ voting_end_time: isoString }).eq('id', 1);
-    if(error) showToast("Error", "error"); else showToast("Time Updated!", "success");
-}
+        const { error } = await sb.from('system_settings').update(payload).eq('id', 1);
+        if(error) showToast("Error", "error"); else showToast("Timeline Updated!", "success");
+    }
 
     async function saveLocation() {
         const lat = parseFloat(document.getElementById('loc-lat').value);
@@ -1064,18 +986,29 @@
         if(!email || !password) return showToast("Enter details", "error");
 
         if(isRegister) {
-            const { error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullname } } });
-            if(!error) {
-                showToast("Registered! Please Login.", "success");
-                toggleAuth();
+            const { data, error } = await sb.auth.signUp({ 
+                email, 
+                password, 
+                options: { 
+                    data: { full_name: fullname },
+                    // You can set emailRedirectTo if needed, but we want auto-login
+                } 
+            });
+            
+            if(!error && data.session) {
+                // Auto-login successful (Supabase setting: Confirm email MUST be OFF)
+                showToast("Registered!", "success");
+                init(); // Restart flow
+            } else if (!error && !data.session) {
+                showToast("Check email to confirm!", "info");
             } else {
                 showToast(error.message, "error");
             }
         } else {
             const { error } = await sb.auth.signInWithPassword({ email, password });
             if(error) showToast(error.message, "error");
+            else init();
         }
-        if(!document.getElementById('view-auth').classList.contains('hidden')) window.location.reload();
     }
 
     async function logout() { 
@@ -1134,7 +1067,6 @@
     async function loadVotingData() {
         const { data: costumes } = await sb.from('costumes').select('*');
         allCostumes = costumes || [];
-        // Fetch MY votes specifically to prevent refresh bug
         const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
         myVotes = votes ? votes.map(v => v.costume_id) : [];
         renderVotingCards();
@@ -1145,8 +1077,6 @@
         list.innerHTML = '';
 
         const filtered = allCostumes.filter(c => c.gender === activeCategory);
-        
-        // Check against DB data (myVotes)
         const hasVotedInThisCategory = allCostumes.some(c => 
             c.gender === activeCategory && myVotes.includes(c.id)
         );
@@ -1184,19 +1114,17 @@
     }
 
     async function castVote(id) {
-        // Double check DB state to prevent refresh exploit
         const { data: currentVotes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
         const currentIds = currentVotes ? currentVotes.map(v => v.costume_id) : [];
         
         const costume = allCostumes.find(c => c.id === id);
         if (!costume) return;
 
-        // Check if already voted in this category in DB
         const alreadyVoted = allCostumes.some(c => c.gender === costume.gender && currentIds.includes(c.id));
 
         if (alreadyVoted) {
             showToast("Already voted in this category!", "error");
-            loadVotingData(); // Sync UI
+            loadVotingData();
             return;
         }
 
@@ -1207,7 +1135,7 @@
             showToast("Error: " + error.message, "error");
         } else {
             myVotes.push(id);
-            renderVotingCards(); // Update UI without re-checking GPS or doing heavy reloads
+            renderVotingCards();
             celebrateVote();
             showToast("Voted! You can vote in the other category.", "success");
         }
@@ -1248,7 +1176,6 @@
             </div>
         `).join('');
 
-        // Manage List
         document.getElementById('manage-list').innerHTML = allCostumes.map(c => `
             <div class="glass-card flex-between" style="padding:10px; margin-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:10px;">
@@ -1259,7 +1186,6 @@
             </div>
         `).join('');
 
-        // User List
         const { data: users } = await sb.from('profiles').select('*');
         if(users) {
             document.getElementById('user-list').innerHTML = users.map(u => `
@@ -1296,14 +1222,9 @@
     }
 
     async function changeUserRole(uid, role) {
-        // FIX: Ensure proper update
         const { error } = await sb.from('profiles').update({ role }).eq('id', uid);
-        if(error) {
-            console.error(error);
-            showToast("Failed to update role", "error");
-        } else {
-            showToast("Role Updated", "success");
-        }
+        if(error) showToast("Failed to update role", "error");
+        else showToast("Role Updated", "success");
     }
 
     // --- SUPER PROJECTOR MODE ---
@@ -1333,7 +1254,20 @@
                     .w-name { font-size: 3rem; font-weight: 800; text-shadow: 0 5px 10px black; }
                     .w-votes { font-size: 2rem; color: #aaa; }
                     
+                    /* THANK YOU MSG */
+                    .thanks-footer {
+                        position: absolute;
+                        bottom: 20px;
+                        width: 100%;
+                        text-align: center;
+                        font-size: 2rem;
+                        color: #bc13fe;
+                        text-shadow: 0 0 10px rgba(188,19,254,0.5);
+                        animation: blink 2s infinite;
+                    }
+                    
                     @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+                    @keyframes blink { 50% { opacity: 0.6; } }
                 </style>
             </head>
             <body>
@@ -1343,6 +1277,7 @@
                         <div class="col"><div class="title" style="color: #2979FF; border-color: #2979FF;">BOYS</div><div id="boys-list"></div></div>
                         <div class="col"><div class="title" style="color: #F50057; border-color: #F50057;">GIRLS</div><div id="girls-list"></div></div>
                     </div>
+                    <div class="thanks-footer">Thank you for your votes!</div>
                 </div>
 
                 <div id="winner-view" class="winner-view">
@@ -1366,7 +1301,8 @@
                     const apiEndpoint = supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc';
                     const headers = { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey, 'Content-Type': 'application/json' };
                     
-                    let endTime = ${settings.endTime}; // Initial load
+                    let endTime = ${settings.endTime}; 
+                    let startTime = ${settings.startTime};
 
                     async function fetchData() {
                         const res = await fetch(apiEndpoint, { headers: headers });
@@ -1374,8 +1310,13 @@
                         const boys = data.filter(c => c.gender === 'boys');
                         const girls = data.filter(c => c.gender === 'girls');
 
-                        // Check Time
                         const now = new Date().getTime();
+                        
+                        // Logic: 
+                        // If now < startTime: Show "Starting Soon" overlay? For projector, usually we show leaderboard with 0 votes.
+                        // If now >= endTime: Show winners.
+                        // Else: Show live.
+                        
                         if(now > endTime) {
                             document.getElementById('live-view').style.display = 'none';
                             document.getElementById('winner-view').style.display = 'flex';
@@ -1391,7 +1332,7 @@
                                 document.getElementById('w-girl-votes').innerText = girls[0].vote_count + " Votes";
                             }
                         } else {
-                            document.getElementById('live-view').style.display = 'block';
+                            document.getElementById('live-view').style.display = 'flex'; // Changed to flex for layout
                             document.getElementById('winner-view').style.display = 'none';
 
                             document.getElementById('boys-list').innerHTML = boys.map(c => \`
@@ -1437,7 +1378,7 @@
     }
 
     function showView(id) {
-        ['view-auth', 'view-audience', 'view-admin', 'view-winners'].forEach(v => document.getElementById(v).classList.add('hidden'));
+        ['view-auth', 'view-waiting', 'view-audience', 'view-admin', 'view-winners'].forEach(v => document.getElementById(v).classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
     }
 
