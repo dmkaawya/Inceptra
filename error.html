@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Unavailable - INCEPTRA 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-purple: #a855f7;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --bg-dark: #050505;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background Effects */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(106, 17, 203, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(37, 117, 252, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Center Ring Texture */
+        .bg-ring {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vmax;
+            height: 80vmax;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            z-index: -1;
+            animation: spin 60s linear infinite;
+        }
+        
+        .bg-ring::after {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            border-radius: 50%;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        /* Main Icon */
+        .error-icon {
+            font-size: 5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 20px rgba(106, 17, 203, 0.4));
+        }
+
+        /* Glitch Text Effect */
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #a855f7);
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .message-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            backdrop-filter: blur(10px);
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .message-box p {
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+
+        /* Exit Button Styling */
+        .exit-btn {
+            display: inline-block;
+            padding: 0.8rem 2.5rem;
+            background: transparent;
+            border: 2px solid var(--accent-purple);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .exit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: var(--primary-gradient);
+            z-index: -1;
+            transition: width 0.3s ease;
+            border-radius: 30px;
+        }
+
+        .exit-btn:hover::before {
+            width: 100%;
+        }
+
+        .exit-btn:hover {
+            color: #fff;
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Footer text */
+        .footer-text {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #555;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .error-icon { font-size: 4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-ring"></div>
+
+    <div class="container">
+        <!-- Icon -->
+        <div class="error-icon">
+            <i class="fas fa-unlink"></i>
+        </div>
+
+        <!-- Title -->
+        <h1>Page Unavailable</h1>
+
+        <!-- Description -->
+        <p class="subtitle">
+            Oops! The page you are looking for seems to be disconnected or currently under maintenance.
+        </p>
+
+        <!-- Info Box -->
+        <div class="message-box">
+            <p>If you believe this is an error, please contact the support team or try again later. Otherwise, feel free to return to the main hub.</p>
+        </div>
+
+        <!-- Exit Button -->
+        <!-- Change the href to your main page (e.g., index.html) -->
+        <a href="index.html" class="exit-btn">
+            <i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i> Exit
+        </a>
+
+        <div class="footer-text">
+            INCEPTRA 2025 &bull; System Status
+        </div>
+    </div>
+
+</body>
+</html>
