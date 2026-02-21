@@ -158,6 +158,21 @@
         .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 10px; font-family: inherit; font-weight: 600; transition: 0.3s; min-width: 80px; font-size: 0.9rem; }
         .tab-btn.active { background: rgba(188, 19, 254, 0.2); color: var(--secondary); box-shadow: inset 0 0 0 1px var(--secondary); }
 
+        /* Admin Projector View */
+        .projector-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+        @media(min-width: 900px) { .projector-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .leaderboard-section { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 25px; border: 1px solid var(--glass-border); }
+        .leaderboard-title { text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; }
+        .title-boys { color: var(--boys-color); border-bottom: 2px solid var(--boys-color); padding-bottom: 5px; display: inline-block; }
+        .title-girls { color: var(--girls-color); border-bottom: 2px solid var(--girls-color); padding-bottom: 5px; display: inline-block; }
+
+        .live-item { display: flex; align-items: center; margin-bottom: 10px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; transition: all 0.5s ease; border: 1px solid transparent; }
+        .live-rank { font-size: 1.2rem; font-weight: 700; color: rgba(255,255,255,0.2); width: 30px; text-align: center; }
+        .live-photo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 2px solid rgba(255,255,255,0.1); }
+        .live-info { flex: 1; }
+        .live-name { font-weight: 600; font-size: 0.9rem; }
+        .live-votes { font-weight: 800; font-size: 1.1rem; width: 50px; text-align: right; font-family: 'Rajdhani', sans-serif; }
         /* Toast Notifications */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 15px 20px; background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideIn 0.5s ease forwards; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
