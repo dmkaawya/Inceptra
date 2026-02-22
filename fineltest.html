@@ -103,6 +103,7 @@
         .btn-vote:disabled { border-color: #444; color: #666; background: rgba(255,255,255,0.05); cursor: not-allowed; }
         .btn-action { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 10px 20px; margin-right: 10px; margin-bottom: 10px; font-size: 0.9rem; }
         .btn-action:hover { background: var(--primary); color: #000; }
+        .btn-action.active { background: var(--secondary); color: #fff; border-color: var(--secondary); }
 
         /* Inputs */
         .input-group { margin-bottom: 15px; }
@@ -117,6 +118,7 @@
         .cat-tab { padding: 10px 25px; background: transparent; border: 1px solid var(--glass-border); border-radius: 50px; text-align: center; cursor: pointer; transition: all 0.4s ease; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); flex: 1; max-width: 150px; }
         .cat-tab.active-boys { border-color: var(--boys-color); color: #fff; background: rgba(41, 121, 255, 0.15); box-shadow: 0 0 20px rgba(41, 121, 255, 0.3); }
         .cat-tab.active-girls { border-color: var(--girls-color); color: #fff; background: rgba(245, 0, 87, 0.15); box-shadow: 0 0 20px rgba(245, 0, 87, 0.3); }
+        .cat-tab.locked { opacity: 0.5; cursor: not-allowed; border-style: dashed; }
 
         /* Costume Grid */
         .costume-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
@@ -158,6 +160,22 @@
         .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 10px; font-family: inherit; font-weight: 600; transition: 0.3s; min-width: 80px; font-size: 0.9rem; }
         .tab-btn.active { background: rgba(188, 19, 254, 0.2); color: var(--secondary); box-shadow: inset 0 0 0 1px var(--secondary); }
 
+        /* Admin Projector View */
+        .projector-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+        @media(min-width: 900px) { .projector-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .leaderboard-section { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 25px; border: 1px solid var(--glass-border); }
+        .leaderboard-title { text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; }
+        .title-boys { color: var(--boys-color); border-bottom: 2px solid var(--boys-color); padding-bottom: 5px; display: inline-block; }
+        .title-girls { color: var(--girls-color); border-bottom: 2px solid var(--girls-color); padding-bottom: 5px; display: inline-block; }
+
+        .live-item { display: flex; align-items: center; margin-bottom: 10px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; transition: all 0.5s ease; border: 1px solid transparent; }
+        .live-rank { font-size: 1.2rem; font-weight: 700; color: rgba(255,255,255,0.2); width: 30px; text-align: center; }
+        .live-photo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 2px solid rgba(255,255,255,0.1); }
+        .live-info { flex: 1; }
+        .live-name { font-weight: 600; font-size: 0.9rem; }
+        .live-votes { font-weight: 800; font-size: 1.1rem; width: 50px; text-align: right; font-family: 'Rajdhani', sans-serif; }
+        
         /* Toast Notifications */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 15px 20px; background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideIn 0.5s ease forwards; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
@@ -179,84 +197,38 @@
         .setting-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .setting-row .input-group { flex: 1; margin-bottom: 0; min-width: 140px; }
 
-        /* FOOTER STYLES */
+        /* Footer */
         .footer-wrapper {
             position: relative;
-            overflow: hidden;
-            margin-top: auto; 
-            flex-shrink: 0;
-            background: transparent; 
+            width: 100%;
+            background-color: #230a31; 
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .mesh-lines {
-            position: absolute;
-            inset: 0;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 1;
-            opacity: 0.5;
+        .footer-mini-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #a0a0a0;
         }
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(50px);
-            opacity: 0.4;
-            animation: float 10s ease-in-out infinite;
-            pointer-events: none;
+        .footer-links-mini a, .forwarded-mini a { color: #ffffff; text-decoration: none; transition: color 0.3s ease; }
+        .footer-links-mini a:hover, .forwarded-mini a:hover { color: #3b82f6; }
+        .footer-links-mini .divider { margin: 0 10px; opacity: 0.5; }
+        @media (max-width: 768px) {
+            .footer-mini-inner { flex-direction: column; gap: 10px; text-align: center; }
         }
-        .orb-1 { width: 150px; height: 150px; background: var(--primary); top: -50px; left: 5%; }
-        .orb-2 { width: 120px; height: 120px; background: var(--secondary); bottom: -40px; right: 10%; animation-delay: -3s; }
-        @keyframes float { 0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; } 50% { transform: translateY(-15px) scale(1.05); opacity: 0.5; } }
-        .footer-content {
-            position: relative;
-            z-index: 10;
-            padding: 40px 20px 30px;
-            border-top: 1px solid var(--glass-border);
-            background: linear-gradient(to top, rgba(10,10,18,0.9), rgba(10,10,18,0.4));
-        }
-        .footer-inner { max-width: 1200px; margin: 0 auto; }
-        .footer-top { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); margin-bottom: 20px; }
-        .brand-logo { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
-        .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--primary); }
-        .social-links { display: flex; gap: 12px; }
-        .social-link { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.3s ease; text-decoration: none; }
-        .social-link:hover { color: var(--primary); border-color: var(--primary); transform: translateY(-2px); }
-        .social-link svg { width: 18px; height: 18px; fill: currentColor; }
-        .footer-middle { display: flex; flex-direction: column; align-items: center; gap: 15px; padding-bottom: 20px; margin-bottom: 15px; }
-        .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 20px; }
-        .footer-link { color: var(--text-muted); text-decoration: none; font-size: 13px; transition: color 0.3s; }
-        .footer-link:hover { color: var(--text-main); }
-        .footer-bottom { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
-        .copyright { color: #666; font-size: 12px; }
-        .copyright span { color: #aaa; font-weight: 500; }
-        .forwarded-by { display: inline-flex; align-items: center; gap: 6px; padding: 8px 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 20px; font-size: 11px; color: #666; }
-        .forwarded-by a { color: var(--primary); text-decoration: none; font-weight: 600; }
         
-        /* MOBILE RESPONSIVE FIXES FOR FOOTER */
-        @media (max-width: 600px) {
-            .footer-content { padding: 30px 15px 20px; }
-            .footer-top { gap: 15px; padding-bottom: 15px; margin-bottom: 15px; }
-            .footer-middle { padding-bottom: 15px; margin-bottom: 10px; }
-            .brand-logo { font-size: 20px; }
-            .logo-icon { width: 26px; height: 26px; }
-            .social-link { width: 36px; height: 36px; }
-            .footer-links { font-size: 12px; }
-            .orb { opacity: 0.2; }
-        }
-        @media (min-width: 768px) {
-            .footer-top { flex-direction: row; justify-content: space-between; }
-            .footer-middle { flex-direction: row; justify-content: space-between; }
-            .footer-bottom { flex-direction: row; justify-content: space-between; }
-        }
+        /* Switch Toggle */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(24px); }
 
-        /* Other Mobile Fixes */
-        @media (max-width: 600px) {
-            .logo-text { font-size: 2.5rem; }
-            .costume-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-            .costume-img { height: 180px; }
-            .tab-nav { flex-direction: column; }
-        }
     </style>
 </head>
 <body>
@@ -279,6 +251,15 @@
         <div id="view-auth" class="hidden glass-card" style="max-width: 400px; margin: 0 auto;">
             <h2 class="text-center" style="margin-bottom: 20px; font-size: 1.5rem;" id="auth-title">Welcome Back</h2>
             <div class="input-group"><input type="text" id="fullname" placeholder="Full Name" class="input-field hidden"></div>
+            
+            <!-- Gender Select in Auth -->
+            <div class="input-group hidden" id="gender-group">
+                <select id="gender-select" class="input-field">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            
             <div class="input-group"><input type="email" id="email" placeholder="Email Address" class="input-field"></div>
             <div class="input-group"><input type="password" id="password" placeholder="Password" class="input-field"></div>
             <button onclick="handleAuth()" class="btn btn-primary" id="btn-auth">Login</button>
@@ -302,7 +283,7 @@
         <div id="view-audience" class="hidden">
             <div class="user-header flex-between">
                 <div>
-                    <div style="font-size:0.7rem; color:#aaa; text-transform:uppercase;">Logged in as</div>
+                    <div style="font-size:0.7rem; color:#aaa; text-transform:uppercase;">Logged in as (<span id="user-gender-display">User</span>)</div>
                     <div style="font-weight:700; font-size:1rem;" id="user-name-display">User</div>
                 </div>
                 <button onclick="logout()" class="btn-danger">Logout</button>
@@ -403,6 +384,15 @@
                 </div>
 
                 <div class="glass-card" style="margin-top: 15px;">
+                    <h3 style="margin-bottom: 15px; color: var(--accent);">Voting Rules</h3>
+                    <div class="input-group">
+                        <label style="color:#aaa; font-size:0.8rem;">Votes Per Category (per user)</label>
+                        <input type="number" id="vote-limit-input" class="input-field" placeholder="1">
+                    </div>
+                    <button onclick="saveVoteLimit()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save Limit</button>
+                </div>
+
+                <div class="glass-card" style="margin-top: 15px;">
                     <h3 style="margin-bottom: 15px; color: var(--accent);">Location</h3>
                     <div class="setting-row">
                         <div class="input-group">
@@ -431,6 +421,35 @@
                         <button onclick="clearAnnouncement()" class="btn btn-danger" style="padding:8px 20px;">Clear</button>
                     </div>
                 </div>
+
+                <div class="glass-card" style="margin-top: 15px;">
+                    <h3 style="margin-bottom: 15px; color: #ffd700;">👑 Winner Control</h3>
+                    <div class="flex-between">
+                        <div style="display:flex; align-items:center; gap: 10px;">
+                            <label class="switch">
+                                <input type="checkbox" id="show-winners-toggle" onchange="toggleShowWinners(this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Force Show Winners</span>
+                        </div>
+                    </div>
+                    <p style="font-size:0.8rem; color:#666; margin-top:10px;">Turn ON to display winners on user screens immediately (ignores time).</p>
+                </div>
+
+                <div class="glass-card" style="margin-top: 15px; border-color: var(--secondary);">
+                    <h3 style="margin-bottom: 15px; color: var(--secondary);">🎬 Projector Remote</h3>
+                    <p style="font-size:0.8rem; color:#aaa; margin-bottom:15px;">Control the Projector View sequence. Click "Start Sequence" to begin the reveal.</p>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button onclick="setProjectorState('live')" class="btn btn-action">Live Mode</button>
+                        <button onclick="startWinnerSequence()" class="btn btn-primary" style="width:auto; flex:1;">▶ Start Sequence</button>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                         <button onclick="setProjectorState('show_3rd')" class="btn btn-action">3rd</button>
+                         <button onclick="setProjectorState('show_2nd')" class="btn btn-action">2nd</button>
+                         <button onclick="setProjectorState('show_1st')" class="btn btn-action">1st</button>
+                         <button onclick="setProjectorState('thank_you')" class="btn btn-action">End</button>
+                    </div>
+                </div>
             </div>
 
             <div id="tab-users" class="hidden">
@@ -441,48 +460,14 @@
 
     <!-- FOOTER -->
     <footer class="footer-wrapper">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="mesh-lines"></div>
-        
-        <div class="footer-content">
-            <div class="footer-inner">
-                <div class="footer-top">
-                    <div class="brand-logo">
-                        <div class="logo-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                                <polyline points="2 17 12 22 22 17"></polyline>
-                                <polyline points="2 12 12 17 22 12"></polyline>
-                            </svg>
-                        </div>
-                        Inceptra
-                    </div>
-
-                    <div class="social-links">
-                        <a href="#" class="social-link" aria-label="Facebook">
-                            <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Instagram">
-                            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="footer-middle">
-                    <nav class="footer-links">
-                        <a href="rules.html" class="footer-link">Terms of Service</a>
-                        <a href="#" class="footer-link">Support</a>
-                    </nav>
-                </div>
-
-                <div class="footer-bottom">
-                    <p class="copyright">&copy; 2026 <span>Inceptra Team</span>. All rights reserved.</p>
-                    <div class="forwarded-by">
-                        Forwarded by <a href="https://dmkaawya.vercel.app" target="_blank" rel="noopener noreferrer">DMC Group</a>
-                    </div>
-                </div>
-            </div>
+        <div class="footer-mini-inner">
+            <nav class="footer-links-mini">
+                <a href="rules.html">Terms of Service</a>
+                <span class="divider">|</span>
+                <a href="error.html">Support</a>
+            </nav>
+            <div class="copyright-mini">&copy; 2026 Inceptra Team. All rights reserved.</div>
+            <div class="forwarded-mini">Powered by <a href="https://vezlo-web.vercel.app/" target="_blank">Vezlo Web Design</a></div>
         </div>
     </footer>
     
@@ -494,6 +479,7 @@
 
     // --- STATE ---
     let currentUser = null;
+    let userProfile = null;
     let isRegister = false;
     let activeCategory = 'boys'; 
     let allCostumes = [];
@@ -502,29 +488,22 @@
     let settings = {
         startTime: new Date().getTime(),
         endTime: new Date('2025-12-31T23:59:59').getTime(),
-        lat: 0,
-        long: 0,
-        radius: 100,
-        announcement: ''
+        lat: 0, long: 0, radius: 100,
+        announcement: '',
+        votesPerCategory: 1,
+        showWinners: false,
+        projectorState: 'live'
     };
 
-    // --- TOAST NOTIFICATION SYSTEM ---
+    // --- TOAST ---
     function showToast(message, type = 'info') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        
-        let icon = 'ℹ️';
-        if(type === 'success') icon = '✅';
-        if(type === 'error') icon = '❌';
-        
+        let icon = 'ℹ️'; if(type === 'success') icon = '✅'; if(type === 'error') icon = '❌';
         toast.innerHTML = `<span style="font-size:1.2rem">${icon}</span> <span>${message}</span>`;
         container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.classList.add('fade-out');
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
+        setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 500); }, 4000);
     }
 
     // --- INIT ---
@@ -538,14 +517,19 @@
             const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
             
             if (!profile) {
-                await sb.from('profiles').insert([{ 
+                // Create profile if missing (metadata from auth)
+                const gender = currentUser.user_metadata.gender || 'male';
+                const { data: newProfile } = await sb.from('profiles').insert([{ 
                     id: currentUser.id, 
                     email: currentUser.email, 
                     full_name: currentUser.user_metadata.full_name || 'User', 
-                    role: 'audience' 
-                }]);
+                    role: 'audience',
+                    gender: gender
+                }]).select().single();
+                userProfile = newProfile;
                 decideView(); 
             } else {
+                userProfile = profile;
                 if(profile.role === 'admin') {
                     showView('view-admin');
                     initAdmin();
@@ -563,12 +547,19 @@
 
     function decideView() {
         const now = new Date().getTime();
+        
+        // Check Admin Override
+        if (settings.showWinners) {
+            endGame(); return;
+        }
+
         if (now < settings.startTime) {
             showView('view-waiting');
             startWaitCountdown();
         } else if (now >= settings.startTime && now < settings.endTime) {
             showView('view-audience');
-            document.getElementById('user-name-display').innerText = currentUser.user_metadata.full_name || "User";
+            document.getElementById('user-name-display').innerText = userProfile.full_name || "User";
+            document.getElementById('user-gender-display').innerText = userProfile.gender || "User";
             initAudience();
         } else {
             endGame();
@@ -582,23 +573,13 @@
         const updateTimer = () => {
             const now = new Date().getTime();
             const distance = settings.startTime - now;
-
-            if (distance <= 0) {
-                timerElem.innerHTML = "Starting Now!";
-                showView('view-audience');
-                document.getElementById('user-name-display').innerText = currentUser.user_metadata.full_name || "User";
-                initAudience();
-                return;
-            }
-
+            if (distance <= 0) { timerElem.innerHTML = "Starting Now!"; decideView(); return; }
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
             timerElem.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
         };
-
         updateTimer();
         countdownInterval = setInterval(updateTimer, 1000);
     }
@@ -613,6 +594,9 @@
             settings.long = data.target_long || 0;
             settings.radius = data.radius_meters || 100;
             settings.announcement = data.announcement || '';
+            settings.votesPerCategory = data.votes_per_category || 1;
+            settings.showWinners = data.show_winners || false;
+            settings.projectorState = data.projector_state || 'live';
 
             updateCountdownDisplay();
             updateAnnouncementUI();
@@ -622,50 +606,42 @@
                const d = new Date(data.voting_start_time);
                startInput.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
            }
-
-           const timeInput = document.getElementById('end-time-input');
-           if(timeInput && data.voting_end_time) {
+           const endInput = document.getElementById('end-time-input');
+           if(endInput && data.voting_end_time) {
                const d = new Date(data.voting_end_time);
-               timeInput.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+               endInput.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
            }
             
-            const latInput = document.getElementById('loc-lat');
-            if(latInput) latInput.value = settings.lat;
-            
-            const longInput = document.getElementById('loc-long');
-            if(longInput) longInput.value = settings.long;
-            
-            const radInput = document.getElementById('loc-radius');
-            if(radInput) radInput.value = settings.radius;
+            const latInput = document.getElementById('loc-lat'); if(latInput) latInput.value = settings.lat;
+            const longInput = document.getElementById('loc-long'); if(longInput) longInput.value = settings.long;
+            const radInput = document.getElementById('loc-radius'); if(radInput) radInput.value = settings.radius;
+            const voteInput = document.getElementById('vote-limit-input'); if(voteInput) voteInput.value = settings.votesPerCategory;
+            const winToggle = document.getElementById('show-winners-toggle'); if(winToggle) winToggle.checked = settings.showWinners;
         }
     }
 
     function setupRealtime() {
-        sb.channel('system_settings_changes').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'system_settings' }, payload => {
+        sb.channel('system_changes').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'system_settings' }, payload => {
             const data = payload.new;
-            
             if(data.voting_start_time) settings.startTime = new Date(data.voting_start_time).getTime();
             settings.endTime = new Date(data.voting_end_time).getTime();
-            settings.lat = data.target_lat;
-            settings.long = data.target_long;
-            settings.radius = data.radius_meters;
-            settings.announcement = data.announcement;
+            settings.showWinners = data.show_winners;
+            settings.projectorState = data.projector_state;
+            settings.votesPerCategory = data.votes_per_category;
             
-            if(!document.getElementById('view-admin').classList.contains('hidden')) {
-                 updateCountdownDisplay();
+            // If not admin, re-evaluate view
+            if(document.getElementById('view-admin').classList.contains('hidden')) {
+                decideView();
             } else {
-                 decideView(); 
+                loadSettings(); // Refresh admin inputs
             }
-            
             showToast("System Updated!", "info");
         }).subscribe();
 
         sb.channel('votes_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, () => {
-            if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
-        }).subscribe();
-        
-        sb.channel('costumes_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'costumes' }, () => {
-             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
+            if(!document.getElementById('view-admin').classList.contains('hidden')) loadAdminData();
+            // Also refresh audience if needed
+            if(!document.getElementById('view-audience').classList.contains('hidden')) loadVotingData();
         }).subscribe();
     }
 
@@ -676,13 +652,11 @@
             if(settings.announcement) {
                 el.innerText = "📢 " + settings.announcement;
                 el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
+            } else { el.classList.add('hidden'); }
         }
     }
 
-    // --- COUNTDOWN LOGIC ---
+    // --- COUNTDOWN ---
     function startCountdown() {
         if(countdownInterval) clearInterval(countdownInterval);
         const timerElem = document.getElementById('countdown-timer');
@@ -700,11 +674,8 @@
                 return;
             }
 
-            if (distance < 5000) {
-                timerElem.classList.add('ending-soon');
-            } else {
-                timerElem.classList.remove('ending-soon');
-            }
+            if (distance < 5000) timerElem.classList.add('ending-soon');
+            else timerElem.classList.remove('ending-soon');
 
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -720,10 +691,11 @@
         countdownInterval = setInterval(updateTimer, 1000);
     }
 
-    // --- END GAME LOGIC ---
+    // --- END GAME ---
     async function endGame() {
         if(countdownInterval) clearInterval(countdownInterval);
         
+        // Only run for audience views
         if(!document.getElementById('view-audience').classList.contains('hidden') || !document.getElementById('view-waiting').classList.contains('hidden')) {
             if(allCostumes.length === 0) {
                 const { data } = await sb.from('costumes').select('*');
@@ -752,40 +724,56 @@
         }
     }
 
-    // --- ADMIN SAVING FUNCTIONS ---
+    // --- ADMIN SAVING ---
     async function saveTime() {
         const startVal = document.getElementById('start-time-input').value;
         const endVal = document.getElementById('end-time-input').value;
-        
         if(!endVal) return showToast("End time required", "error");
-
         const payload = { voting_end_time: new Date(endVal).toISOString() };
         if(startVal) payload.voting_start_time = new Date(startVal).toISOString();
-
         const { error } = await sb.from('system_settings').update(payload).eq('id', 1);
         if(error) showToast("Error", "error"); else showToast("Timeline Updated!", "success");
+    }
+
+    async function saveVoteLimit() {
+        const val = parseInt(document.getElementById('vote-limit-input').value);
+        if(isNaN(val)) return;
+        const { error } = await sb.from('system_settings').update({ votes_per_category: val }).eq('id', 1);
+        if(error) showToast("Error", "error"); else showToast("Vote Limit Set!", "success");
+    }
+
+    async function toggleShowWinners(checked) {
+        const { error } = await sb.from('system_settings').update({ show_winners: checked }).eq('id', 1);
+        if(error) showToast("Error", "error"); else showToast(checked ? "Winners Revealed!" : "Winners Hidden", "success");
+    }
+
+    async function setProjectorState(state) {
+        const { error } = await sb.from('system_settings').update({ projector_state: state }).eq('id', 1);
+        if(error) showToast("Error", "error");
+    }
+
+    async function startWinnerSequence() {
+        // Auto sequence logic handled by admin client for timing control
+        await setProjectorState('show_3rd');
+        setTimeout(() => setProjectorState('show_2nd'), 3000); // 3s for 3rd
+        setTimeout(() => setProjectorState('show_1st'), 5000); // 2s for 2nd (total 5s)
+        setTimeout(() => setProjectorState('thank_you'), 10000); // 5s for 1st (total 10s)
+        showToast("Projector Sequence Started!", "success");
     }
 
     async function saveLocation() {
         const lat = parseFloat(document.getElementById('loc-lat').value);
         const long = parseFloat(document.getElementById('loc-long').value);
         const radius = parseInt(document.getElementById('loc-radius').value);
-        
         if(isNaN(lat) || isNaN(long)) return showToast("Invalid coords", "error");
-        
-        const { error } = await sb.from('system_settings').update({ 
-            target_lat: lat, 
-            target_long: long, 
-            radius_meters: radius 
-        }).eq('id', 1);
-        
+        const { error } = await sb.from('system_settings').update({ target_lat: lat, target_long: long, radius_meters: radius }).eq('id', 1);
         if(error) showToast("Error", "error"); else showToast("Location Updated!", "success");
     }
 
     async function saveAnnouncement() {
         const msg = document.getElementById('announcement-msg').value;
-        const { error } = await sb.from('system_settings').update({ announcement: msg }).eq('id', 1);
-        if(error) showToast("Error", "error"); else showToast("Sent!", "success");
+        await sb.from('system_settings').update({ announcement: msg }).eq('id', 1);
+        showToast("Sent!", "success");
     }
 
     async function clearAnnouncement() {
@@ -801,31 +789,24 @@
         document.getElementById('btn-auth').innerText = isRegister ? "Register" : "Login";
         document.getElementById('text-toggle').innerText = isRegister ? "Have account? Login" : "New here? Register";
         document.getElementById('fullname').classList.toggle('hidden', !isRegister);
+        document.getElementById('gender-group').classList.toggle('hidden', !isRegister);
     }
 
     async function handleAuth() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const fullname = document.getElementById('fullname').value;
+        const gender = document.getElementById('gender-select').value;
         if(!email || !password) return showToast("Enter details", "error");
 
         if(isRegister) {
             const { data, error } = await sb.auth.signUp({ 
-                email, 
-                password, 
-                options: { 
-                    data: { full_name: fullname }
-                } 
+                email, password, 
+                options: { data: { full_name: fullname, gender: gender } }
             });
-            
-            if(!error && data.session) {
-                showToast("Registered!", "success");
-                init();
-            } else if (!error && !data.session) {
-                showToast("Check email to confirm!", "info");
-            } else {
-                showToast(error.message, "error");
-            }
+            if(!error && data.session) { showToast("Registered!", "success"); init(); } 
+            else if (!error && !data.session) { showToast("Check email to confirm!", "info"); } 
+            else { showToast(error.message, "error"); }
         } else {
             const { error } = await sb.auth.signInWithPassword({ email, password });
             if(error) showToast(error.message, "error");
@@ -848,17 +829,9 @@
     function checkLocation() {
         const locDiv = document.getElementById('loc-status');
         if(settings.lat === 0 && settings.long === 0) {
-             locDiv.innerHTML = "⏳ Admin setting location...";
-             locDiv.className = "status-box status-error";
-             return;
+             locDiv.innerHTML = "⏳ Admin setting location..."; locDiv.className = "status-box status-error"; return;
         }
-
-        if(!navigator.geolocation) {
-            locDiv.innerHTML = "❌ GPS Not Supported";
-            locDiv.className = "status-box status-error";
-            return;
-        };
-        
+        if(!navigator.geolocation) { locDiv.innerHTML = "❌ GPS Not Supported"; locDiv.className = "status-box status-error"; return; }
         locDiv.innerHTML = "⌛ Locating...";
         
         navigator.geolocation.getCurrentPosition(pos => {
@@ -872,17 +845,23 @@
                 locDiv.className = "status-box status-error";
             }
         }, (err) => {
-             let msg = "❌ Location Error";
-             if(err.code === 1) msg = "❌ Permission Denied";
-             locDiv.innerHTML = msg;
-             locDiv.className = "status-box status-error";
+             let msg = "❌ Location Error"; if(err.code === 1) msg = "❌ Permission Denied";
+             locDiv.innerHTML = msg; locDiv.className = "status-box status-error";
         }, { timeout: 10000, enableHighAccuracy: true });
     }
 
     function switchCategory(cat) {
         activeCategory = cat;
+        // Visual update
         document.getElementById('tab-boys').className = cat === 'boys' ? 'cat-tab active-boys' : 'cat-tab';
         document.getElementById('tab-girls').className = cat === 'girls' ? 'cat-tab active-girls' : 'cat-tab';
+        
+        // Logic check
+        const userGender = userProfile.gender;
+        const canVote = (userGender === 'male' && cat === 'girls') || (userGender === 'female' && cat === 'boys');
+        
+        // If trying to access non-voting tab, just show but maybe indicate?
+        // Actually, user can switch to view, but buttons will be disabled in render.
         renderVotingCards();
     }
 
@@ -891,30 +870,46 @@
         allCostumes = costumes || [];
         const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
         myVotes = votes ? votes.map(v => v.costume_id) : [];
-        renderVotingCards();
+        
+        // Initial Category Logic: Auto-switch to the category they can vote for
+        if(userProfile.gender === 'male') {
+            activeCategory = 'girls';
+            document.getElementById('tab-boys').classList.add('locked');
+            document.getElementById('tab-boys').title = "View Only";
+        } else {
+            activeCategory = 'boys';
+            document.getElementById('tab-girls').classList.add('locked');
+            document.getElementById('tab-girls').title = "View Only";
+        }
+        
+        switchCategory(activeCategory);
     }
 
     function renderVotingCards() {
         const list = document.getElementById('costume-list');
         list.innerHTML = '';
+        
+        const userGender = userProfile.gender;
+        const canVoteInCategory = (userGender === 'male' && activeCategory === 'girls') || (userGender === 'female' && activeCategory === 'boys');
+        
+        // Calculate votes used in THIS category
+        const idsInCategory = allCostumes.filter(c => c.gender === activeCategory).map(c => c.id);
+        const votesUsedInCategory = myVotes.filter(id => idsInCategory.includes(id)).length;
+        const votesLeft = settings.votesPerCategory - votesUsedInCategory;
 
         const filtered = allCostumes.filter(c => c.gender === activeCategory);
-        const hasVotedInThisCategory = allCostumes.some(c => 
-            c.gender === activeCategory && myVotes.includes(c.id)
-        );
-
         if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 20px; color:#555;'>No candidates.</p>";
 
         filtered.forEach(c => {
             const isThisOneVoted = myVotes.includes(c.id);
             let btnHtml = '';
 
-            if (hasVotedInThisCategory) {
-                if (isThisOneVoted) {
-                    btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent);">✓ Voted</button>`;
-                } else {
-                    btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
-                }
+            if (!canVoteInCategory) {
+                btnHtml = `<button class="btn btn-vote" disabled style="background:rgba(255,255,255,0.05); border-color:#333; color:#555;">View Only</button>`;
+            } else if (isThisOneVoted) {
+                btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent);">✓ Voted</button>`;
+            } else if (votesLeft <= 0) {
+                btnHtml = `<button class="btn btn-vote" disabled>Limit Reached</button>`;
             } else {
                 btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote</button>`;
             }
@@ -931,24 +926,21 @@
         });
     }
 
-    function celebrateVote() {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe'] });
-    }
+    function celebrateVote() { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe'] }); }
 
     async function castVote(id) {
-        const { data: currentVotes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
-        const currentIds = currentVotes ? currentVotes.map(v => v.costume_id) : [];
-        
         const costume = allCostumes.find(c => c.id === id);
         if (!costume) return;
 
-        const alreadyVoted = allCostumes.some(c => c.gender === costume.gender && currentIds.includes(c.id));
+        // Double check logic
+        const userGender = userProfile.gender;
+        const allowed = (userGender === 'male' && costume.gender === 'girls') || (userGender === 'female' && costume.gender === 'boys');
+        if (!allowed) return showToast("You cannot vote in this category", "error");
 
-        if (alreadyVoted) {
-            showToast("Already voted in this category!", "error");
-            loadVotingData();
-            return;
-        }
+        // Check limit
+        const idsInCategory = allCostumes.filter(c => c.gender === costume.gender).map(c => c.id);
+        const votesUsed = myVotes.filter(vid => idsInCategory.includes(vid)).length;
+        if (votesUsed >= settings.votesPerCategory) return showToast("Vote limit reached for this category", "error");
 
         if(!confirm("Confirm Vote?")) return;
         
@@ -959,7 +951,7 @@
             myVotes.push(id);
             renderVotingCards();
             celebrateVote();
-            showToast("Voted! You can vote in the other category.", "success");
+            showToast("Voted Successfully!", "success");
         }
     }
 
@@ -977,33 +969,16 @@
         let girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
 
         document.getElementById('boys-results').innerHTML = boys.map((c, i) => `
-            <div class="live-item">
-                <div class="live-rank">#${i+1}</div>
-                <img src="${c.image_url}" class="live-photo">
-                <div class="live-info">
-                    <div class="live-name">${c.name}</div>
-                </div>
-                <div class="live-votes">${c.vote_count || 0}</div>
-            </div>
+            <div class="live-item"><div class="live-rank">#${i+1}</div><img src="${c.image_url}" class="live-photo"><div class="live-info"><div class="live-name">${c.name}</div></div><div class="live-votes">${c.vote_count || 0}</div></div>
         `).join('');
 
         document.getElementById('girls-results').innerHTML = girls.map((c, i) => `
-            <div class="live-item">
-                <div class="live-rank">#${i+1}</div>
-                <img src="${c.image_url}" class="live-photo">
-                <div class="live-info">
-                    <div class="live-name">${c.name}</div>
-                </div>
-                <div class="live-votes">${c.vote_count || 0}</div>
-            </div>
+            <div class="live-item"><div class="live-rank">#${i+1}</div><img src="${c.image_url}" class="live-photo"><div class="live-info"><div class="live-name">${c.name}</div></div><div class="live-votes">${c.vote_count || 0}</div></div>
         `).join('');
 
         document.getElementById('manage-list').innerHTML = allCostumes.map(c => `
             <div class="glass-card flex-between" style="padding:10px; margin-bottom:10px;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <img src="${c.image_url}" style="width:40px; height:40px; object-fit:cover; border-radius:8px;">
-                    <span style="font-weight:600; font-size:0.9rem;">${c.name}</span>
-                </div>
+                <div style="display:flex; align-items:center; gap:10px;"><img src="${c.image_url}" style="width:40px; height:40px; object-fit:cover; border-radius:8px;"><span style="font-weight:600; font-size:0.9rem;">${c.name}</span></div>
                 <button onclick="delCostume(${c.id})" class="btn-danger" style="padding: 4px 8px; font-size: 0.7rem;">Del</button>
             </div>
         `).join('');
@@ -1013,10 +988,7 @@
             document.getElementById('user-list').innerHTML = users.map(u => `
                 <div class="glass-card" style="padding:15px; margin-bottom:10px;">
                     <div class="flex-between" style="flex-wrap: wrap; gap:10px;">
-                        <div style="font-size:0.9rem;">
-                            <b>${u.full_name || 'No Name'}</b><br>
-                            <small style="color:#555">${u.email || ''}</small>
-                        </div>
+                        <div style="font-size:0.9rem;"><b>${u.full_name || 'No Name'}</b> <span style="opacity:0.5">(${u.gender || 'N/A'})</span><br><small style="color:#555">${u.email || ''}</small></div>
                         <select onchange="changeUserRole('${u.id}', this.value)" class="input-field" style="width:auto; padding:5px 10px; border-radius:6px; font-size:0.8rem;">
                             <option value="audience" ${u.role==='audience'?'selected':''}>Audience</option>
                             <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
@@ -1033,333 +1005,173 @@
         const img = document.getElementById('new-img').value;
         const gender = document.getElementById('new-gender').value;
         if(!name || !img) return showToast("Name & URL required", "error");
-        
         const { error } = await sb.from('costumes').insert([{ name, image_url: img, gender }]);
-        if(error) showToast("Error", "error");
-        else {
-            showToast("Added!", "success");
-            document.getElementById('new-name').value = '';
-            document.getElementById('new-img').value = '';
-        }
+        if(error) showToast("Error", "error"); else { showToast("Added!", "success"); document.getElementById('new-name').value = ''; document.getElementById('new-img').value = ''; }
     }
 
     async function changeUserRole(uid, role) {
         const { error } = await sb.from('profiles').update({ role }).eq('id', uid);
-        if(error) showToast("Failed to update role", "error");
-        else showToast("Role Updated", "success");
+        if(error) showToast("Failed", "error"); else showToast("Role Updated", "success");
     }
 
-    // --- SUPER PROJECTOR MODE (FIXED) ---
+    // --- SUPER PROJECTOR MODE ---
     function openProjector() {
-        if (!settings.endTime) return showToast("Settings not loaded", "error");
-
-        const w = window.open('', '_blank', 'width=1920,height=1080');
-        if (!w) {
-            showToast("Pop-up blocked! Please allow pop-ups for this site.", "error");
-            return;
-        }
-
+        const w = window.open('', '_blank');
+        // Inject all necessary variables into the new window
+        w.settings = settings;
+        w.supabaseUrl = supabaseUrl;
+        w.supabaseKey = supabaseKey;
+        
         w.document.write(`
-            <!DOCTYPE html>
             <html>
             <head>
-                <title>Inceptra 25 - Projector</title>
-                <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+                <title>Projector</title>
+                <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
                 <style>
-                    * { box-sizing: border-box; margin: 0; padding: 0; }
-                    body { 
-                        background: #0a0a12; 
-                        color: white; 
-                        font-family: 'Rajdhani', sans-serif; 
-                        height: 100vh; 
-                        width: 100vw;
-                        overflow: hidden; 
-                        display: flex; 
-                        flex-direction: column; 
-                    }
+                    body { background: #0a0a12; color: white; font-family: 'Rajdhani', sans-serif; text-align: center; padding: 0; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+                    h1 { color: #00f3ff; font-size: 5vw; margin: 2vh 0; text-shadow: 0 0 20px cyan; }
+                    .grid { display: flex; flex: 1; gap: 2vw; padding: 2vw; }
+                    .col { flex: 1; display: flex; flex-direction: column; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; }
+                    .title { font-size: 3rem; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid white; padding-bottom: 10px; }
+                    .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 15px; border-radius: 10px; }
+                    img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
+                    .name { flex: 1; text-align: left; font-size: 2rem; margin-left: 20px; }
+                    .votes { font-size: 3rem; font-weight: 800; color: #00f3ff; min-width: 80px; text-align: right; }
                     
-                    /* Main Container */
-                    .main-container { 
-                        flex: 1; 
-                        display: flex; 
-                        flex-direction: column; 
-                        width: 100%; 
-                        padding: 2vw; 
-                        gap: 2vw;
-                    }
-
-                    /* Header */
-                    h1 { 
-                        font-size: 5vw; 
-                        color: #00f3ff; 
-                        text-align: center; 
-                        margin-bottom: 1vh;
-                        text-shadow: 0 0 20px rgba(0,243,255,0.5); 
-                        text-transform: uppercase;
-                        letter-spacing: 5px;
-                        line-height: 1;
-                    }
-
-                    /* Grid Layout */
-                    .grid { 
-                        flex: 1; 
-                        display: flex; 
-                        gap: 2vw; 
-                        height: 100%;
-                    }
+                    /* WINNER STYLES */
+                    .winner-view { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 50px; background: radial-gradient(circle, rgba(188,19,254,0.2), transparent); }
+                    .winner-card { text-align: center; animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                    .w { font-size: 5rem; }
+                    .w-img { width: 250px; height: 250px; border-radius: 50%; border: 5px solid gold; box-shadow: 0 0 50px gold; object-fit: cover; margin: 20px auto; }
+                    .w-name { font-size: 3rem; font-weight: 800; text-shadow: 0 5px 10px black; }
+                    .w-votes { font-size: 2rem; color: #aaa; }
+                    .w-sub { font-size: 1.5rem; color: #ffd700; margin-top: -10px; }
                     
-                    .col { 
-                        flex: 1; 
-                        background: rgba(255,255,255,0.03); 
-                        border-radius: 20px; 
-                        padding: 2vw; 
-                        display: flex;
-                        flex-direction: column;
-                        border: 1px solid rgba(255,255,255,0.1);
-                    }
+                    /* Thank You */
+                    .thank-you { display: none; flex: 1; align-items: center; justify-content: center; font-size: 6rem; color: #fff; animation: pulse 2s infinite; }
                     
-                    .title { 
-                        font-size: 3.5vw; 
-                        margin-bottom: 2vh; 
-                        text-transform: uppercase; 
-                        text-align: center;
-                        font-weight: 700;
-                        padding-bottom: 1vh;
-                        border-bottom: 3px solid;
-                    }
-                    
-                    .list-container {
-                        flex: 1;
-                        overflow-y: auto;
-                    }
-
-                    /* List Items */
-                    .row { 
-                        display: flex; 
-                        align-items: center; 
-                        background: rgba(255,255,255,0.05); 
-                        padding: 1.5vw; 
-                        margin-bottom: 1.5vh; 
-                        border-radius: 15px; 
-                        transition: 0.3s;
-                    }
-                    
-                    img { 
-                        width: 5vw; 
-                        height: 5vw; 
-                        border-radius: 50%; 
-                        object-fit: cover; 
-                        border: 3px solid rgba(255,255,255,0.2); 
-                    }
-                    
-                    .name { 
-                        flex: 1; 
-                        font-size: 2.5vw; 
-                        margin-left: 2vw; 
-                        font-weight: 600;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-                    
-                    .votes { 
-                        font-size: 3vw; 
-                        font-weight: 800; 
-                        color: #00f3ff; 
-                        min-width: 5vw; 
-                        text-align: right; 
-                    }
-
-                    /* States */
-                    .winner-view { 
-                        display: none; 
-                        flex: 1; 
-                        flex-direction: column; 
-                        align-items: center; 
-                        justify-content: center; 
-                        gap: 5vh;
-                        background: radial-gradient(circle, rgba(188,19,254,0.2), transparent);
-                    }
-                    
-                    .winner-card { 
-                        text-align: center; 
-                        animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-                    }
-                    
-                    .w { font-size: 4vw; margin-bottom: 2vh; font-weight: 800; text-shadow: 0 0 20px currentColor; }
-                    
-                    .w-img { 
-                        width: 15vw; 
-                        height: 15vw; 
-                        border-radius: 50%; 
-                        border: 5px solid gold; 
-                        box-shadow: 0 0 50px rgba(255,215,0,0.5); 
-                        object-fit: cover; 
-                        margin: 0 auto; 
-                    }
-                    
-                    .w-name { font-size: 3vw; font-weight: 700; margin-top: 2vh; }
-                    .w-votes { font-size: 1.5vw; color: #aaa; }
-
-                    .wait-screen { 
-                        display: none; 
-                        flex: 1; 
-                        flex-direction: column; 
-                        align-items: center; 
-                        justify-content: center; 
-                        font-size: 4vw; 
-                        color: #bc13fe; 
-                        text-align: center;
-                    }
-                    .wait-clock { font-size: 6vw; color: #fff; margin-top: 2vh; font-weight: 700; }
-
-                    .footer-msg { 
-                        font-size: 2vw; 
-                        color: #bc13fe; 
-                        text-align: center; 
-                        padding: 1vh 0; 
-                        text-shadow: 0 0 10px rgba(188,19,254,0.5); 
-                        border-top: 1px solid rgba(255,255,255,0.1);
-                        animation: pulse 2s infinite;
-                    }
-
                     @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-                    @keyframes pulse { 50% { opacity: 0.7; } }
+                    @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
                 </style>
             </head>
             <body>
-                
-                <!-- Waiting State -->
-                <div id="wait-state" class="wait-screen">
-                    <div>Event Starting Soon</div>
-                    <div id="wait-clock-proj" class="wait-clock">--:--:--</div>
-                </div>
-
-                <!-- Live Voting State -->
-                <div id="live-state" class="main-container">
-                    <h1>Inceptra 25</h1>
+                <div id="live-view">
+                    <h1>INCEPTRA 25 - LIVE</h1>
                     <div class="grid">
-                        <div class="col">
-                            <div class="title" style="color: #2979FF; border-color: #2979FF;">BOYS</div>
-                            <div class="list-container" id="boys-list"></div>
-                        </div>
-                        <div class="col">
-                            <div class="title" style="color: #F50057; border-color: #F50057;">GIRLS</div>
-                            <div class="list-container" id="girls-list"></div>
-                        </div>
+                        <div class="col"><div class="title" style="color: #2979FF; border-color: #2979FF;">BOYS</div><div id="boys-list"></div></div>
+                        <div class="col"><div class="title" style="color: #F50057; border-color: #F50057;">GIRLS</div><div id="girls-list"></div></div>
                     </div>
                 </div>
 
-                <!-- Winner State -->
-                <div id="winner-state" class="winner-view">
-                    <div class="winner-card">
+                <div id="winner-view" class="winner-view">
+                    <div class="winner-card" id="display-boy">
                         <div class="w" style="color: #2979FF;">MR. INCEPTRA</div>
                         <img id="w-boy-img" class="w-img">
+                        <div id="w-boy-sub" class="w-sub"></div>
                         <div id="w-boy-name" class="w-name"></div>
                         <div id="w-boy-votes" class="w-votes"></div>
                     </div>
-                    <div class="winner-card">
+                    <div class="winner-card" id="display-girl">
                         <div class="w" style="color: #F50057;">MISS. INCEPTRA</div>
                         <img id="w-girl-img" class="w-img">
+                        <div id="w-girl-sub" class="w-sub"></div>
                         <div id="w-girl-name" class="w-name"></div>
                         <div id="w-girl-votes" class="w-votes"></div>
                     </div>
                 </div>
 
-                <div id="footer-thanks" class="footer-msg">Thank you for voting!</div>
-                
+                <div id="thank-view" class="thank-you">
+                    Thank You For Voting! 🎉
+                </div>
+
+                <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
                 <script>
-                    const supabaseUrl = '${supabaseUrl}';
-                    const supabaseKey = '${supabaseKey}';
-                    const headers = { 
-                        'apikey': supabaseKey, 
-                        'Authorization': 'Bearer ' + supabaseKey, 
-                        'Content-Type': 'application/json' 
-                    };
+                    const supabaseUrl = window.opener.supabaseUrl;
+                    const supabaseKey = window.opener.supabaseKey;
+                    const sb = supabase.createClient(supabaseUrl, supabaseKey);
                     
-                    let startTime = ${settings.startTime}; 
-                    let endTime = ${settings.endTime}; 
-
+                    let allData = [];
+                    
                     async function fetchData() {
-                        try {
-                            const res = await fetch(supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc', { headers: headers });
-                            const data = await res.json();
-                            const boys = data.filter(c => c.gender === 'boys');
-                            const girls = data.filter(c => c.gender === 'girls');
-                            const now = new Date().getTime();
+                        const res = await fetch(supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc', { headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey } });
+                        allData = await res.json();
+                        render();
+                    }
 
-                            // Clear all states
-                            document.getElementById('wait-state').style.display = 'none';
-                            document.getElementById('live-state').style.display = 'none';
-                            document.getElementById('winner-state').style.display = 'none';
-                            document.getElementById('footer-thanks').style.display = 'none';
+                    function render() {
+                        const state = window.opener.settings.projectorState; // Read from opener initially
+                        // We need to listen for changes, but setInterval is easier for cross-window variable reading
+                    }
+                    
+                    // Real-time sync with parent window settings
+                    setInterval(async () => {
+                        // Fetch latest setting
+                        const setRes = await fetch(supabaseUrl + '/rest/v1/system_settings?id=eq.1&select=projector_state', { headers: { 'apikey': supabaseKey }});
+                        const setData = await setRes.json();
+                        const state = setData[0]?.projector_state;
+                        
+                        await fetchData(); // refresh votes
 
-                            // Logic
-                            if (now < startTime) {
-                                // Waiting State
-                                document.getElementById('wait-state').style.display = 'flex';
-                                updateWaitClock();
-                            } else if (now >= endTime) {
-                                // Winner State
-                                document.getElementById('winner-state').style.display = 'flex';
-                                
-                                if(boys[0]) {
-                                    document.getElementById('w-boy-img').src = boys[0].image_url;
-                                    document.getElementById('w-boy-name').innerText = boys[0].name;
-                                    document.getElementById('w-boy-votes').innerText = boys[0].vote_count + " Votes";
-                                }
-                                if(girls[0]) {
-                                    document.getElementById('w-girl-img').src = girls[0].image_url;
-                                    document.getElementById('w-girl-name').innerText = girls[0].name;
-                                    document.getElementById('w-girl-votes').innerText = girls[0].vote_count + " Votes";
-                                }
-                            } else {
-                                // Live State
-                                document.getElementById('live-state').style.display = 'flex';
-                                document.getElementById('footer-thanks').style.display = 'block';
+                        const boys = allData.filter(c => c.gender === 'boys');
+                        const girls = allData.filter(c => c.gender === 'girls');
 
-                                document.getElementById('boys-list').innerHTML = boys.map(c => \`
-                                    <div class="row">
-                                        <img src="\${c.image_url}">
-                                        <div class="name">\${c.name}</div>
-                                        <div class="votes">\${c.vote_count || 0}</div>
-                                    </div>
-                                \`).join('');
+                        const liveView = document.getElementById('live-view');
+                        const winView = document.getElementById('winner-view');
+                        const thankView = document.getElementById('thank-view');
 
-                                document.getElementById('girls-list').innerHTML = girls.map(c => \`
-                                    <div class="row">
-                                        <img src="\${c.image_url}">
-                                        <div class="name">\${c.name}</div>
-                                        <div class="votes">\${c.vote_count || 0}</div>
-                                    </div>
-                                \`).join('');
+                        if(state === 'live') {
+                            liveView.style.display = 'flex';
+                            winView.style.display = 'none';
+                            thankView.style.display = 'none';
+                            
+                            document.getElementById('boys-list').innerHTML = boys.map(c => '<div class="row"><img src="'+c.image_url+'"><div class="name">'+c.name+'</div><div class="votes">'+(c.vote_count||0)+'</div></div>').join('');
+                            document.getElementById('girls-list').innerHTML = girls.map(c => '<div class="row"><img src="'+c.image_url+'"><div class="name">'+c.name+'</div><div class="votes">'+(c.vote_count||0)+'</div></div>').join('');
+                        
+                        } else if (state === 'thank_you') {
+                            liveView.style.display = 'none';
+                            winView.style.display = 'none';
+                            thankView.style.display = 'flex';
+                        } else {
+                            // Winner Logic
+                            liveView.style.display = 'none';
+                            winView.style.display = 'flex';
+                            thankView.style.display = 'none';
+                            
+                            // 3rd place is index 2
+                            let boyObj = null; let girlObj = null;
+                            let subTitle = "";
+                            
+                            if(state === 'show_3rd') {
+                                boyObj = boys[2]; girlObj = girls[2]; subTitle = "2nd Runner Up 🥉";
+                            } else if(state === 'show_2nd') {
+                                boyObj = boys[1]; girlObj = girls[1]; subTitle = "1st Runner Up 🥈";
+                            } else if(state === 'show_1st') {
+                                boyObj = boys[0]; girlObj = girls[0]; subTitle = "Winner 👑";
                             }
-                        } catch (e) {
-                            console.error("Projector Error:", e);
-                        }
-                    }
 
-                    function updateWaitClock() {
-                        const now = new Date().getTime();
-                        const distance = startTime - now;
-                        if (distance < 0) {
-                            document.getElementById('wait-clock-proj').innerText = "STARTING";
-                            return;
-                        }
-                        const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                        const s = Math.floor((distance % (1000 * 60)) / 1000);
-                        document.getElementById('wait-clock-proj').innerText = h + "h " + m + "m " + s + "s";
-                    }
+                            if(boyObj) {
+                                document.getElementById('display-boy').style.display = 'block';
+                                document.getElementById('w-boy-img').src = boyObj.image_url;
+                                document.getElementById('w-boy-name').innerText = boyObj.name;
+                                document.getElementById('w-boy-votes').innerText = (boyObj.vote_count||0) + " Votes";
+                                document.getElementById('w-boy-sub').innerText = subTitle;
+                            } else { document.getElementById('display-boy').style.display = 'none'; }
 
-                    setInterval(fetchData, 3000);
-                    setInterval(updateWaitClock, 1000);
-                    fetchData();
+                            if(girlObj) {
+                                document.getElementById('display-girl').style.display = 'block';
+                                document.getElementById('w-girl-img').src = girlObj.image_url;
+                                document.getElementById('w-girl-name').innerText = girlObj.name;
+                                document.getElementById('w-girl-votes').innerText = (girlObj.vote_count||0) + " Votes";
+                                document.getElementById('w-girl-sub').innerText = subTitle;
+                            } else { document.getElementById('display-girl').style.display = 'none'; }
+                        }
+                    }, 1000);
                 <\/script>
             </body>
             </html>
         `);
     }
+
 
     async function delCostume(id) {
         if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
@@ -1393,8 +1205,7 @@
     }
 
     function getDist(lat1, lon1) {
-        const R = 6371e3; 
-        const φ1 = lat1 * Math.PI/180, φ2 = settings.lat * Math.PI/180; 
+        const R = 6371e3; const φ1 = lat1 * Math.PI/180, φ2 = settings.lat * Math.PI/180; 
         const Δφ = (settings.lat-lat1) * Math.PI/180, Δλ = (settings.long-lon1) * Math.PI/180;
         const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2) * Math.sin(Δλ/2)**2;
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
