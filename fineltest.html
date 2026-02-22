@@ -118,7 +118,6 @@
         .cat-tab { padding: 10px 25px; background: transparent; border: 1px solid var(--glass-border); border-radius: 50px; text-align: center; cursor: pointer; transition: all 0.4s ease; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); flex: 1; max-width: 150px; }
         .cat-tab.active-boys { border-color: var(--boys-color); color: #fff; background: rgba(41, 121, 255, 0.15); box-shadow: 0 0 20px rgba(41, 121, 255, 0.3); }
         .cat-tab.active-girls { border-color: var(--girls-color); color: #fff; background: rgba(245, 0, 87, 0.15); box-shadow: 0 0 20px rgba(245, 0, 87, 0.3); }
-        .cat-tab.locked { opacity: 0.5; cursor: not-allowed; border-style: dashed; }
 
         /* Costume Grid */
         .costume-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
@@ -236,7 +235,6 @@
             <h2 class="text-center" style="margin-bottom: 20px; font-size: 1.5rem;" id="auth-title">Welcome Back</h2>
             <div class="input-group"><input type="text" id="fullname" placeholder="Full Name" class="input-field hidden"></div>
             
-            <!-- Gender Select in Auth -->
             <div class="input-group hidden" id="gender-group">
                 <select id="gender-select" class="input-field">
                     <option value="male">Male</option>
@@ -368,12 +366,44 @@
                 </div>
 
                 <div class="glass-card" style="margin-top: 15px;">
-                    <h3 style="margin-bottom: 15px; color: var(--accent);">Voting Rules</h3>
-                    <div class="input-group">
+                    <h3 style="margin-bottom: 15px; color: var(--accent);">Voting Permissions & Limits</h3>
+                    <div class="input-group" style="margin-bottom: 20px;">
                         <label style="color:#aaa; font-size:0.8rem;">Votes Per Category (per user)</label>
-                        <input type="number" id="vote-limit-input" class="input-field" placeholder="1">
+                        <div style="display:flex; gap:10px;">
+                            <input type="number" id="vote-limit-input" class="input-field" placeholder="1">
+                            <button onclick="saveVoteLimit()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save Limit</button>
+                        </div>
                     </div>
-                    <button onclick="saveVoteLimit()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save Limit</button>
+                    
+                    <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
+                    
+                    <div class="setting-row">
+                        <div class="input-group">
+                            <label style="color:#fff; font-size:0.9rem; margin-bottom: 10px; display:block;">Male Users Can Vote For:</label>
+                            <div style="display:flex; gap:20px;">
+                                <label style="display:flex; align-items:center; gap:10px;">
+                                    <label class="switch"><input type="checkbox" id="male-vote-boys" onchange="savePermissions()"><span class="slider"></span></label> Boys
+                                </label>
+                                <label style="display:flex; align-items:center; gap:10px;">
+                                    <label class="switch"><input type="checkbox" id="male-vote-girls" onchange="savePermissions()"><span class="slider"></span></label> Girls
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-row" style="margin-top: 10px;">
+                        <div class="input-group">
+                            <label style="color:#fff; font-size:0.9rem; margin-bottom: 10px; display:block;">Female Users Can Vote For:</label>
+                            <div style="display:flex; gap:20px;">
+                                <label style="display:flex; align-items:center; gap:10px;">
+                                    <label class="switch"><input type="checkbox" id="female-vote-boys" onchange="savePermissions()"><span class="slider"></span></label> Boys
+                                </label>
+                                <label style="display:flex; align-items:center; gap:10px;">
+                                    <label class="switch"><input type="checkbox" id="female-vote-girls" onchange="savePermissions()"><span class="slider"></span></label> Girls
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="glass-card" style="margin-top: 15px;">
@@ -442,7 +472,6 @@
         </div>
     </div>
 
-    <!-- FOOTER -->
     <footer class="footer-wrapper">
         <div class="footer-mini-inner">
             <nav class="footer-links-mini">
@@ -476,7 +505,11 @@
         announcement: '',
         votesPerCategory: 1,
         showWinners: false,
-        projectorState: 'live'
+        projectorState: 'live',
+        maleCanVoteBoys: false,
+        maleCanVoteGirls: true,
+        femaleCanVoteBoys: true,
+        femaleCanVoteGirls: false
     };
 
     // --- TOAST ---
@@ -499,12 +532,9 @@
         if (session) {
             currentUser = session.user;
             
-            // Fetch profile
             let { data: profile, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
             
-            // Handle RLS or missing profile
             if (error || !profile) {
-                 // Try to create profile if it doesn't exist (handles registration fallback)
                  const gender = currentUser.user_metadata.gender || 'male';
                  const name = currentUser.user_metadata.full_name || 'User';
                  
@@ -519,7 +549,6 @@
                  if(insertError) {
                      console.error("Profile create error", insertError);
                      showToast("Error loading profile. Contact Admin.", "error");
-                     // Stay on screen or logout
                      return;
                  }
                  profile = newProfile;
@@ -544,7 +573,6 @@
     function decideView() {
         const now = new Date().getTime();
         
-        // Check Admin Override
         if (settings.showWinners) {
             endGame(); return;
         }
@@ -593,6 +621,11 @@
             settings.votesPerCategory = data.votes_per_category || 1;
             settings.showWinners = data.show_winners || false;
             settings.projectorState = data.projector_state || 'live';
+            
+            settings.maleCanVoteBoys = data.male_can_vote_boys;
+            settings.maleCanVoteGirls = data.male_can_vote_girls;
+            settings.femaleCanVoteBoys = data.female_can_vote_boys;
+            settings.femaleCanVoteGirls = data.female_can_vote_girls;
 
             updateCountdownDisplay();
             updateAnnouncementUI();
@@ -613,6 +646,11 @@
             const radInput = document.getElementById('loc-radius'); if(radInput) radInput.value = settings.radius;
             const voteInput = document.getElementById('vote-limit-input'); if(voteInput) voteInput.value = settings.votesPerCategory;
             const winToggle = document.getElementById('show-winners-toggle'); if(winToggle) winToggle.checked = settings.showWinners;
+            
+            const mvb = document.getElementById('male-vote-boys'); if(mvb) mvb.checked = settings.maleCanVoteBoys;
+            const mvg = document.getElementById('male-vote-girls'); if(mvg) mvg.checked = settings.maleCanVoteGirls;
+            const fvb = document.getElementById('female-vote-boys'); if(fvb) fvb.checked = settings.femaleCanVoteBoys;
+            const fvg = document.getElementById('female-vote-girls'); if(fvg) fvg.checked = settings.femaleCanVoteGirls;
         }
     }
 
@@ -625,8 +663,14 @@
             settings.projectorState = data.projector_state;
             settings.votesPerCategory = data.votes_per_category;
             
+            settings.maleCanVoteBoys = data.male_can_vote_boys;
+            settings.maleCanVoteGirls = data.male_can_vote_girls;
+            settings.femaleCanVoteBoys = data.female_can_vote_boys;
+            settings.femaleCanVoteGirls = data.female_can_vote_girls;
+            
             if(document.getElementById('view-admin').classList.contains('hidden')) {
                 decideView();
+                if(!document.getElementById('view-audience').classList.contains('hidden')) renderVotingCards();
             } else {
                 loadSettings(); 
             }
@@ -733,6 +777,18 @@
         if(isNaN(val)) return;
         const { error } = await sb.from('system_settings').update({ votes_per_category: val }).eq('id', 1);
         if(error) showToast("Error", "error"); else showToast("Vote Limit Set!", "success");
+    }
+    
+    async function savePermissions() {
+        const payload = {
+            male_can_vote_boys: document.getElementById('male-vote-boys').checked,
+            male_can_vote_girls: document.getElementById('male-vote-girls').checked,
+            female_can_vote_boys: document.getElementById('female-vote-boys').checked,
+            female_can_vote_girls: document.getElementById('female-vote-girls').checked
+        };
+        const { error } = await sb.from('system_settings').update(payload).eq('id', 1);
+        if(error) showToast("Error: " + error.message, "error"); 
+        else showToast("Permissions Updated!", "success");
     }
 
     async function toggleShowWinners(checked) {
@@ -847,9 +903,7 @@
         document.getElementById('tab-boys').className = cat === 'boys' ? 'cat-tab active-boys' : 'cat-tab';
         document.getElementById('tab-girls').className = cat === 'girls' ? 'cat-tab active-girls' : 'cat-tab';
         
-        const userGender = userProfile.gender;
-        const canVote = (userGender === 'male' && cat === 'girls') || (userGender === 'female' && cat === 'boys');
-        
+        // Tab eka thawa kalin wage lock wenne na. Oyalata tab eka click karala balanna puluwan. 
         renderVotingCards();
     }
 
@@ -859,14 +913,11 @@
         const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
         myVotes = votes ? votes.map(v => v.costume_id) : [];
         
+        // Default View eka gender eka anuwa wenas wenawa
         if(userProfile.gender === 'male') {
             activeCategory = 'girls';
-            document.getElementById('tab-boys').classList.add('locked');
-            document.getElementById('tab-boys').title = "View Only";
         } else {
             activeCategory = 'boys';
-            document.getElementById('tab-girls').classList.add('locked');
-            document.getElementById('tab-girls').title = "View Only";
         }
         
         switchCategory(activeCategory);
@@ -877,7 +928,16 @@
         list.innerHTML = '';
         
         const userGender = userProfile.gender;
-        const canVoteInCategory = (userGender === 'male' && activeCategory === 'girls') || (userGender === 'female' && activeCategory === 'boys');
+        let canVoteInCategory = false;
+        
+        // Check permissions based on Admin Toggle switches
+        if (userGender === 'male') {
+            if (activeCategory === 'boys' && settings.maleCanVoteBoys) canVoteInCategory = true;
+            if (activeCategory === 'girls' && settings.maleCanVoteGirls) canVoteInCategory = true;
+        } else if (userGender === 'female') {
+            if (activeCategory === 'boys' && settings.femaleCanVoteBoys) canVoteInCategory = true;
+            if (activeCategory === 'girls' && settings.femaleCanVoteGirls) canVoteInCategory = true;
+        }
         
         const idsInCategory = allCostumes.filter(c => c.gender === activeCategory).map(c => c.id);
         const votesUsedInCategory = myVotes.filter(id => idsInCategory.includes(id)).length;
@@ -919,8 +979,18 @@
         if (!costume) return;
 
         const userGender = userProfile.gender;
-        const allowed = (userGender === 'male' && costume.gender === 'girls') || (userGender === 'female' && costume.gender === 'boys');
-        if (!allowed) return showToast("You cannot vote in this category", "error");
+        let allowed = false;
+        
+        // Final permission check before inserting into DB
+        if (userGender === 'male') {
+            if (costume.gender === 'boys' && settings.maleCanVoteBoys) allowed = true;
+            if (costume.gender === 'girls' && settings.maleCanVoteGirls) allowed = true;
+        } else if (userGender === 'female') {
+            if (costume.gender === 'boys' && settings.femaleCanVoteBoys) allowed = true;
+            if (costume.gender === 'girls' && settings.femaleCanVoteGirls) allowed = true;
+        }
+
+        if (!allowed) return showToast("You do not have permission to vote in this category", "error");
 
         const idsInCategory = allCostumes.filter(c => c.gender === costume.gender).map(c => c.id);
         const votesUsed = myVotes.filter(vid => idsInCategory.includes(vid)).length;
@@ -1078,16 +1148,9 @@
                     async function fetchData() {
                         const res = await fetch(supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc', { headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey } });
                         allData = await res.json();
-                        render();
-                    }
-
-                    function render() {
-                        const state = window.opener.settings.projectorState; 
                     }
                     
-                    // Real-time sync with parent window settings
                     setInterval(async () => {
-                        // Fetch latest setting
                         const setRes = await fetch(supabaseUrl + '/rest/v1/system_settings?id=eq.1&select=projector_state', { headers: { 'apikey': supabaseKey }});
                         const setData = await setRes.json();
                         const state = setData[0]?.projector_state;
@@ -1102,33 +1165,19 @@
                         const thankView = document.getElementById('thank-view');
 
                         if(state === 'live') {
-                            liveView.style.display = 'flex';
-                            winView.style.display = 'none';
-                            thankView.style.display = 'none';
-                            
+                            liveView.style.display = 'flex'; winView.style.display = 'none'; thankView.style.display = 'none';
                             document.getElementById('boys-list').innerHTML = boys.map(c => '<div class="row"><img src="'+c.image_url+'"><div class="name">'+c.name+'</div><div class="votes">'+(c.vote_count||0)+'</div></div>').join('');
                             document.getElementById('girls-list').innerHTML = girls.map(c => '<div class="row"><img src="'+c.image_url+'"><div class="name">'+c.name+'</div><div class="votes">'+(c.vote_count||0)+'</div></div>').join('');
-                        
                         } else if (state === 'thank_you') {
-                            liveView.style.display = 'none';
-                            winView.style.display = 'none';
-                            thankView.style.display = 'flex';
+                            liveView.style.display = 'none'; winView.style.display = 'none'; thankView.style.display = 'flex';
                         } else {
-                            // Winner Logic
-                            liveView.style.display = 'none';
-                            winView.style.display = 'flex';
-                            thankView.style.display = 'none';
+                            liveView.style.display = 'none'; winView.style.display = 'flex'; thankView.style.display = 'none';
                             
-                            let boyObj = null; let girlObj = null;
-                            let subTitle = "";
+                            let boyObj = null; let girlObj = null; let subTitle = "";
                             
-                            if(state === 'show_3rd') {
-                                boyObj = boys[2]; girlObj = girls[2]; subTitle = "2nd Runner Up 🥉";
-                            } else if(state === 'show_2nd') {
-                                boyObj = boys[1]; girlObj = girls[1]; subTitle = "1st Runner Up 🥈";
-                            } else if(state === 'show_1st') {
-                                boyObj = boys[0]; girlObj = girls[0]; subTitle = "Winner 👑";
-                            }
+                            if(state === 'show_3rd') { boyObj = boys[2]; girlObj = girls[2]; subTitle = "2nd Runner Up 🥉"; } 
+                            else if(state === 'show_2nd') { boyObj = boys[1]; girlObj = girls[1]; subTitle = "1st Runner Up 🥈"; } 
+                            else if(state === 'show_1st') { boyObj = boys[0]; girlObj = girls[0]; subTitle = "Winner 👑"; }
 
                             if(boyObj) {
                                 document.getElementById('display-boy').style.display = 'block';
@@ -1152,7 +1201,6 @@
             </html>
         `);
     }
-
 
     async function delCostume(id) {
         if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
