@@ -160,22 +160,6 @@
         .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 10px; font-family: inherit; font-weight: 600; transition: 0.3s; min-width: 80px; font-size: 0.9rem; }
         .tab-btn.active { background: rgba(188, 19, 254, 0.2); color: var(--secondary); box-shadow: inset 0 0 0 1px var(--secondary); }
 
-        /* Admin Projector View */
-        .projector-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
-        @media(min-width: 900px) { .projector-grid { grid-template-columns: 1fr 1fr; } }
-        
-        .leaderboard-section { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 25px; border: 1px solid var(--glass-border); }
-        .leaderboard-title { text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; }
-        .title-boys { color: var(--boys-color); border-bottom: 2px solid var(--boys-color); padding-bottom: 5px; display: inline-block; }
-        .title-girls { color: var(--girls-color); border-bottom: 2px solid var(--girls-color); padding-bottom: 5px; display: inline-block; }
-
-        .live-item { display: flex; align-items: center; margin-bottom: 10px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; transition: all 0.5s ease; border: 1px solid transparent; }
-        .live-rank { font-size: 1.2rem; font-weight: 700; color: rgba(255,255,255,0.2); width: 30px; text-align: center; }
-        .live-photo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 2px solid rgba(255,255,255,0.1); }
-        .live-info { flex: 1; }
-        .live-name { font-weight: 600; font-size: 0.9rem; }
-        .live-votes { font-weight: 800; font-size: 1.1rem; width: 50px; text-align: right; font-family: 'Rajdhani', sans-serif; }
-        
         /* Toast Notifications */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 15px 20px; background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideIn 0.5s ease forwards; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
@@ -514,31 +498,43 @@
         const { data: { session } } = await sb.auth.getSession();
         if (session) {
             currentUser = session.user;
-            const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
             
-            if (!profile) {
-                // Create profile if missing (metadata from auth)
-                const gender = currentUser.user_metadata.gender || 'male';
-                const { data: newProfile } = await sb.from('profiles').insert([{ 
+            // Fetch profile
+            let { data: profile, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+            
+            // Handle RLS or missing profile
+            if (error || !profile) {
+                 // Try to create profile if it doesn't exist (handles registration fallback)
+                 const gender = currentUser.user_metadata.gender || 'male';
+                 const name = currentUser.user_metadata.full_name || 'User';
+                 
+                 const { data: newProfile, error: insertError } = await sb.from('profiles').insert([{ 
                     id: currentUser.id, 
                     email: currentUser.email, 
-                    full_name: currentUser.user_metadata.full_name || 'User', 
+                    full_name: name, 
                     role: 'audience',
                     gender: gender
-                }]).select().single();
-                userProfile = newProfile;
-                decideView(); 
+                 }]).select().single();
+
+                 if(insertError) {
+                     console.error("Profile create error", insertError);
+                     showToast("Error loading profile. Contact Admin.", "error");
+                     // Stay on screen or logout
+                     return;
+                 }
+                 profile = newProfile;
+            }
+
+            userProfile = profile;
+
+            if(userProfile.role === 'admin') {
+                showView('view-admin');
+                initAdmin();
+            } else if(userProfile.role === 'blocked') {
+                showToast("Account Blocked!", "error"); 
+                logout();
             } else {
-                userProfile = profile;
-                if(profile.role === 'admin') {
-                    showView('view-admin');
-                    initAdmin();
-                } else if(profile.role === 'blocked') {
-                    showToast("Account Blocked!", "error"); 
-                    logout();
-                } else {
-                    decideView();
-                }
+                decideView();
             }
         } else {
             showView('view-auth');
@@ -629,18 +625,16 @@
             settings.projectorState = data.projector_state;
             settings.votesPerCategory = data.votes_per_category;
             
-            // If not admin, re-evaluate view
             if(document.getElementById('view-admin').classList.contains('hidden')) {
                 decideView();
             } else {
-                loadSettings(); // Refresh admin inputs
+                loadSettings(); 
             }
             showToast("System Updated!", "info");
         }).subscribe();
 
         sb.channel('votes_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, () => {
             if(!document.getElementById('view-admin').classList.contains('hidden')) loadAdminData();
-            // Also refresh audience if needed
             if(!document.getElementById('view-audience').classList.contains('hidden')) loadVotingData();
         }).subscribe();
     }
@@ -695,7 +689,6 @@
     async function endGame() {
         if(countdownInterval) clearInterval(countdownInterval);
         
-        // Only run for audience views
         if(!document.getElementById('view-audience').classList.contains('hidden') || !document.getElementById('view-waiting').classList.contains('hidden')) {
             if(allCostumes.length === 0) {
                 const { data } = await sb.from('costumes').select('*');
@@ -753,11 +746,10 @@
     }
 
     async function startWinnerSequence() {
-        // Auto sequence logic handled by admin client for timing control
         await setProjectorState('show_3rd');
-        setTimeout(() => setProjectorState('show_2nd'), 3000); // 3s for 3rd
-        setTimeout(() => setProjectorState('show_1st'), 5000); // 2s for 2nd (total 5s)
-        setTimeout(() => setProjectorState('thank_you'), 10000); // 5s for 1st (total 10s)
+        setTimeout(() => setProjectorState('show_2nd'), 3000); 
+        setTimeout(() => setProjectorState('show_1st'), 5000); 
+        setTimeout(() => setProjectorState('thank_you'), 10000); 
         showToast("Projector Sequence Started!", "success");
     }
 
@@ -852,16 +844,12 @@
 
     function switchCategory(cat) {
         activeCategory = cat;
-        // Visual update
         document.getElementById('tab-boys').className = cat === 'boys' ? 'cat-tab active-boys' : 'cat-tab';
         document.getElementById('tab-girls').className = cat === 'girls' ? 'cat-tab active-girls' : 'cat-tab';
         
-        // Logic check
         const userGender = userProfile.gender;
         const canVote = (userGender === 'male' && cat === 'girls') || (userGender === 'female' && cat === 'boys');
         
-        // If trying to access non-voting tab, just show but maybe indicate?
-        // Actually, user can switch to view, but buttons will be disabled in render.
         renderVotingCards();
     }
 
@@ -871,7 +859,6 @@
         const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
         myVotes = votes ? votes.map(v => v.costume_id) : [];
         
-        // Initial Category Logic: Auto-switch to the category they can vote for
         if(userProfile.gender === 'male') {
             activeCategory = 'girls';
             document.getElementById('tab-boys').classList.add('locked');
@@ -892,7 +879,6 @@
         const userGender = userProfile.gender;
         const canVoteInCategory = (userGender === 'male' && activeCategory === 'girls') || (userGender === 'female' && activeCategory === 'boys');
         
-        // Calculate votes used in THIS category
         const idsInCategory = allCostumes.filter(c => c.gender === activeCategory).map(c => c.id);
         const votesUsedInCategory = myVotes.filter(id => idsInCategory.includes(id)).length;
         const votesLeft = settings.votesPerCategory - votesUsedInCategory;
@@ -932,12 +918,10 @@
         const costume = allCostumes.find(c => c.id === id);
         if (!costume) return;
 
-        // Double check logic
         const userGender = userProfile.gender;
         const allowed = (userGender === 'male' && costume.gender === 'girls') || (userGender === 'female' && costume.gender === 'boys');
         if (!allowed) return showToast("You cannot vote in this category", "error");
 
-        // Check limit
         const idsInCategory = allCostumes.filter(c => c.gender === costume.gender).map(c => c.id);
         const votesUsed = myVotes.filter(vid => idsInCategory.includes(vid)).length;
         if (votesUsed >= settings.votesPerCategory) return showToast("Vote limit reached for this category", "error");
@@ -1017,7 +1001,6 @@
     // --- SUPER PROJECTOR MODE ---
     function openProjector() {
         const w = window.open('', '_blank');
-        // Inject all necessary variables into the new window
         w.settings = settings;
         w.supabaseUrl = supabaseUrl;
         w.supabaseKey = supabaseKey;
@@ -1099,8 +1082,7 @@
                     }
 
                     function render() {
-                        const state = window.opener.settings.projectorState; // Read from opener initially
-                        // We need to listen for changes, but setInterval is easier for cross-window variable reading
+                        const state = window.opener.settings.projectorState; 
                     }
                     
                     // Real-time sync with parent window settings
@@ -1110,7 +1092,7 @@
                         const setData = await setRes.json();
                         const state = setData[0]?.projector_state;
                         
-                        await fetchData(); // refresh votes
+                        await fetchData(); 
 
                         const boys = allData.filter(c => c.gender === 'boys');
                         const girls = allData.filter(c => c.gender === 'girls');
@@ -1137,7 +1119,6 @@
                             winView.style.display = 'flex';
                             thankView.style.display = 'none';
                             
-                            // 3rd place is index 2
                             let boyObj = null; let girlObj = null;
                             let subTitle = "";
                             
