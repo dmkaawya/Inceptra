@@ -579,10 +579,6 @@
     function decideView() {
         const now = new Date().getTime();
         
-        if (settings.showWinners) {
-            endGame(); return;
-        }
-
         if (now < settings.startTime) {
             showView('view-waiting');
             startWaitCountdown();
@@ -592,7 +588,7 @@
             document.getElementById('user-gender-display').innerText = userProfile.gender || "User";
             initAudience();
         } else {
-            endGame();
+            endGame(); // වෙලාව ඉවර වුණාම අනිවාර්යයෙන්ම Voting ඉවර කරනවා
         }
     }
 
@@ -740,30 +736,46 @@
         if(countdownInterval) clearInterval(countdownInterval);
         
         if(!document.getElementById('view-audience').classList.contains('hidden') || !document.getElementById('view-waiting').classList.contains('hidden')) {
-            if(allCostumes.length === 0) {
-                const { data } = await sb.from('costumes').select('*');
-                allCostumes = data || [];
+            
+            showView('view-winners'); 
+
+            const container = document.querySelector('.winner-container');
+            const msg = document.querySelector('.thank-you-msg');
+
+            // Admin Toggle එක ON නම් විතරක් Winners ලව පෙන්නනවා
+            if (settings.showWinners) {
+                if(allCostumes.length === 0) {
+                    const { data } = await sb.from('costumes').select('*');
+                    allCostumes = data || [];
+                }
+
+                const boys = allCostumes.filter(c => c.gender === 'boys').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
+                const girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
+
+                const winnerBoy = boys[0];
+                const winnerGirl = girls[0];
+
+                if(winnerBoy) {
+                    document.getElementById('winner-boy-name').innerText = winnerBoy.name;
+                    document.getElementById('winner-boy-votes').innerText = (winnerBoy.vote_count || 0) + " Votes";
+                    document.getElementById('winner-boy-img').src = winnerBoy.image_url;
+                }
+                if(winnerGirl) {
+                    document.getElementById('winner-girl-name').innerText = winnerGirl.name;
+                    document.getElementById('winner-girl-votes').innerText = (winnerGirl.vote_count || 0) + " Votes";
+                    document.getElementById('winner-girl-img').src = winnerGirl.image_url;
+                }
+
+                // පින්තූර ටික පෙන්නනවා, Confetti දානවා
+                container.style.display = 'flex';
+                msg.innerText = "Thank you for voting! Here are the winners:";
+                confetti({ particleCount: 300, spread: 100, origin: { y: 0.6 } });
+                
+            } else {
+                // Toggle එක OFF නම් Winners ලව හංගනවා
+                container.style.display = 'none';
+                msg.innerText = "Voting has ended! Please wait for the final results to be revealed on the projector.";
             }
-
-            const boys = allCostumes.filter(c => c.gender === 'boys').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-            const girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-
-            const winnerBoy = boys[0];
-            const winnerGirl = girls[0];
-
-            if(winnerBoy) {
-                document.getElementById('winner-boy-name').innerText = winnerBoy.name;
-                document.getElementById('winner-boy-votes').innerText = (winnerBoy.vote_count || 0) + " Votes";
-                document.getElementById('winner-boy-img').src = winnerBoy.image_url;
-            }
-            if(winnerGirl) {
-                document.getElementById('winner-girl-name').innerText = winnerGirl.name;
-                document.getElementById('winner-girl-votes').innerText = (winnerGirl.vote_count || 0) + " Votes";
-                document.getElementById('winner-girl-img').src = winnerGirl.image_url;
-            }
-
-            showView('view-winners');
-            confetti({ particleCount: 300, spread: 100, origin: { y: 0.6 } });
         }
     }
 
