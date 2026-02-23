@@ -830,10 +830,10 @@
     }
 
     async function startWinnerSequence() {
-        await setProjectorState('show_3rd');
-        setTimeout(() => setProjectorState('show_2nd'), 3000); 
-        setTimeout(() => setProjectorState('show_1st'), 5000); 
-        setTimeout(() => setProjectorState('thank_you'), 10000); 
+        await setProjectorState('show_3rd'); // මෙතනදි 3..2..1 ගිහින් තත්පර 3කින් 3rd පෙන්නනවා
+        setTimeout(() => setProjectorState('show_2nd'), 7000);  // 7s කින් 2nd ව පෙන්නනවා
+        setTimeout(() => setProjectorState('show_1st'), 11000); // 11s කින් 1st ව පෙන්නනවා
+        setTimeout(() => setProjectorState('thank_you'), 16000); // 16s කින් Thank You කියනවා
         showToast("Projector Sequence Started!", "success");
     }
 
@@ -1097,65 +1097,97 @@
     }
 
     // --- SUPER PROJECTOR MODE ---
-   function openProjector() {
+    function openProjector() {
         const w = window.open('', '_blank');
         
         // අලුත් Tab එක ඇතුලට කෙලින්ම URL එකයි Key එකයි යවනවා
         w.document.write(`
             <html>
             <head>
-                <title>Projector</title>
-                <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+                <title>Inceptra 25 - Live Projector</title>
+                <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
                 <style>
                     body { background: #0a0a12; color: white; font-family: 'Rajdhani', sans-serif; text-align: center; padding: 0; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
-                    h1 { color: #00f3ff; font-size: 5vw; margin: 2vh 0; text-shadow: 0 0 20px cyan; }
-                    .grid { display: flex; flex: 1; gap: 2vw; padding: 2vw; }
-                    .col { flex: 1; display: flex; flex-direction: column; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; }
-                    .title { font-size: 3rem; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid white; padding-bottom: 10px; }
-                    .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 15px; border-radius: 10px; }
-                    img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
-                    .name { flex: 1; text-align: left; font-size: 2rem; margin-left: 20px; }
-                    .votes { font-size: 3rem; font-weight: 800; color: #00f3ff; min-width: 80px; text-align: right; }
+                    h1 { color: #00e5ff; font-size: 5vw; margin: 2vh 0; text-shadow: 0 0 20px rgba(0,229,255,0.5); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+                    
+                    /* Split Layout (මැදින් බෙදපු ඩිසයින් එක) */
+                    .split-screen { display: flex; flex: 1; max-width: 95vw; margin: 0 auto; gap: 40px; width: 100%; padding-bottom: 20px;}
+                    .category-side { flex: 1; display: flex; flex-direction: column; background: rgba(26, 28, 35, 0.6); border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
+                    .center-divider { width: 3px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; margin: 0 10px; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
+                    
+                    .title { font-size: 3.5rem; margin-bottom: 20px; text-transform: uppercase; border-bottom: 3px solid; padding-bottom: 10px; font-weight: 800; letter-spacing: 2px; }
+                    .boys-title { color: #2979FF; border-color: #2979FF; text-shadow: 0 0 15px rgba(41,121,255,0.4); }
+                    .girls-title { color: #F50057; border-color: #F50057; text-shadow: 0 0 15px rgba(245,0,87,0.4); }
+                    
+                    /* List & Rows */
+                    .list-container { flex: 1; overflow-y: auto; padding-right: 10px; }
+                    .row { display: flex; align-items: center; background: rgba(37, 40, 54, 0.9); padding: 12px 20px; margin-bottom: 15px; border-radius: 12px; transition: all 0.5s ease; border-left: 5px solid transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+                    
+                    /* මුල් 3 දෙනාට විශේෂ පාට */
+                    .row:nth-child(1) { border-left-color: #ffd700; transform: scale(1.02); background: rgba(255, 215, 0, 0.05); }
+                    .row:nth-child(2) { border-left-color: #c0c0c0; }
+                    .row:nth-child(3) { border-left-color: #cd7f32; }
+                    
+                    .rank-badge { font-size: 2.5rem; font-weight: 800; color: rgba(255,255,255,0.3); width: 50px; text-align: left; font-family: sans-serif; }
+                    img { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.2); margin: 0 20px; }
+                    .name { flex: 1; text-align: left; font-size: 2.2rem; font-weight: 700; text-transform: capitalize; }
+                    .votes { font-size: 3rem; font-weight: 800; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
                     
                     /* WINNER STYLES */
-                    .winner-view { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 50px; background: radial-gradient(circle, rgba(188,19,254,0.2), transparent); }
-                    .winner-card { text-align: center; animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-                    .w { font-size: 5rem; }
-                    .w-img { width: 250px; height: 250px; border-radius: 50%; border: 5px solid gold; box-shadow: 0 0 50px gold; object-fit: cover; margin: 20px auto; }
-                    .w-name { font-size: 3rem; font-weight: 800; text-shadow: 0 5px 10px black; }
-                    .w-votes { font-size: 2rem; color: #aaa; }
-                    .w-sub { font-size: 1.5rem; color: #ffd700; margin-top: -10px; }
+                    .winner-view { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 40px; background: radial-gradient(circle, rgba(188,19,254,0.15), #0a0a12); }
+                    .winner-wrapper { display: flex; gap: 60px; justify-content: center; align-items: flex-end; width: 100%; }
+                    .winner-card { text-align: center; animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: rgba(255,255,255,0.03); padding: 40px; border-radius: 25px; border: 2px solid; backdrop-filter: blur(10px); }
+                    .winner-card.boys { border-color: #2979FF; box-shadow: 0 0 40px rgba(41, 121, 255, 0.2); }
+                    .winner-card.girls { border-color: #F50057; box-shadow: 0 0 40px rgba(245, 0, 87, 0.2); }
                     
-                    /* Thank You */
-                    .thank-you { display: none; flex: 1; align-items: center; justify-content: center; font-size: 6rem; color: #fff; animation: pulse 2s infinite; }
+                    .w { font-size: 3rem; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px;}
+                    .w-img { width: 280px; height: 280px; border-radius: 50%; border: 6px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: cover; margin: 0 auto 20px; display: block; }
+                    .w-sub { font-size: 2.8rem; color: #ffd700; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
+                    .w-name { font-size: 3.5rem; font-weight: 800; text-shadow: 0 5px 10px black; margin: 10px 0; }
+                    .w-votes { font-size: 2.2rem; color: #aaa; font-weight: 700; }
                     
-                    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-                    @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
+                    /* Thank You & Countdown Overlay */
+                    .thank-you { display: none; flex: 1; align-items: center; justify-content: center; font-size: 6rem; font-weight: 800; color: #fff; text-shadow: 0 0 30px #bc13fe; animation: pulse 2s infinite; text-transform: uppercase; }
+                    .countdown-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,18,0.95); z-index: 100; align-items: center; justify-content: center; font-size: 25vw; font-weight: 800; color: #ff0000; text-shadow: 0 0 80px red; font-family: sans-serif; }
+                    
+                    @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+                    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
                 </style>
             </head>
             <body>
-                <div id="live-view">
+                <div id="countdown-overlay" class="countdown-overlay">3</div>
+
+                <div id="live-view" style="display:flex; flex-direction:column; height:100%;">
                     <h1>INCEPTRA 25 - LIVE</h1>
-                    <div class="grid">
-                        <div class="col"><div class="title" style="color: #2979FF; border-color: #2979FF;">BOYS</div><div id="boys-list"></div></div>
-                        <div class="col"><div class="title" style="color: #F50057; border-color: #F50057;">GIRLS</div><div id="girls-list"></div></div>
+                    <div class="split-screen">
+                        <div class="category-side">
+                            <div class="title boys-title">BOYS</div>
+                            <div class="list-container" id="boys-list"></div>
+                        </div>
+                        <div class="center-divider"></div>
+                        <div class="category-side">
+                            <div class="title girls-title">GIRLS</div>
+                            <div class="list-container" id="girls-list"></div>
+                        </div>
                     </div>
                 </div>
 
                 <div id="winner-view" class="winner-view">
-                    <div class="winner-card" id="display-boy">
-                        <div class="w" style="color: #2979FF;">MR. INCEPTRA</div>
-                        <img id="w-boy-img" class="w-img">
-                        <div id="w-boy-sub" class="w-sub"></div>
-                        <div id="w-boy-name" class="w-name"></div>
-                        <div id="w-boy-votes" class="w-votes"></div>
-                    </div>
-                    <div class="winner-card" id="display-girl">
-                        <div class="w" style="color: #F50057;">MISS. INCEPTRA</div>
-                        <img id="w-girl-img" class="w-img">
-                        <div id="w-girl-sub" class="w-sub"></div>
-                        <div id="w-girl-name" class="w-name"></div>
-                        <div id="w-girl-votes" class="w-votes"></div>
+                    <div class="winner-wrapper">
+                        <div class="winner-card boys" id="display-boy">
+                            <div class="w" style="color: #2979FF;">MR. INCEPTRA</div>
+                            <div id="w-boy-sub" class="w-sub"></div>
+                            <img id="w-boy-img" class="w-img">
+                            <div id="w-boy-name" class="w-name"></div>
+                            <div id="w-boy-votes" class="w-votes"></div>
+                        </div>
+                        <div class="winner-card girls" id="display-girl">
+                            <div class="w" style="color: #F50057;">MISS. INCEPTRA</div>
+                            <div id="w-girl-sub" class="w-sub"></div>
+                            <img id="w-girl-img" class="w-img">
+                            <div id="w-girl-name" class="w-name"></div>
+                            <div id="w-girl-votes" class="w-votes"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -1165,19 +1197,57 @@
 
                 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
                 <script>
-                    // මෙතන තමයි වෙනස. කෙලින්ම URL එක මෙතනට දානවා.
                     const sbUrl = "${supabaseUrl}";
                     const sbKey = "${supabaseKey}";
                     const sb = supabase.createClient(sbUrl, sbKey);
                     
                     let allData = [];
+                    let lastState = 'live';
+                    let isCountingDown = false;
                     
                     async function fetchData() {
                         const { data } = await sb.from('costumes').select('*').order('vote_count', { ascending: false });
                         if(data) allData = data;
                     }
                     
+                    // ලයිව් ටේබල් එක අඳින ෆන්ක්ෂන් එක
+                    function renderList(containerId, items) {
+                        const html = items.map((c, index) => {
+                            let rankColor = 'rgba(255,255,255,0.3)';
+                            if(index === 0) rankColor = '#ffd700'; // 1st - Gold
+                            else if(index === 1) rankColor = '#c0c0c0'; // 2nd - Silver
+                            else if(index === 2) rankColor = '#cd7f32'; // 3rd - Bronze
+                            
+                            return '<div class="row"><div class="rank-badge" style="color:'+rankColor+'">'+(index+1)+'</div><img src="'+c.image_url+'"><div class="name">'+c.name+'</div><div class="votes">'+(c.vote_count||0)+'</div></div>';
+                        }).join('');
+                        document.getElementById(containerId).innerHTML = html;
+                    }
+
+                    // 3.. 2.. 1.. Countdown එක ප්ලේ කරන ෆන්ක්ෂන් එක
+                    function playCountdownAndShow(nextStateCallback) {
+                        if(isCountingDown) return;
+                        isCountingDown = true;
+                        const overlay = document.getElementById('countdown-overlay');
+                        overlay.style.display = 'flex';
+                        let count = 3;
+                        overlay.innerText = count;
+                        
+                        let timer = setInterval(() => {
+                            count--;
+                            if(count > 0) {
+                                overlay.innerText = count;
+                            } else {
+                                clearInterval(timer);
+                                overlay.style.display = 'none';
+                                isCountingDown = false;
+                                nextStateCallback();
+                            }
+                        }, 1000);
+                    }
+                    
                     setInterval(async () => {
+                        if(isCountingDown) return; // Countdown එක යන වෙලාවට අප්ඩේට් වෙන එක නවත්තනවා
+
                         const { data: setData } = await sb.from('system_settings').select('projector_state').eq('id', 1).single();
                         const state = setData ? setData.projector_state : 'live';
                         
@@ -1190,10 +1260,18 @@
                         const winView = document.getElementById('winner-view');
                         const thankView = document.getElementById('thank-view');
 
+                        // ලයිව් එකේ ඉඳන් Winner පේජ් එකකට යනවනම් Countdown එක trigger කරනවා
+                        if(lastState === 'live' && state.startsWith('show_') && !isCountingDown) {
+                            playCountdownAndShow(() => { lastState = state; });
+                            return; 
+                        }
+                        
+                        lastState = state;
+
                         if(state === 'live') {
                             liveView.style.display = 'flex'; winView.style.display = 'none'; thankView.style.display = 'none';
-                            document.getElementById('boys-list').innerHTML = boys.map(c => '<div class="row"><img src="'+c.image_url+'"><div class="name">'+c.name+'</div><div class="votes">'+(c.vote_count||0)+'</div></div>').join('');
-                            document.getElementById('girls-list').innerHTML = girls.map(c => '<div class="row"><img src="'+c.image_url+'"><div class="name">'+c.name+'</div><div class="votes">'+(c.vote_count||0)+'</div></div>').join('');
+                            renderList('boys-list', boys);
+                            renderList('girls-list', girls);
                         } else if (state === 'thank_you') {
                             liveView.style.display = 'none'; winView.style.display = 'none'; thankView.style.display = 'flex';
                         } else {
@@ -1201,9 +1279,10 @@
                             
                             let boyObj = null; let girlObj = null; let subTitle = "";
                             
-                            if(state === 'show_3rd') { boyObj = boys[2]; girlObj = girls[2]; subTitle = "2nd Runner Up 🥉"; } 
-                            else if(state === 'show_2nd') { boyObj = boys[1]; girlObj = girls[1]; subTitle = "1st Runner Up 🥈"; } 
-                            else if(state === 'show_1st') { boyObj = boys[0]; girlObj = girls[0]; subTitle = "Winner 👑"; }
+                            // ඔයා ඉල්ලපු විදියට 3rd Winner, 2nd Winner, 1st Winner 👑 දාලා තියෙන්නේ
+                            if(state === 'show_3rd') { boyObj = boys[2]; girlObj = girls[2]; subTitle = "3rd WINNER"; } 
+                            else if(state === 'show_2nd') { boyObj = boys[1]; girlObj = girls[1]; subTitle = "2nd WINNER"; } 
+                            else if(state === 'show_1st') { boyObj = boys[0]; girlObj = girls[0]; subTitle = "1st WINNER 👑"; }
 
                             if(boyObj) {
                                 document.getElementById('display-boy').style.display = 'block';
@@ -1226,7 +1305,6 @@
             </body>
             </html>
         `);
-        // Browser එකට document එක ලියලා ඉවරයි කියලා කියන්න ඕනේ (නැත්තං stuck වෙනවා)
         w.document.close(); 
     }
     
