@@ -1099,10 +1099,8 @@
     // --- SUPER PROJECTOR MODE ---
    function openProjector() {
         const w = window.open('', '_blank');
-        w.settings = settings;
-        w.supabaseUrl = supabaseUrl;
-        w.supabaseKey = supabaseKey;
         
+        // අලුත් Tab එක ඇතුලට කෙලින්ම URL එකයි Key එකයි යවනවා
         w.document.write(`
             <html>
             <head>
@@ -1167,9 +1165,10 @@
 
                 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
                 <script>
-                    const supabaseUrl = window.opener.supabaseUrl;
-                    const supabaseKey = window.opener.supabaseKey;
-                    const sb = supabase.createClient(supabaseUrl, supabaseKey);
+                    // මෙතන තමයි වෙනස. කෙලින්ම URL එක මෙතනට දානවා.
+                    const sbUrl = "${supabaseUrl}";
+                    const sbKey = "${supabaseKey}";
+                    const sb = supabase.createClient(sbUrl, sbKey);
                     
                     let allData = [];
                     
@@ -1227,6 +1226,8 @@
             </body>
             </html>
         `);
+        // Browser එකට document එක ලියලා ඉවරයි කියලා කියන්න ඕනේ (නැත්තං stuck වෙනවා)
+        w.document.close(); 
     }
     
     async function delCostume(id) {
