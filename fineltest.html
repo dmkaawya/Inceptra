@@ -1134,13 +1134,74 @@
                     .votes { font-size: 3rem; font-weight: 800; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
 
                     
-                    /* WINNER STYLES */
-                    .winner-view { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 40px; background: radial-gradient(circle, rgba(188,19,254,0.15), #0a0a12); }
-                    .winner-wrapper { display: flex; gap: 60px; justify-content: center; align-items: flex-end; width: 100%; }
-                    .winner-card { text-align: center; animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: rgba(255,255,255,0.03); padding: 40px; border-radius: 25px; border: 2px solid; backdrop-filter: blur(10px); }
-                    .winner-card.boys { border-color: #2979FF; box-shadow: 0 0 40px rgba(41, 121, 255, 0.2); }
-                    .winner-card.girls { border-color: #F50057; box-shadow: 0 0 40px rgba(245, 0, 87, 0.2); }
+                    /* WINNER STYLES - Updated for PC & Phone */
+.winner-view { 
+    display: none; 
+    flex: 1; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 20px;
+    background: radial-gradient(circle, rgba(188,19,254,0.15), #0a0a12); 
+    box-sizing: border-box;
+    width: 100%;
+}
 
+.winner-wrapper { 
+    display: flex; 
+    flex-direction: row; /* PC එකේ දෙපැත්තට */
+    gap: 40px; 
+    justify-content: center; 
+    align-items: stretch; /* දෙකම එකම උසට එන්න */
+    width: 100%; 
+    max-width: 1200px; /* උපරිම පළල ලිමිට් කරා */
+}
+
+/* ෆෝන් එකෙන් බලද්දි එක යට එක එන්න (Responsive) */
+@media (max-width: 768px) {
+    .winner-wrapper {
+        flex-direction: column; /* ෆෝන් එකේ පල්ලෙහාට */
+        align-items: center;
+        gap: 20px;
+    }
+}
+
+.winner-card { 
+    flex: 1; /* Box දෙකම සමානව ඉඩ ගන්නවා */
+    text-align: center; 
+    animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    background: rgba(255,255,255,0.03); 
+    padding: 40px 20px; /* උඩින් පහලින් ලොකුවට, දෙපැත්තෙන් ගානට */
+    border-radius: 25px; 
+    border: 3px solid; 
+    backdrop-filter: blur(10px); 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.winner-card.boys { border-color: #2979FF; box-shadow: 0 0 40px rgba(41, 121, 255, 0.2); }
+.winner-card.girls { border-color: #F50057; box-shadow: 0 0 40px rgba(245, 0, 87, 0.2); }
+
+/* Text & Image Sizes - ගානට පේන්න හැදුවා */
+.w { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+.w-sub { font-size: clamp(1.5rem, 3vw, 2.5rem); color: #ffd700; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
+
+/* ෆොටෝ එක ගානට ලොකු වෙන්න */
+.w-img { 
+    width: clamp(200px, 25vw, 350px); 
+    height: clamp(200px, 25vw, 350px); 
+    border-radius: 50%; 
+    border: 6px solid #fff; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+    object-fit: cover; 
+    margin: 0 auto 20px; 
+    display: block; 
+}
+
+.w-name { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; text-shadow: 0 5px 10px black; margin: 15px 0; }
+.w-votes { font-size: clamp(1.5rem, 3vw, 2.2rem); color: #aaa; font-weight: 700; }
 
                     
                     .w { font-size: 3rem; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px;}
