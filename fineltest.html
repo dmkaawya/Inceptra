@@ -554,7 +554,13 @@
                  profile = newProfile;
             }
 
-            userProfile = profile;
+           userProfile = profile;
+
+            // මේ තියෙන්නේ අලුතෙන් ඇතුල් කරපු කොටස (Auto-heal)
+            if (!userProfile.gender && currentUser.user_metadata && currentUser.user_metadata.gender) {
+                userProfile.gender = currentUser.user_metadata.gender;
+                await sb.from('profiles').update({ gender: userProfile.gender }).eq('id', currentUser.id);
+            }
 
             if(userProfile.role === 'admin') {
                 showView('view-admin');
