@@ -1097,7 +1097,7 @@
     }
 
     // --- SUPER PROJECTOR MODE ---
-    function openProjector() {
+   function openProjector() {
         const w = window.open('', '_blank');
         w.settings = settings;
         w.supabaseUrl = supabaseUrl;
@@ -1174,14 +1174,13 @@
                     let allData = [];
                     
                     async function fetchData() {
-                        const res = await fetch(supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc', { headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey } });
-                        allData = await res.json();
+                        const { data } = await sb.from('costumes').select('*').order('vote_count', { ascending: false });
+                        if(data) allData = data;
                     }
                     
                     setInterval(async () => {
-                        const setRes = await fetch(supabaseUrl + '/rest/v1/system_settings?id=eq.1&select=projector_state', { headers: { 'apikey': supabaseKey }});
-                        const setData = await setRes.json();
-                        const state = setData[0]?.projector_state;
+                        const { data: setData } = await sb.from('system_settings').select('projector_state').eq('id', 1).single();
+                        const state = setData ? setData.projector_state : 'live';
                         
                         await fetchData(); 
 
@@ -1229,7 +1228,7 @@
             </html>
         `);
     }
-
+    
     async function delCostume(id) {
         if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
     }
