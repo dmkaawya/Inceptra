@@ -776,7 +776,13 @@
         const val = parseInt(document.getElementById('vote-limit-input').value);
         if(isNaN(val)) return;
         const { error } = await sb.from('system_settings').update({ votes_per_category: val }).eq('id', 1);
-        if(error) showToast("Error", "error"); else showToast("Vote Limit Set!", "success");
+        
+        if(error) {
+            alert("DB Error: " + JSON.stringify(error)); 
+            showToast("Error", "error"); 
+        } else {
+            showToast("Vote Limit Set!", "success");
+        }
     }
     
     async function savePermissions() {
@@ -787,8 +793,12 @@
             female_can_vote_girls: document.getElementById('female-vote-girls').checked
         };
         const { error } = await sb.from('system_settings').update(payload).eq('id', 1);
-        if(error) showToast("Error: " + error.message, "error"); 
-        else showToast("Permissions Updated!", "success");
+        
+        if(error) {
+            alert("DB Error: " + JSON.stringify(error)); 
+        } else {
+            showToast("Permissions Updated!", "success");
+        }
     }
 
     async function toggleShowWinners(checked) {
