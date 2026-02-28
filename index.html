@@ -1,1 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Disruption | Supabase</title>
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #1c1c1c; /* Supabase Dark Background */
+            color: #ededed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin-top: 60px;
+        }
+
+        /* Logo Area */
+        .logo-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* Header Section */
+        .header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        /* Responsive Typography */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .container {
+                margin-top: 30px;
+            }
+        }
+
+        /* Content Box */
+        .content-box {
+            background-color: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: rgba(237, 137, 54, 0.15); /* Orange warning bg */
+            color: #ed8936; /* Orange warning text */
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid rgba(237, 137, 54, 0.3);
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .description {
+            font-size: 1rem;
+            color: #a0a0a0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* Link Styling */
+        .status-link {
+            color: #3ecf8e; /* Supabase Green */
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .status-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Incident Details (Hidden cause revealed) */
+        .incident-details {
+            border-top: 1px solid #3a3a3a;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .incident-item {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+
+        .incident-item strong {
+            color: #d0d0d0;
+        }
+
+        /* Pulse Animation for "Investigating" */
+        .pulse-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #ed8936;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding-top: 40px;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <svg class="logo-icon" viewBox="0 0 109 113" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z" fill="url(#paint0_linear)"/>
+                <path d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z" fill="url(#paint1_linear)" fill-opacity="0.2"/>
+                <path d="M45.317 2.07103C48.1765 -1.53037 53.9745 0.442937 54.0434 5.041L54.4849 72.2922H9.83113C1.64038 72.2922 -2.92781 62.8321 2.1655 56.4175L45.317 2.07103Z" fill="#3ECF8E"/>
+                <defs>
+                    <linearGradient id="paint0_linear" x1="53.9738" y1="54.974" x2="94.1635" y2="71.8295" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#249361"/>
+                        <stop offset="1" stop-color="#3ECF8E"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear" x1="36.1558" y1="30.578" x2="54.4844" y2="65.0806" gradientUnits="userSpaceOnUse">
+                        <stop/>
+                        <stop offset="1" stop-opacity="0"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <span class="logo-text">Supabase</span>
+        </div>
+
+        <!-- Main Content -->
+        <div class="header">
+            <h1>We are investigating a technical issue</h1>
+        </div>
+
+        <div class="content-box">
+            <span class="status-badge"><span class="pulse-dot"></span>Investigating</span>
+            <h2 class="title">Database Service Disruption</h2>
+            <p class="description">
+                We are currently investigating a service disruption affecting our database infrastructure.
+                Follow the <a href="https://status.supabase.com/" target="_blank" class="status-link">status page</a> for updates.
+            </p>
+
+            <!-- Context Details from previous request -->
+            <div class="incident-details">
+                <div class="incident-item">
+                    <strong>Impacted Region:</strong> ap-south-1 (Mumbai, India)
+                </div>
+                <div class="incident-item">
+                    <strong>Issue:</strong> Connectivity issues detected due to an ISP-level block affecting Indian traffic.
+                </div>
+                <div class="incident-item">
+                    <strong>Next Update:</strong> We will provide an update as soon as the root cause is identified.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        &copy; 2026 Supabase Inc. All rights reserved.
+    </div>
+
+</body>
+</html>
