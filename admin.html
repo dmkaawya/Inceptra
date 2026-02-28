@@ -13,101 +13,29 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        display: ['Orbitron', 'sans-serif'],
-                        body: ['Rajdhani', 'sans-serif'],
-                    },
-                    colors: {
-                        cyan: '#00f5d4',
-                        magenta: '#f72585',
-                        gold: '#ffd60a',
-                    }
+                    fontFamily: { display: ['Orbitron', 'sans-serif'], body: ['Rajdhani', 'sans-serif'] },
+                    colors: { cyan: '#00f5d4', magenta: '#f72585', gold: '#ffd60a' }
                 }
             }
         }
     </script>
     <style>
-        :root {
-            --bg: #0a0a0a;
-            --fg: #ffffff;
-            --muted: #6b7280;
-            --card: rgba(20, 20, 20, 0.9);
-            --border: rgba(0, 245, 212, 0.3);
-        }
-        
-        .light {
-            --bg: #f8fafc;
-            --fg: #0f172a;
-            --card: rgba(255, 255, 255, 0.9);
-            --border: rgba(0, 245, 212, 0.5);
-        }
-        
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background: var(--bg);
-            color: var(--fg);
-        }
-        
+        :root { --bg: #0a0a0a; --fg: #ffffff; --card: rgba(20, 20, 20, 0.9); --border: rgba(0, 245, 212, 0.3); }
+        .light { --bg: #f8fafc; --fg: #0f172a; --card: rgba(255, 255, 255, 0.9); --border: rgba(0, 245, 212, 0.5); }
+        body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--fg); }
         .font-display { font-family: 'Orbitron', sans-serif; }
-        
-        .card-bg {
-            background: var(--card);
-            border: 1px solid var(--border);
-        }
-        
-        .input-field {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            color: var(--fg);
-        }
-        
-        .input-field:focus {
-            outline: none;
-            border-color: #00f5d4;
-            box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.2);
-        }
-        
+        .card-bg { background: var(--card); border: 1px solid var(--border); }
+        .input-field { background: var(--bg); border: 1px solid var(--border); color: var(--fg); }
+        .input-field:focus { outline: none; border-color: #00f5d4; box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.2); }
         .sidebar-link { transition: all 0.2s ease; }
-        
-        .sidebar-link:hover, .sidebar-link.active {
-            background: rgba(0, 245, 212, 0.1);
-            border-left: 3px solid #00f5d4;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #00f5d4, #f72585);
-            transition: all 0.3s ease;
-        }
-        
+        .sidebar-link:hover, .sidebar-link.active { background: rgba(0, 245, 212, 0.1); border-left: 3px solid #00f5d4; }
+        .btn-primary { background: linear-gradient(135deg, #00f5d4, #f72585); transition: all 0.3s ease; }
         .btn-primary:hover { transform: scale(1.02); }
-        
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid #00f5d4;
-            color: #00f5d4;
-        }
-        
-        .btn-secondary:hover {
-            background: #00f5d4;
-            color: #0a0a0a;
-        }
-        
+        .btn-secondary { background: transparent; border: 1px solid #00f5d4; color: #00f5d4; }
+        .btn-secondary:hover { background: #00f5d4; color: #0a0a0a; }
         .status-pending { color: #ffd60a; }
-        .status-approved { color: #00f5d4; }
-        .status-confirmed { color: #00f5d4; }
-        .status-rejected { color: #f72585; }
-        .status-cancelled { color: #f72585; }
-        
-        .gender-btn {
-            border: 1px solid var(--border);
-            transition: all 0.2s ease;
-        }
-        
-        .gender-btn.active {
-            border-color: #00f5d4;
-            background: rgba(0, 245, 212, 0.2);
-            color: #00f5d4;
-        }
+        .status-approved, .status-confirmed { color: #00f5d4; }
+        .status-rejected, .status-cancelled { color: #f72585; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -136,37 +64,7 @@
                 <button type="button" onclick="handleLogin()" class="btn-primary w-full py-3 rounded-lg font-semibold text-white mb-4">Sign In</button>
                 <p class="text-center text-gray-400 text-sm">
                     Don't have an account? 
-                    <button type="button" onclick="showRegister()" class="text-cyan hover:underline">Register</button>
-                </p>
-            </div>
-
-            <div id="registerForm" class="hidden">
-                <div class="space-y-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Full Name</label>
-                        <input type="text" id="regName" class="input-field w-full px-4 py-3 rounded-lg" placeholder="Your name">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Email</label>
-                        <input type="email" id="regEmail" class="input-field w-full px-4 py-3 rounded-lg" placeholder="admin@email.com">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Password</label>
-                        <input type="password" id="regPassword" class="input-field w-full px-4 py-3 rounded-lg" placeholder="Create password">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Gender</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <button type="button" onclick="selectGender('male')" id="genderMale" class="gender-btn px-4 py-3 rounded-lg text-center">Male</button>
-                            <button type="button" onclick="selectGender('female')" id="genderFemale" class="gender-btn px-4 py-3 rounded-lg text-center">Female</button>
-                        </div>
-                        <input type="hidden" id="regGender" value="">
-                    </div>
-                </div>
-                <button type="button" onclick="handleRegister()" class="btn-primary w-full py-3 rounded-lg font-semibold text-white mb-4">Register</button>
-                <p class="text-center text-gray-400 text-sm">
-                    Already have an account? 
-                    <button type="button" onclick="showLogin()" class="text-cyan hover:underline">Sign In</button>
+                    <a href="register.html" class="text-cyan hover:underline">Register Here</a>
                 </p>
             </div>
         </div>
@@ -180,9 +78,7 @@
                 <span class="text-magenta"> ADMIN</span>
             </h1>
             <button type="button" onclick="toggleMobileMenu()" class="p-2 hover:bg-gray-800 rounded-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
         </header>
 
@@ -197,39 +93,27 @@
 
                 <nav class="p-4 space-y-2">
                     <button type="button" onclick="showSection('dashboard')" class="sidebar-link active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="dashboard">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                        </svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                         Dashboard
                     </button>
                     <button type="button" onclick="showSection('bookings')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="bookings">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                         Bookings
                     </button>
                     <button type="button" onclick="showSection('tickets')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="tickets">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
-                        </svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
                         Tickets
                     </button>
                     <button type="button" onclick="showSection('payments')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="payments">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                        </svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                         Payment Methods
                     </button>
                     <button type="button" onclick="showSection('whatsapp')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="whatsapp">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                         WhatsApp Numbers
                     </button>
                     <button type="button" onclick="showSection('admins')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="admins" id="adminsLink">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                         Admin Users
                     </button>
                 </nav>
@@ -237,10 +121,8 @@
                 <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-sm text-gray-400">Theme</span>
-                        <button type="button" onclick="toggleTheme()" id="themeBtn" class="p-2 hover:bg-gray-800 rounded-lg">
-                            <svg id="themeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                            </svg>
+                        <button type="button" onclick="toggleTheme()" class="p-2 hover:bg-gray-800 rounded-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                         </button>
                     </div>
                     <div class="flex items-center justify-between">
@@ -352,7 +234,6 @@
                                         <th class="px-4 py-3 text-left text-sm font-medium">Email</th>
                                         <th class="px-4 py-3 text-left text-sm font-medium">Gender</th>
                                         <th class="px-4 py-3 text-left text-sm font-medium">Role</th>
-                                        <th class="px-4 py-3 text-left text-sm font-medium">Status</th>
                                         <th class="px-4 py-3 text-left text-sm font-medium">Actions</th>
                                     </tr>
                                 </thead>
@@ -365,7 +246,7 @@
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Modals (Ticket, Payment, WP, Booking) -->
     <div id="ticketModal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/80" onclick="closeTicketModal()"></div>
         <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
@@ -510,7 +391,7 @@
         </div>
     </footer>
 
-    <!-- JavaScript Module -->
+    <!-- JS -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
@@ -527,113 +408,30 @@
         let admins = [];
         let selectedBooking = null;
 
-        // Theme
         window.toggleTheme = function() {
             const isDark = document.documentElement.classList.contains('dark');
-            if (isDark) {
-                document.documentElement.classList.remove('dark');
-                document.body.classList.add('light');
-            } else {
-                document.documentElement.classList.add('dark');
-                document.body.classList.remove('light');
-            }
+            if (isDark) { document.documentElement.classList.remove('dark'); document.body.classList.add('light'); }
+            else { document.documentElement.classList.add('dark'); document.body.classList.remove('light'); }
             localStorage.setItem('adminTheme', isDark ? 'light' : 'dark');
         };
 
         const savedTheme = localStorage.getItem('adminTheme');
-        if (savedTheme === 'light') {
-            document.body.classList.add('light');
-        } else {
-            document.documentElement.classList.add('dark');
-        }
-
-        // Gender Selection
-        window.selectGender = function(gender) {
-            document.getElementById('regGender').value = gender;
-            document.getElementById('genderMale').classList.remove('active');
-            document.getElementById('genderFemale').classList.remove('active');
-            document.getElementById(gender === 'male' ? 'genderMale' : 'genderFemale').classList.add('active');
-        };
-
-        // Auth
-        window.showRegister = function() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('registerForm').classList.remove('hidden');
-        };
-
-        window.showLogin = function() {
-            document.getElementById('registerForm').classList.add('hidden');
-            document.getElementById('loginForm').classList.remove('hidden');
-        };
-
-        window.handleRegister = async function() {
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-            const gender = document.getElementById('regGender').value;
-
-            if (!name || !email || !password || !gender) {
-                alert('Please fill all fields including gender');
-                return;
-            }
-
-            try {
-                const { data, error } = await supabase
-                    .from('admin_users')
-                    .insert([{ 
-                        name, 
-                        email, 
-                        password, 
-                        gender,
-                        role: 'admin', 
-                        status: 'approved' // Auto-approve
-                    }])
-                    .select();
-
-                if (error) {
-                    alert('Error registering: ' + error.message);
-                    return;
-                }
-
-                if (data && data[0]) {
-                    currentUser = data[0];
-                    localStorage.setItem('adminUser', JSON.stringify(data[0]));
-                    alert('Registration successful!');
-                    showDashboard();
-                }
-            } catch (err) {
-                alert('Registration failed: ' + err.message);
-            }
-        };
+        if (savedTheme === 'light') document.body.classList.add('light');
+        else document.documentElement.classList.add('dark');
 
         window.handleLogin = async function() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
-            if (!email || !password) {
-                alert('Please enter email and password');
-                return;
-            }
+            if (!email || !password) { alert('Please enter email and password'); return; }
 
             try {
-                const { data, error } = await supabase
-                    .from('admin_users')
-                    .select('*')
-                    .eq('email', email)
-                    .eq('password', password)
-                    .single();
-
-                if (error || !data) {
-                    alert('Invalid credentials');
-                    return;
-                }
-
+                const { data, error } = await supabase.from('admin_users').select('*').eq('email', email).eq('password', password).single();
+                if (error || !data) { alert('Invalid credentials'); return; }
                 currentUser = data;
                 localStorage.setItem('adminUser', JSON.stringify(data));
                 showDashboard();
-            } catch (err) {
-                alert('Login failed: ' + err.message);
-            }
+            } catch (err) { alert('Login failed: ' + err.message); }
         };
 
         window.logout = function() {
@@ -641,8 +439,6 @@
             localStorage.removeItem('adminUser');
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('registerForm').classList.add('hidden');
         };
 
         function showDashboard() {
@@ -650,31 +446,18 @@
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('adminName').textContent = currentUser.name;
             document.getElementById('adminRole').textContent = currentUser.role;
-
-            if (currentUser.role === 'admin') {
-                document.getElementById('adminsLink').classList.add('hidden');
-            } else {
-                document.getElementById('adminsLink').classList.remove('hidden');
-            }
-
+            if (currentUser.role === 'admin') document.getElementById('adminsLink').classList.add('hidden');
+            else document.getElementById('adminsLink').classList.remove('hidden');
             loadDashboardData();
             showSection('dashboard');
         }
 
         window.showSection = function(section) {
-            const sections = ['dashboard', 'bookings', 'tickets', 'payments', 'whatsapp', 'admins'];
-            sections.forEach(s => {
-                document.getElementById(s + 'Section').classList.add('hidden');
-            });
+            ['dashboard', 'bookings', 'tickets', 'payments', 'whatsapp', 'admins'].forEach(s => document.getElementById(s + 'Section').classList.add('hidden'));
             document.getElementById(section + 'Section').classList.remove('hidden');
-
-            document.querySelectorAll('.sidebar-link').forEach(link => {
-                link.classList.remove('active');
-            });
+            document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
             document.querySelector(`[data-section="${section}"]`).classList.add('active');
-
             document.getElementById('sidebar').classList.add('-translate-x-full');
-
             if (section === 'bookings') loadBookings();
             if (section === 'tickets') loadTickets();
             if (section === 'payments') loadPaymentMethods();
@@ -682,64 +465,39 @@
             if (section === 'admins') loadAdmins();
         };
 
-        window.toggleMobileMenu = function() {
-            document.getElementById('sidebar').classList.toggle('-translate-x-full');
-        };
+        window.toggleMobileMenu = function() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); };
 
-        // Dashboard
         async function loadDashboardData() {
             const { data: allBookings } = await supabase.from('bookings').select('*, tickets(name)');
-
             if (allBookings) {
                 bookings = allBookings;
                 document.getElementById('totalBookings').textContent = bookings.length;
                 document.getElementById('pendingBookings').textContent = bookings.filter(b => b.status === 'pending').length;
                 document.getElementById('confirmedBookings').textContent = bookings.filter(b => b.status === 'confirmed').length;
-                
                 const total = bookings.filter(b => b.status === 'confirmed').reduce((sum, b) => sum + parseFloat(b.total_amount || 0), 0);
                 document.getElementById('totalRevenue').textContent = 'LKR ' + total.toLocaleString();
-
                 const recent = bookings.slice(-5).reverse();
                 document.getElementById('recentBookings').innerHTML = recent.length > 0 ? recent.map(b => `
                     <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
-                        <div>
-                            <p class="font-medium">${b.full_name}</p>
-                            <p class="text-sm text-gray-400">${b.tickets?.name || 'Unknown Ticket'}</p>
-                        </div>
+                        <div><p class="font-medium">${b.full_name}</p><p class="text-sm text-gray-400">${b.tickets?.name || 'Unknown'}</p></div>
                         <span class="text-sm font-medium status-${b.status}">${b.status}</span>
                     </div>
                 `).join('') : '<p class="text-gray-500 text-center">No bookings yet</p>';
             }
         }
 
-        // Bookings
         async function loadBookings() {
-            const { data } = await supabase
-                .from('bookings')
-                .select('*, tickets(name), payment_methods(name)')
-                .order('created_at', { ascending: false });
-
+            const { data } = await supabase.from('bookings').select('*, tickets(name), payment_methods(name)').order('created_at', { ascending: false });
             if (data) bookings = data;
             renderBookings();
         }
 
-        window.filterBookings = function() {
-            renderBookings();
-        };
+        window.filterBookings = function() { renderBookings(); };
 
         function renderBookings() {
             const filter = document.getElementById('bookingFilter').value;
-            let filtered = bookings;
-
-            if (filter !== 'all') {
-                filtered = bookings.filter(b => b.status === filter);
-            }
-
-            if (filtered.length === 0) {
-                document.getElementById('bookingsTable').innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No bookings found</td></tr>';
-                return;
-            }
-
+            let filtered = filter === 'all' ? bookings : bookings.filter(b => b.status === filter);
+            if (filtered.length === 0) { document.getElementById('bookingsTable').innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No bookings found</td></tr>'; return; }
             document.getElementById('bookingsTable').innerHTML = filtered.map(b => `
                 <tr class="hover:bg-gray-800/50">
                     <td class="px-4 py-3 text-sm font-mono">${b.id.slice(0, 8)}...</td>
@@ -747,20 +505,13 @@
                     <td class="px-4 py-3 text-sm">${b.tickets?.name || '-'}</td>
                     <td class="px-4 py-3 text-sm">LKR ${parseFloat(b.total_amount || 0).toLocaleString()}</td>
                     <td class="px-4 py-3"><span class="status-${b.status} font-medium">${b.status}</span></td>
-                    <td class="px-4 py-3">
-                        <button type="button" onclick="viewBooking('${b.id}')" class="text-cyan text-sm hover:underline">View</button>
-                    </td>
+                    <td class="px-4 py-3"><button type="button" onclick="viewBooking('${b.id}')" class="text-cyan text-sm hover:underline">View</button></td>
                 </tr>
             `).join('');
         }
 
         window.viewBooking = async function(id) {
-            const { data } = await supabase
-                .from('bookings')
-                .select('*, tickets(name, price), payment_methods(name)')
-                .eq('id', id)
-                .single();
-
+            const { data } = await supabase.from('bookings').select('*, tickets(name, price), payment_methods(name)').eq('id', id).single();
             if (data) {
                 selectedBooking = data;
                 document.getElementById('bookingDetails').innerHTML = `
@@ -782,19 +533,13 @@
             }
         };
 
-        window.closeBookingModal = function() {
-            document.getElementById('bookingModal').classList.add('hidden');
-        };
-
+        window.closeBookingModal = function() { document.getElementById('bookingModal').classList.add('hidden'); };
         window.updateBookingStatus = async function(status) {
             if (!selectedBooking) return;
             await supabase.from('bookings').update({ status }).eq('id', selectedBooking.id);
-            closeBookingModal();
-            loadBookings();
-            loadDashboardData();
+            closeBookingModal(); loadBookings(); loadDashboardData();
         };
 
-        // Tickets
         async function loadTickets() {
             const { data } = await supabase.from('tickets').select('*').order('position');
             if (data) tickets = data;
@@ -802,11 +547,7 @@
         }
 
         function renderTickets() {
-            if (tickets.length === 0) {
-                document.getElementById('ticketsList').innerHTML = '<p class="text-gray-500 col-span-2 text-center py-8">No tickets yet</p>';
-                return;
-            }
-
+            if (tickets.length === 0) { document.getElementById('ticketsList').innerHTML = '<p class="text-gray-500 col-span-2 text-center py-8">No tickets yet</p>'; return; }
             document.getElementById('ticketsList').innerHTML = tickets.map(t => `
                 <div class="card-bg rounded-xl p-4 flex gap-4">
                     <div class="w-24 h-24 rounded-lg bg-gray-800 overflow-hidden flex-shrink-0">
@@ -825,72 +566,22 @@
             `).join('');
         }
 
-        window.openTicketModal = function() {
-            document.getElementById('ticketForm').reset();
-            document.getElementById('ticketId').value = '';
-            document.getElementById('ticketModalTitle').textContent = 'Add Ticket';
-            document.getElementById('ticketActive').checked = true;
-            document.getElementById('ticketModal').classList.remove('hidden');
-        };
-
-        window.closeTicketModal = function() {
-            document.getElementById('ticketModal').classList.add('hidden');
-        };
-
-        window.editTicket = function(id) {
-            const ticket = tickets.find(t => t.id === id);
-            if (!ticket) return;
-            document.getElementById('ticketId').value = ticket.id;
-            document.getElementById('ticketName').value = ticket.name;
-            document.getElementById('ticketDesc').value = ticket.description || '';
-            document.getElementById('ticketPrice').value = ticket.price;
-            document.getElementById('ticketPos').value = ticket.position;
-            document.getElementById('ticketImage').value = ticket.image_url || '';
-            document.getElementById('ticketActive').checked = ticket.is_active;
-            document.getElementById('ticketModalTitle').textContent = 'Edit Ticket';
-            document.getElementById('ticketModal').classList.remove('hidden');
-        };
-
-        window.deleteTicket = async function(id) {
-            if (!confirm('Delete this ticket?')) return;
-            await supabase.from('tickets').delete().eq('id', id);
-            loadTickets();
-        };
-
+        window.openTicketModal = function() { document.getElementById('ticketForm').reset(); document.getElementById('ticketId').value = ''; document.getElementById('ticketModalTitle').textContent = 'Add Ticket'; document.getElementById('ticketActive').checked = true; document.getElementById('ticketModal').classList.remove('hidden'); };
+        window.closeTicketModal = function() { document.getElementById('ticketModal').classList.add('hidden'); };
+        window.editTicket = function(id) { const ticket = tickets.find(t => t.id === id); if (!ticket) return; document.getElementById('ticketId').value = ticket.id; document.getElementById('ticketName').value = ticket.name; document.getElementById('ticketDesc').value = ticket.description || ''; document.getElementById('ticketPrice').value = ticket.price; document.getElementById('ticketPos').value = ticket.position; document.getElementById('ticketImage').value = ticket.image_url || ''; document.getElementById('ticketActive').checked = ticket.is_active; document.getElementById('ticketModalTitle').textContent = 'Edit Ticket'; document.getElementById('ticketModal').classList.remove('hidden'); };
+        window.deleteTicket = async function(id) { if (!confirm('Delete this ticket?')) return; await supabase.from('tickets').delete().eq('id', id); loadTickets(); };
         document.getElementById('ticketForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('ticketId').value;
-            const data = {
-                name: document.getElementById('ticketName').value,
-                description: document.getElementById('ticketDesc').value,
-                price: parseFloat(document.getElementById('ticketPrice').value),
-                position: parseInt(document.getElementById('ticketPos').value) || 0,
-                image_url: document.getElementById('ticketImage').value || null,
-                is_active: document.getElementById('ticketActive').checked
-            };
-
-            if (id) {
-                await supabase.from('tickets').update(data).eq('id', id);
-            } else {
-                await supabase.from('tickets').insert([data]);
-            }
-            closeTicketModal();
-            loadTickets();
+            const data = { name: document.getElementById('ticketName').value, description: document.getElementById('ticketDesc').value, price: parseFloat(document.getElementById('ticketPrice').value), position: parseInt(document.getElementById('ticketPos').value) || 0, image_url: document.getElementById('ticketImage').value || null, is_active: document.getElementById('ticketActive').checked };
+            if (id) await supabase.from('tickets').update(data).eq('id', id);
+            else await supabase.from('tickets').insert([data]);
+            closeTicketModal(); loadTickets();
         });
 
-        // Payment Methods
-        async function loadPaymentMethods() {
-            const { data } = await supabase.from('payment_methods').select('*');
-            if (data) paymentMethods = data;
-            renderPaymentMethods();
-        }
-
+        async function loadPaymentMethods() { const { data } = await supabase.from('payment_methods').select('*'); if (data) paymentMethods = data; renderPaymentMethods(); }
         function renderPaymentMethods() {
-            if (paymentMethods.length === 0) {
-                document.getElementById('paymentsList').innerHTML = '<p class="text-gray-500 col-span-2 text-center py-8">No payment methods</p>';
-                return;
-            }
-
+            if (paymentMethods.length === 0) { document.getElementById('paymentsList').innerHTML = '<p class="text-gray-500 col-span-2 text-center py-8">No payment methods</p>'; return; }
             document.getElementById('paymentsList').innerHTML = paymentMethods.map(p => `
                 <div class="card-bg rounded-xl p-4">
                     <div class="flex justify-between items-start mb-3">
@@ -907,73 +598,22 @@
                 </div>
             `).join('');
         }
-
-        window.openPaymentModal = function() {
-            document.getElementById('paymentForm').reset();
-            document.getElementById('paymentId').value = '';
-            document.getElementById('paymentActive').checked = true;
-            document.getElementById('paymentModal').classList.remove('hidden');
-        };
-
-        window.closePaymentModal = function() {
-            document.getElementById('paymentModal').classList.add('hidden');
-        };
-
-        window.editPayment = function(id) {
-            const pm = paymentMethods.find(p => p.id === id);
-            if (!pm) return;
-            document.getElementById('paymentId').value = pm.id;
-            document.getElementById('paymentName').value = pm.name;
-            document.getElementById('paymentType').value = pm.type;
-            document.getElementById('paymentBank').value = pm.bank_name || '';
-            document.getElementById('paymentAccNum').value = pm.account_number || '';
-            document.getElementById('paymentAccName').value = pm.account_name || '';
-            document.getElementById('paymentLocation').value = pm.location || '';
-            document.getElementById('paymentActive').checked = pm.is_active;
-            document.getElementById('paymentModal').classList.remove('hidden');
-        };
-
-        window.deletePayment = async function(id) {
-            if (!confirm('Delete this payment method?')) return;
-            await supabase.from('payment_methods').delete().eq('id', id);
-            loadPaymentMethods();
-        };
-
+        window.openPaymentModal = function() { document.getElementById('paymentForm').reset(); document.getElementById('paymentId').value = ''; document.getElementById('paymentActive').checked = true; document.getElementById('paymentModal').classList.remove('hidden'); };
+        window.closePaymentModal = function() { document.getElementById('paymentModal').classList.add('hidden'); };
+        window.editPayment = function(id) { const pm = paymentMethods.find(p => p.id === id); if (!pm) return; document.getElementById('paymentId').value = pm.id; document.getElementById('paymentName').value = pm.name; document.getElementById('paymentType').value = pm.type; document.getElementById('paymentBank').value = pm.bank_name || ''; document.getElementById('paymentAccNum').value = pm.account_number || ''; document.getElementById('paymentAccName').value = pm.account_name || ''; document.getElementById('paymentLocation').value = pm.location || ''; document.getElementById('paymentActive').checked = pm.is_active; document.getElementById('paymentModal').classList.remove('hidden'); };
+        window.deletePayment = async function(id) { if (!confirm('Delete this payment method?')) return; await supabase.from('payment_methods').delete().eq('id', id); loadPaymentMethods(); };
         document.getElementById('paymentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('paymentId').value;
-            const data = {
-                name: document.getElementById('paymentName').value,
-                type: document.getElementById('paymentType').value,
-                bank_name: document.getElementById('paymentBank').value || null,
-                account_number: document.getElementById('paymentAccNum').value || null,
-                account_name: document.getElementById('paymentAccName').value || null,
-                location: document.getElementById('paymentLocation').value || null,
-                is_active: document.getElementById('paymentActive').checked
-            };
-
-            if (id) {
-                await supabase.from('payment_methods').update(data).eq('id', id);
-            } else {
-                await supabase.from('payment_methods').insert([data]);
-            }
-            closePaymentModal();
-            loadPaymentMethods();
+            const data = { name: document.getElementById('paymentName').value, type: document.getElementById('paymentType').value, bank_name: document.getElementById('paymentBank').value || null, account_number: document.getElementById('paymentAccNum').value || null, account_name: document.getElementById('paymentAccName').value || null, location: document.getElementById('paymentLocation').value || null, is_active: document.getElementById('paymentActive').checked };
+            if (id) await supabase.from('payment_methods').update(data).eq('id', id);
+            else await supabase.from('payment_methods').insert([data]);
+            closePaymentModal(); loadPaymentMethods();
         });
 
-        // WhatsApp
-        async function loadWhatsappNumbers() {
-            const { data } = await supabase.from('whatsapp_numbers').select('*');
-            if (data) whatsappNumbers = data;
-            renderWhatsappNumbers();
-        }
-
+        async function loadWhatsappNumbers() { const { data } = await supabase.from('whatsapp_numbers').select('*'); if (data) whatsappNumbers = data; renderWhatsappNumbers(); }
         function renderWhatsappNumbers() {
-            if (whatsappNumbers.length === 0) {
-                document.getElementById('wpList').innerHTML = '<p class="text-gray-500 col-span-4 text-center py-8">No WhatsApp numbers</p>';
-                return;
-            }
-
+            if (whatsappNumbers.length === 0) { document.getElementById('wpList').innerHTML = '<p class="text-gray-500 col-span-4 text-center py-8">No WhatsApp numbers</p>'; return; }
             document.getElementById('wpList').innerHTML = whatsappNumbers.map(w => `
                 <div class="card-bg rounded-xl p-4">
                     <h4 class="font-semibold">${w.name}</h4>
@@ -986,59 +626,20 @@
                 </div>
             `).join('');
         }
-
-        window.openWpModal = function() {
-            document.getElementById('wpForm').reset();
-            document.getElementById('wpId').value = '';
-            document.getElementById('wpActive').checked = true;
-            document.getElementById('wpModal').classList.remove('hidden');
-        };
-
-        window.closeWpModal = function() {
-            document.getElementById('wpModal').classList.add('hidden');
-        };
-
-        window.editWp = function(id) {
-            const wp = whatsappNumbers.find(w => w.id === id);
-            if (!wp) return;
-            document.getElementById('wpId').value = wp.id;
-            document.getElementById('wpName').value = wp.name;
-            document.getElementById('wpNumber').value = wp.number;
-            document.getElementById('wpActive').checked = wp.is_active;
-            document.getElementById('wpModal').classList.remove('hidden');
-        };
-
-        window.deleteWp = async function(id) {
-            if (!confirm('Delete this number?')) return;
-            await supabase.from('whatsapp_numbers').delete().eq('id', id);
-            loadWhatsappNumbers();
-        };
-
+        window.openWpModal = function() { document.getElementById('wpForm').reset(); document.getElementById('wpId').value = ''; document.getElementById('wpActive').checked = true; document.getElementById('wpModal').classList.remove('hidden'); };
+        window.closeWpModal = function() { document.getElementById('wpModal').classList.add('hidden'); };
+        window.editWp = function(id) { const wp = whatsappNumbers.find(w => w.id === id); if (!wp) return; document.getElementById('wpId').value = wp.id; document.getElementById('wpName').value = wp.name; document.getElementById('wpNumber').value = wp.number; document.getElementById('wpActive').checked = wp.is_active; document.getElementById('wpModal').classList.remove('hidden'); };
+        window.deleteWp = async function(id) { if (!confirm('Delete this number?')) return; await supabase.from('whatsapp_numbers').delete().eq('id', id); loadWhatsappNumbers(); };
         document.getElementById('wpForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('wpId').value;
-            const data = {
-                name: document.getElementById('wpName').value,
-                number: document.getElementById('wpNumber').value,
-                is_active: document.getElementById('wpActive').checked
-            };
-
-            if (id) {
-                await supabase.from('whatsapp_numbers').update(data).eq('id', id);
-            } else {
-                await supabase.from('whatsapp_numbers').insert([data]);
-            }
-            closeWpModal();
-            loadWhatsappNumbers();
+            const data = { name: document.getElementById('wpName').value, number: document.getElementById('wpNumber').value, is_active: document.getElementById('wpActive').checked };
+            if (id) await supabase.from('whatsapp_numbers').update(data).eq('id', id);
+            else await supabase.from('whatsapp_numbers').insert([data]);
+            closeWpModal(); loadWhatsappNumbers();
         });
 
-        // Admin Users
-        async function loadAdmins() {
-            const { data } = await supabase.from('admin_users').select('*');
-            if (data) admins = data;
-            renderAdmins();
-        }
-
+        async function loadAdmins() { const { data } = await supabase.from('admin_users').select('*'); if (data) admins = data; renderAdmins(); }
         function renderAdmins() {
             document.getElementById('adminsTable').innerHTML = admins.map(a => `
                 <tr class="hover:bg-gray-800/50">
@@ -1046,35 +647,16 @@
                     <td class="px-4 py-3 text-sm">${a.email}</td>
                     <td class="px-4 py-3 text-sm capitalize">${a.gender || '-'}</td>
                     <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs ${a.role === 'owner' ? 'bg-gold/20 text-gold' : a.role === 'manager' ? 'bg-magenta/20 text-magenta' : 'bg-cyan/20 text-cyan'}">${a.role}</span></td>
-                    <td class="px-4 py-3"><span class="status-${a.status}">${a.status}</span></td>
                     <td class="px-4 py-3">
-                        ${currentUser?.role !== 'admin' ? `
-                            <select onchange="updateAdminRole('${a.id}', this.value)" class="input-field px-2 py-1 rounded text-sm">
-                                <option value="admin" ${a.role === 'admin' ? 'selected' : ''}>Admin</option>
-                                <option value="manager" ${a.role === 'manager' ? 'selected' : ''}>Manager</option>
-                                <option value="owner" ${a.role === 'owner' ? 'selected' : ''}>Owner</option>
-                            </select>
-                        ` : '-'}
+                        ${currentUser?.role !== 'admin' ? `<select onchange="updateAdminRole('${a.id}', this.value)" class="input-field px-2 py-1 rounded text-sm"><option value="admin" ${a.role === 'admin' ? 'selected' : ''}>Admin</option><option value="manager" ${a.role === 'manager' ? 'selected' : ''}>Manager</option><option value="owner" ${a.role === 'owner' ? 'selected' : ''}>Owner</option></select>` : '-'}
                     </td>
                 </tr>
             `).join('');
         }
+        window.updateAdminRole = async function(id, role) { await supabase.from('admin_users').update({ role }).eq('id', id); loadAdmins(); };
 
-        window.updateAdminRole = async function(id, role) {
-            await supabase.from('admin_users').update({ role }).eq('id', id);
-            loadAdmins();
-        };
-
-        // Check session
         const savedUser = localStorage.getItem('adminUser');
-        if (savedUser) {
-            try {
-                currentUser = JSON.parse(savedUser);
-                showDashboard();
-            } catch (e) {
-                localStorage.removeItem('adminUser');
-            }
-        }
+        if (savedUser) { try { currentUser = JSON.parse(savedUser); showDashboard(); } catch (e) { localStorage.removeItem('adminUser'); } }
     </script>
 </body>
 </html>
