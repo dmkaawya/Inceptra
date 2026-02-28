@@ -1,156 +1,788 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="si">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Masterminds</title>
+    <title>Inceptrra 25 - Ticket Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1; 
-            --secondary: #a855f7; 
-            --bg: #0b0f1a; 
-            --card-bg: rgba(255, 255, 255, 0.03);
+            --bg: #050505;
+            --surface: #0f0f0f;
+            --card: #141414;
+            --border: #262626;
             --text-main: #ffffff;
-            --text-sub: #94a3b8;
+            --text-muted: #a3a3a3;
+            --accent: #8b5cf6; /* Main Accent: Vibrant Purple */
+            --accent-hover: #7c3aed;
+            --accent-soft: rgba(139, 92, 246, 0.1);
+            --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
+            font-family: 'Outfit', sans-serif;
             background-color: var(--bg);
             color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-            margin: 0;
-            padding: 4rem 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Header Styling */
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
         }
 
-        .section-header h2 {
-            font-size: 3rem;
-            margin: 0;
-            background: linear-gradient(to right, #6366f1, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-        }
-
-        .section-header p {
-            color: var(--text-sub);
-            font-size: 1.1rem;
-            margin-top: 10px;
-        }
-
-        .team-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            max-width: 1200px;
+        /* Subtle Background Elements */
+        .bg-gradient-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
         }
 
-        .team-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            padding: 3rem 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
         }
 
-        .team-card:hover {
-            transform: translateY(-12px);
-            border-color: var(--secondary);
-            background: rgba(168, 85, 247, 0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--accent);
+            top: -200px;
+            right: -200px;
+            opacity: 0.15;
         }
 
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 25px; /* Squircle look */
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            margin: 0 auto 1.5rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 800;
-            font-size: 1.8rem;
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: #ec4899; /* Pink secondary */
+            bottom: -100px;
+            left: -200px;
+            opacity: 0.1;
+        }
+
+        /* Card Styling */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: #333;
+        }
+
+        /* Inputs */
+        .input-field {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
             color: white;
-            transform: rotate(-3deg);
+            width: 100%;
+            transition: all 0.2s;
         }
 
-        .team-card:hover .avatar {
-            transform: rotate(0deg) scale(1.1);
-            transition: 0.3s ease;
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        .role {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--primary);
-            letter-spacing: 1.5px;
-            margin-bottom: 0.5rem;
-            display: block;
+        /* Buttons */
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
 
-        h3 {
-            font-size: 1.6rem;
-            margin: 0.5rem 0;
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
         }
 
-        .bio {
-            color: var(--text-sub);
-            line-height: 1.6;
-            font-size: 0.95rem;
+        .btn-primary:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            filter: none;
+            box-shadow: none;
         }
 
-        @media (max-width: 768px) {
-            .section-header h2 { font-size: 2.2rem; }
-            .team-container { grid-template-columns: 1fr; }
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: white;
+            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: #444;
+        }
+
+        /* Selection Card */
+        .select-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .select-card:hover {
+            border-color: #444;
+        }
+
+        .select-card.active {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
+        }
+
+        /* Copy Button Style */
+        .copy-btn {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent);
+            cursor: pointer;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .copy-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Info Row for Copy */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+        .info-label {
+            color: #737373;
+            font-size: 11px;
+            width: 80px;
+        }
+        .info-val-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .info-value {
+            font-size: 12px;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
     </style>
 </head>
 <body>
 
-    <div class="section-header">
-        <h2>The Masterminds</h2>
-        <p>The crew that turned the vision into pixels and code.</p>
+    <!-- Background -->
+    <div class="bg-gradient-blur">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
     </div>
 
-    <div class="team-container">
-        
-        <div class="team-card">
-            <span class="role">Lead Web Developer</span>
-            <div class="avatar">DK</div>
-            <h3>DM Kaawya</h3>
-            <p class="bio">The heavy lifter on the tech side. If the site is fast and the code is clean, it’s because he built it that way.</p>
-        </div>
+    <!-- Main Container -->
+    <div class="min-h-screen flex flex-col">
 
-        <div class="team-card">
-            <span class="role">Head of Brand & Graphics</span>
-            <div class="avatar">TR</div>
-            <h3>Thashila Ranoosh</h3>
-            <p class="bio">Owner of the visual identity. Every graphic and color choice came from his desk to ensure the aesthetic was top-tier.</p>
-        </div>
+        <!-- Header -->
+        <header class="p-6 border-b border-[var(--border)] animate-in">
+            <div class="max-w-4xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-[var(--accent)] flex items-center justify-center text-white font-bold">
+                        I25
+                    </div>
+                    <div>
+                        <h1 class="font-display font-bold text-lg tracking-tight">INCEPTRRA 25</h1>
+                        <p class="text-xs text-[var(--text-muted)]">Official Ticket Store</p>
+                    </div>
+                </div>
+                <a href="support.html" class="text-sm text-[var(--text-muted)] hover:text-white transition-colors">Support</a>
+            </div>
+        </header>
 
-        <div class="team-card">
-            <span class="role">Product Concept & Co-Dev</span>
-            <div class="avatar">NB</div>
-            <h3>Nadeeja Bandara</h3>
-            <p class="bio">The hybrid. Conceptualized the entire digital experience and drove both the development and branding from day one.</p>
-        </div>
+        <!-- Content -->
+        <main class="flex-1 p-6">
+            <div class="max-w-4xl mx-auto space-y-10">
+
+                <!-- Event Hero Section -->
+                <section class="text-center space-y-4 animate-in delay-1">
+                    <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight">
+                        Where beginnings <span class="text-[var(--accent)]">become legacy</span>
+                    </h2>
+                    <div class="flex flex-wrap items-center justify-center gap-4 text-sm text-[var(--text-muted)]">
+                        <span class="flex items-center gap-2 bg-[var(--card)] px-3 py-1.5 rounded-full border border-[var(--border)]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            MARCH 17
+                        </span>
+                        <span class="flex items-center gap-2 bg-[var(--card)] px-3 py-1.5 rounded-full border border-[var(--border)]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            9.30 AM - 4.30 PM
+                        </span>
+                        <span class="flex items-center gap-2 bg-[var(--card)] px-3 py-1.5 rounded-full border border-[var(--border)]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                            Silanrich Hotel, Monaragala
+                        </span>
+                    </div>
+                </section>
+
+                <!-- Ticket & Booking Section -->
+                <section class="grid md:grid-cols-2 gap-8 animate-in delay-2">
+                    
+                    <!-- Left: Ticket Card -->
+                    <div class="card p-6 flex flex-col">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <span class="text-xs font-medium text-[var(--accent)] tracking-wider uppercase">Entrance Ticket</span>
+                                <h3 class="font-display text-2xl font-bold mt-1">Standard Access</h3>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-display text-3xl font-bold">LKR 3000</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3 flex-1 text-sm text-[var(--text-muted)]">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Event Access
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Networking Sessions
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Refreshments Included
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-[var(--border)]">
+                            <img src="https://z-cdn-media.chatglm.cn/files/f7622795-f424-4009-8472-3b55f7be3f93.jpg?auth_key=1872320776-c48fb169f24b47bea5538b74a0ecff74-0-754386994b7b84ae44fc3225c4226551" alt="Inceptrra 25 Ticket" class="w-full h-32 object-cover rounded-lg opacity-80 hover:opacity-100 transition-opacity"/>
+                        </div>
+                    </div>
+
+                    <!-- Right: Booking Contact Selection -->
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="font-display text-xl font-bold mb-2">Select Booking Contact</h3>
+                            <p class="text-sm text-[var(--text-muted)] mb-4">Choose an organizer to send your booking request via WhatsApp.</p>
+                            
+                            <div class="grid grid-cols-2 gap-3" id="contactGrid">
+                                <!-- Contacts populated by JS -->
+                            </div>
+                        </div>
+
+                        <button id="buyBtn" class="w-full btn-primary text-center" disabled onclick="openModal()">
+                            Select Contact to Proceed
+                        </button>
+                    </div>
+
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="p-6 mt-auto border-t border-[var(--border)]">
+            <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[var(--text-muted)]">
+                <div class="flex gap-6">
+                    <a href="support.html" class="hover:text-white transition-colors">Support</a>
+                    <a href="rules.html" class="hover:text-white transition-colors">Terms & Services</a>
+                </div>
+                <div>
+                    2026 Copyright. Powered by <a href="https://vezlo-web.vercel.app/" target="_blank" class="text-[var(--accent)] hover:underline">Vezlo Web</a>
+                </div>
+            </div>
+        </footer>
 
     </div>
 
+    <!-- Booking Modal -->
+    <div class="modal-overlay" id="bookingModal">
+        <div class="modal-content">
+            
+            <!-- Header -->
+            <div class="p-6 border-b border-[var(--border)] flex justify-between items-center">
+                <div>
+                    <h3 class="font-display text-xl font-bold">Complete Booking</h3>
+                    <p class="text-sm text-[var(--text-muted)]">Step <span id="stepIndicator">1</span> of 3</p>
+                </div>
+                <button onclick="closeModal()" class="text-[var(--text-muted)] hover:text-white p-2 rounded-lg hover:bg-white/5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Step 1: Personal Details -->
+            <div id="step1" class="step-panel p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Full Name *</label>
+                    <input type="text" id="name" class="input-field" placeholder="Enter your name">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">WhatsApp Number *</label>
+                        <input type="text" id="wp" class="input-field" placeholder="07XXXXXXXX">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Work Number</label>
+                        <input type="text" id="work" class="input-field" placeholder="Optional">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Email Address (Optional)</label>
+                    <input type="email" id="email" class="input-field" placeholder="your@email.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Special Note</label>
+                    <textarea id="note" rows="2" class="input-field resize-none" placeholder="Any special requirements..."></textarea>
+                </div>
+                <button class="w-full btn-primary mt-4" onclick="nextStep(2)">Continue to Payment</button>
+            </div>
+
+            <!-- Step 2: Payment Method -->
+            <div id="step2" class="step-panel p-6 hidden">
+                
+                <!-- Online Payment Notice -->
+                <div class="bg-amber-500/10 border border-amber-500/20 text-amber-300 p-3 rounded-lg text-xs mb-5 flex items-start gap-2">
+                    <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span>Online bank transfers must be confirmed by sending the payment receipt to the organizer via WhatsApp.</span>
+                </div>
+
+                <p class="text-sm text-[var(--text-muted)] mb-4">Choose a payment method. Use <span class="text-[var(--accent)]">Copy</span> to save details.</p>
+                
+                <div class="space-y-3">
+                    <!-- Bank 1 -->
+                    <div class="select-card" onclick="selectPayment(this, 'bank1')">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-sm">Bank Transfer - CBC</h4>
+                                <p class="text-xs text-[var(--text-muted)]">Ceylon Banking Corporation</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Updated Bank Details Structure -->
+                        <div class="bank-details hidden mt-3 pt-3 border-t border-[var(--border)] text-xs space-y-2">
+                            <div class="info-row">
+                                <span class="info-label">Bank</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">Ceylon Banking Corporation</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('Ceylon Banking Corporation', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Branch</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">Monaragala Branch</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('Monaragala Branch', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Acc Name</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">MR.PAT Dulmika</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('MR.PAT Dulmika', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Acc Number</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">0094709986</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('0094709986', this)">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bank 2 -->
+                    <div class="select-card" onclick="selectPayment(this, 'bank2')">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-sm">Bank Transfer - Peoples Bank</h4>
+                                <p class="text-xs text-[var(--text-muted)]">Peoples Bank</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Updated Bank Details Structure -->
+                        <div class="bank-details hidden mt-3 pt-3 border-t border-[var(--border)] text-xs space-y-2">
+                            <div class="info-row">
+                                <span class="info-label">Bank</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">Peoples Bank</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('Peoples Bank', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Branch</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">Monaragala Branch</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('Monaragala Branch', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Acc Name</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">MR.MJKDT Nimsara</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('MR.MJKDT Nimsara', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Acc Number</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">068 2 001 10084831</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('068 2 001 10084831', this)">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- On-site -->
+                    <div class="select-card" onclick="selectPayment(this, 'onsite')">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center text-green-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-sm">Physical Purchase</h4>
+                                <p class="text-xs text-[var(--text-muted)]">Zeus (Monaragala)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button class="flex-1 btn-secondary" onclick="prevStep(1)">Back</button>
+                    <button id="step2Next" class="flex-1 btn-primary" onclick="nextStep(3)" disabled>Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Summary -->
+            <div id="step3" class="step-panel p-6 hidden">
+                <div class="bg-white/5 p-4 rounded-xl mb-6 space-y-3 text-sm">
+                    <div class="flex justify-between"><span class="text-[var(--text-muted)]">Name</span><span id="sumName" class="font-medium">-</span></div>
+                    <div class="flex justify-between"><span class="text-[var(--text-muted)]">Ticket</span><span class="font-medium">Entrance (LKR 3000)</span></div>
+                    <div class="flex justify-between"><span class="text-[var(--text-muted)]">Payment</span><span id="sumPay" class="font-medium">-</span></div>
+                </div>
+
+                <label class="flex items-start gap-3 cursor-pointer mb-6" onclick="toggleRules()">
+                    <div id="rulesCheck" class="w-5 h-5 mt-0.5 rounded border border-[var(--border)] flex items-center justify-center transition-colors">
+                        <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <span class="text-sm text-[var(--text-muted)]">I agree to the <a href="rules.html" target="_blank" class="text-[var(--accent)] hover:underline">Terms & Conditions</a></span>
+                </label>
+
+                <div class="flex gap-3">
+                    <button class="flex-1 btn-secondary" onclick="prevStep(2)">Back</button>
+                    <button id="confirmBtn" class="flex-1 btn-primary" onclick="confirmBooking()" disabled>Confirm Booking</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Success -->
+            <div id="step4" class="step-panel p-6 text-center hidden">
+                <div class="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <h3 class="font-display text-xl font-bold mb-2">Booking Request Sent</h3>
+                <p class="text-sm text-[var(--text-muted)] mb-6">Please check WhatsApp to complete your conversation with the organizer.</p>
+                
+                <a id="waBtn" href="#" target="_blank" class="w-full btn-primary inline-flex items-center justify-center gap-2 bg-green-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    Open WhatsApp
+                </a>
+                <button class="w-full btn-secondary mt-3" onclick="closeModal()">Close</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Real Data
+        const contacts = [
+            { id: 1, name: 'Teran', phone: '0782493599' },
+            { id: 2, name: 'Nadeepa', phone: '0764710965' },
+            { id: 3, name: 'Damindu', phone: '0767352138' },
+            { id: 4, name: 'Chamodya', phone: '0718918117' }
+        ];
+
+        const ticketPrice = 'LKR 3000';
+        let selectedContact = null;
+        let selectedPaymentMethod = null;
+        let rulesAccepted = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderContacts();
+        });
+
+        function renderContacts() {
+            const grid = document.getElementById('contactGrid');
+            grid.innerHTML = '';
+            
+            contacts.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'select-card flex items-center gap-3';
+                div.onclick = () => selectContact(c, div);
+                div.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold">${c.id}</div>
+                    <div>
+                        <p class="font-medium text-sm">${c.name}</p>
+                        <p class="text-xs text-[var(--text-muted)]">${c.phone}</p>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function selectContact(contact, el) {
+            document.querySelectorAll('#contactGrid .select-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            selectedContact = contact;
+            
+            const btn = document.getElementById('buyBtn');
+            btn.disabled = false;
+            btn.textContent = 'Buy Now - ' + ticketPrice;
+        }
+
+        function selectPayment(el, method) {
+            document.querySelectorAll('#step2 .select-card').forEach(c => {
+                c.classList.remove('active');
+                c.querySelector('.bank-details')?.classList.add('hidden');
+            });
+            el.classList.add('active');
+            el.querySelector('.bank-details')?.classList.remove('hidden');
+            
+            selectedPaymentMethod = method;
+            document.getElementById('step2Next').disabled = false;
+        }
+
+        function toggleRules() {
+            rulesAccepted = !rulesAccepted;
+            const check = document.getElementById('rulesCheck');
+            const btn = document.getElementById('confirmBtn');
+            
+            if (rulesAccepted) {
+                check.classList.add('bg-[var(--accent)]', 'border-[var(--accent)]');
+                check.querySelector('svg').classList.remove('hidden');
+                btn.disabled = false;
+            } else {
+                check.classList.remove('bg-[var(--accent)]', 'border-[var(--accent)]');
+                check.querySelector('svg').classList.add('hidden');
+                btn.disabled = true;
+            }
+        }
+
+        // Navigation
+        function openModal() {
+            document.getElementById('bookingModal').classList.add('active');
+            showStep(1);
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').classList.remove('active');
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById('step' + step).classList.remove('hidden');
+            document.getElementById('stepIndicator').textContent = step;
+            
+            if (step === 3) updateSummary();
+        }
+
+        function nextStep(step) {
+            if (step === 2) {
+                const name = document.getElementById('name').value;
+                const wp = document.getElementById('wp').value;
+                if (!name || !wp) {
+                    alert("Please fill Name and WhatsApp Number.");
+                    return;
+                }
+            }
+            showStep(step);
+        }
+
+        function prevStep(step) {
+            showStep(step);
+        }
+
+        function updateSummary() {
+            document.getElementById('sumName').textContent = document.getElementById('name').value;
+            let payText = selectedPaymentMethod;
+            if (selectedPaymentMethod === 'bank1') payText = 'Bank Transfer (CBC)';
+            if (selectedPaymentMethod === 'bank2') payText = 'Bank Transfer (Peoples Bank)';
+            if (selectedPaymentMethod === 'onsite') payText = 'Physical (Zeus)';
+            document.getElementById('sumPay').textContent = payText;
+        }
+
+        // Copy Function
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.backgroundColor = 'var(--accent)';
+                btn.style.color = 'white';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback for older browsers
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 1500);
+            });
+        }
+
+        function confirmBooking() {
+            const name = document.getElementById('name').value;
+            const wp = document.getElementById('wp').value;
+            const work = document.getElementById('work').value || 'N/A';
+            const email = document.getElementById('email').value || 'Not Provided';
+            const note = document.getElementById('note').value || 'None';
+
+            const msg = `🎉 *INCEPTRRA 25 - TICKET BOOKING*
+━━━━━━━━━━━━━━━━━━━━━
+👤 *Customer Details*
+Name: ${name}
+WhatsApp: ${wp}
+Work No: ${work}
+Email: ${email}
+Note: ${note}
+
+🎫 *Ticket Info*
+Type: Standard Access
+Amount: ${ticketPrice}
+
+💳 *Payment Method*
+ ${document.getElementById('sumPay').textContent}
+
+👨‍💼 *Selected Organizer*
+ ${selectedContact.name}
+
+━━━━━━━━━━━━━━━━━━━━━
+✅ *Please confirm payment and release ticket.*
+_Thank you for booking with Inceptrra 25!_`;
+
+            const waLink = `https://wa.me/94${selectedContact.phone.substring(1)}?text=${encodeURIComponent(msg)}`;
+            
+            document.getElementById('waBtn').href = waLink;
+            showStep(4);
+            
+            window.open(waLink, '_blank');
+        }
+    </script>
 </body>
 </html>
