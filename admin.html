@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inceptra 25 | Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -49,9 +48,7 @@
             color: var(--fg);
         }
         
-        .font-display {
-            font-family: 'Orbitron', sans-serif;
-        }
+        .font-display { font-family: 'Orbitron', sans-serif; }
         
         .card-bg {
             background: var(--card);
@@ -70,9 +67,7 @@
             box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.2);
         }
         
-        .sidebar-link {
-            transition: all 0.2s ease;
-        }
+        .sidebar-link { transition: all 0.2s ease; }
         
         .sidebar-link:hover, .sidebar-link.active {
             background: rgba(0, 245, 212, 0.1);
@@ -84,9 +79,7 @@
             transition: all 0.3s ease;
         }
         
-        .btn-primary:hover {
-            transform: scale(1.02);
-        }
+        .btn-primary:hover { transform: scale(1.02); }
         
         .btn-secondary {
             background: transparent;
@@ -101,12 +94,12 @@
         
         .status-pending { color: #ffd60a; }
         .status-approved { color: #00f5d4; }
+        .status-confirmed { color: #00f5d4; }
         .status-rejected { color: #f72585; }
+        .status-cancelled { color: #f72585; }
         
         @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-            }
+            * { animation-duration: 0.01ms !important; }
         }
     </style>
 </head>
@@ -133,10 +126,10 @@
                         <input type="password" id="loginPassword" class="input-field w-full px-4 py-3 rounded-lg" placeholder="Enter password">
                     </div>
                 </div>
-                <button onclick="login()" class="btn-primary w-full py-3 rounded-lg font-semibold text-white mb-4">Sign In</button>
+                <button type="button" onclick="handleLogin()" class="btn-primary w-full py-3 rounded-lg font-semibold text-white mb-4">Sign In</button>
                 <p class="text-center text-gray-400 text-sm">
                     Don't have an account? 
-                    <button onclick="showRegister()" class="text-cyan hover:underline">Register</button>
+                    <button type="button" onclick="showRegister()" class="text-cyan hover:underline">Register</button>
                 </p>
             </div>
 
@@ -159,10 +152,10 @@
                         <input type="tel" id="regWp" class="input-field w-full px-4 py-3 rounded-lg" placeholder="+94 77 123 4567">
                     </div>
                 </div>
-                <button onclick="register()" class="btn-primary w-full py-3 rounded-lg font-semibold text-white mb-4">Register</button>
+                <button type="button" onclick="handleRegister()" class="btn-primary w-full py-3 rounded-lg font-semibold text-white mb-4">Register</button>
                 <p class="text-center text-gray-400 text-sm">
                     Already have an account? 
-                    <button onclick="showLogin()" class="text-cyan hover:underline">Sign In</button>
+                    <button type="button" onclick="showLogin()" class="text-cyan hover:underline">Sign In</button>
                 </p>
             </div>
 
@@ -186,7 +179,7 @@
                 <span class="text-cyan">INCEPTRA</span>
                 <span class="text-magenta"> ADMIN</span>
             </h1>
-            <button onclick="toggleMobileMenu()" class="p-2 hover:bg-gray-800 rounded-lg">
+            <button type="button" onclick="toggleMobileMenu()" class="p-2 hover:bg-gray-800 rounded-lg">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
@@ -204,37 +197,37 @@
                 </div>
 
                 <nav class="p-4 space-y-2">
-                    <button onclick="showSection('dashboard')" class="sidebar-link active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="dashboard">
+                    <button type="button" onclick="showSection('dashboard')" class="sidebar-link active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="dashboard">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                         </svg>
                         Dashboard
                     </button>
-                    <button onclick="showSection('bookings')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="bookings">
+                    <button type="button" onclick="showSection('bookings')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="bookings">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                         </svg>
                         Bookings
                     </button>
-                    <button onclick="showSection('tickets')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="tickets">
+                    <button type="button" onclick="showSection('tickets')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="tickets">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
                         </svg>
                         Tickets
                     </button>
-                    <button onclick="showSection('payments')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="payments">
+                    <button type="button" onclick="showSection('payments')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="payments">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
                         Payment Methods
                     </button>
-                    <button onclick="showSection('whatsapp')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="whatsapp">
+                    <button type="button" onclick="showSection('whatsapp')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="whatsapp">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                         </svg>
                         WhatsApp Numbers
                     </button>
-                    <button onclick="showSection('admins')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="admins" id="adminsLink">
+                    <button type="button" onclick="showSection('admins')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="admins" id="adminsLink">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
@@ -245,7 +238,7 @@
                 <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-sm text-gray-400">Theme</span>
-                        <button onclick="toggleTheme()" id="themeBtn" class="p-2 hover:bg-gray-800 rounded-lg">
+                        <button type="button" onclick="toggleTheme()" id="themeBtn" class="p-2 hover:bg-gray-800 rounded-lg">
                             <svg id="themeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
@@ -256,7 +249,7 @@
                             <p id="adminName" class="font-medium text-sm"></p>
                             <p id="adminRole" class="text-xs text-gray-400"></p>
                         </div>
-                        <button onclick="logout()" class="text-sm text-magenta hover:underline">Logout</button>
+                        <button type="button" onclick="logout()" class="text-sm text-magenta hover:underline">Logout</button>
                     </div>
                 </div>
             </aside>
@@ -266,7 +259,6 @@
                 <!-- Dashboard Section -->
                 <section id="dashboardSection" class="space-y-6">
                     <h2 class="font-display font-bold text-2xl">Dashboard</h2>
-                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="card-bg rounded-xl p-6">
                             <p class="text-gray-400 text-sm mb-1">Total Bookings</p>
@@ -285,12 +277,9 @@
                             <p id="totalRevenue" class="font-display font-bold text-3xl text-magenta">LKR 0</p>
                         </div>
                     </div>
-
                     <div class="card-bg rounded-xl p-6">
                         <h3 class="font-semibold mb-4">Recent Bookings</h3>
-                        <div id="recentBookings" class="space-y-3">
-                            <!-- Loaded dynamically -->
-                        </div>
+                        <div id="recentBookings" class="space-y-3"></div>
                     </div>
                 </section>
 
@@ -298,16 +287,13 @@
                 <section id="bookingsSection" class="hidden space-y-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <h2 class="font-display font-bold text-2xl">Bookings</h2>
-                        <div class="flex gap-2">
-                            <select id="bookingFilter" onchange="filterBookings()" class="input-field px-4 py-2 rounded-lg text-sm">
-                                <option value="all">All Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="confirmed">Confirmed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
+                        <select id="bookingFilter" onchange="filterBookings()" class="input-field px-4 py-2 rounded-lg text-sm">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
                     </div>
-
                     <div class="card-bg rounded-xl overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full">
@@ -321,9 +307,7 @@
                                         <th class="px-4 py-3 text-left text-sm font-medium">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="bookingsTable" class="divide-y divide-gray-700">
-                                    <!-- Loaded dynamically -->
-                                </tbody>
+                                <tbody id="bookingsTable" class="divide-y divide-gray-700"></tbody>
                             </table>
                         </div>
                     </div>
@@ -333,36 +317,27 @@
                 <section id="ticketsSection" class="hidden space-y-6">
                     <div class="flex items-center justify-between">
                         <h2 class="font-display font-bold text-2xl">Tickets</h2>
-                        <button onclick="openTicketModal()" class="btn-primary px-4 py-2 rounded-lg font-semibold text-white text-sm">Add Ticket</button>
+                        <button type="button" onclick="openTicketModal()" class="btn-primary px-4 py-2 rounded-lg font-semibold text-white text-sm">Add Ticket</button>
                     </div>
-
-                    <div id="ticketsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Loaded dynamically -->
-                    </div>
+                    <div id="ticketsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 </section>
 
                 <!-- Payment Methods Section -->
                 <section id="paymentsSection" class="hidden space-y-6">
                     <div class="flex items-center justify-between">
                         <h2 class="font-display font-bold text-2xl">Payment Methods</h2>
-                        <button onclick="openPaymentModal()" class="btn-primary px-4 py-2 rounded-lg font-semibold text-white text-sm">Add Method</button>
+                        <button type="button" onclick="openPaymentModal()" class="btn-primary px-4 py-2 rounded-lg font-semibold text-white text-sm">Add Method</button>
                     </div>
-
-                    <div id="paymentsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Loaded dynamically -->
-                    </div>
+                    <div id="paymentsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 </section>
 
                 <!-- WhatsApp Numbers Section -->
                 <section id="whatsappSection" class="hidden space-y-6">
                     <div class="flex items-center justify-between">
                         <h2 class="font-display font-bold text-2xl">WhatsApp Numbers</h2>
-                        <button onclick="openWpModal()" class="btn-primary px-4 py-2 rounded-lg font-semibold text-white text-sm">Add Number</button>
+                        <button type="button" onclick="openWpModal()" class="btn-primary px-4 py-2 rounded-lg font-semibold text-white text-sm">Add Number</button>
                     </div>
-
-                    <div id="wpList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Loaded dynamically -->
-                    </div>
+                    <div id="wpList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
                 </section>
 
                 <!-- Admin Users Section -->
@@ -370,7 +345,6 @@
                     <div class="flex items-center justify-between">
                         <h2 class="font-display font-bold text-2xl">Admin Users</h2>
                     </div>
-
                     <div class="card-bg rounded-xl overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full">
@@ -383,9 +357,7 @@
                                         <th class="px-4 py-3 text-left text-sm font-medium">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="adminsTable" class="divide-y divide-gray-700">
-                                    <!-- Loaded dynamically -->
-                                </tbody>
+                                <tbody id="adminsTable" class="divide-y divide-gray-700"></tbody>
                             </table>
                         </div>
                     </div>
@@ -394,7 +366,7 @@
         </div>
     </div>
 
-    <!-- Ticket Modal -->
+    <!-- Modals -->
     <div id="ticketModal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/80" onclick="closeTicketModal()"></div>
         <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
@@ -437,7 +409,6 @@
         </div>
     </div>
 
-    <!-- Payment Modal -->
     <div id="paymentModal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/80" onclick="closePaymentModal()"></div>
         <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
@@ -488,7 +459,6 @@
         </div>
     </div>
 
-    <!-- WhatsApp Modal -->
     <div id="wpModal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/80" onclick="closeWpModal()"></div>
         <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
@@ -517,18 +487,15 @@
         </div>
     </div>
 
-    <!-- Booking Details Modal -->
     <div id="bookingModal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/80" onclick="closeBookingModal()"></div>
         <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
             <div class="card-bg rounded-2xl w-full max-w-lg p-6">
                 <h3 class="font-display font-bold text-xl mb-6">Booking Details</h3>
-                <div id="bookingDetails" class="space-y-3 mb-6">
-                    <!-- Loaded dynamically -->
-                </div>
+                <div id="bookingDetails" class="space-y-3 mb-6"></div>
                 <div class="flex gap-3">
-                    <button onclick="updateBookingStatus('confirmed')" class="btn-primary flex-1 py-3 rounded-lg font-semibold text-white">Confirm</button>
-                    <button onclick="updateBookingStatus('cancelled')" class="btn-secondary flex-1 py-3 rounded-lg font-semibold text-magenta border-magenta">Cancel</button>
+                    <button type="button" onclick="updateBookingStatus('confirmed')" class="btn-primary flex-1 py-3 rounded-lg font-semibold text-white">Confirm</button>
+                    <button type="button" onclick="updateBookingStatus('cancelled')" class="btn-secondary flex-1 py-3 rounded-lg font-semibold" style="border-color: #f72585; color: #f72585;">Cancel</button>
                 </div>
             </div>
         </div>
@@ -536,7 +503,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-gray-800 py-6 px-4 mt-auto">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-4 text-center">
             <a href="support.html" class="text-gray-400 hover:text-cyan text-sm">Support</a>
             <a href="rules.html" class="text-gray-400 hover:text-cyan text-sm">Terms and Services</a>
             <span class="text-gray-500 text-sm">2026 Inceptra. All Rights Reserved.</span>
@@ -544,12 +511,15 @@
         </div>
     </footer>
 
-    <script>
+    <!-- JavaScript Module -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
         // Supabase Configuration
         const SUPABASE_URL = 'https://vegemuqhinyyxeojfbdxd.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // State
         let currentUser = null;
@@ -561,7 +531,7 @@
         let selectedBooking = null;
 
         // Theme
-        function toggleTheme() {
+        window.toggleTheme = function() {
             const isDark = document.documentElement.classList.contains('dark');
             if (isDark) {
                 document.documentElement.classList.remove('dark');
@@ -571,7 +541,7 @@
                 document.body.classList.remove('light');
             }
             localStorage.setItem('adminTheme', isDark ? 'light' : 'dark');
-        }
+        };
 
         // Initialize theme
         const savedTheme = localStorage.getItem('adminTheme');
@@ -582,17 +552,17 @@
         }
 
         // Auth Functions
-        function showRegister() {
+        window.showRegister = function() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('registerForm').classList.remove('hidden');
-        }
+        };
 
-        function showLogin() {
+        window.showLogin = function() {
             document.getElementById('registerForm').classList.add('hidden');
             document.getElementById('loginForm').classList.remove('hidden');
-        }
+        };
 
-        async function register() {
+        window.handleRegister = async function() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
@@ -608,48 +578,64 @@
                 .insert([{ name, email, password, wp_number: wpNumber, role: 'admin', status: 'pending' }])
                 .select();
 
-            if (!error) {
+            if (!error && data) {
                 document.getElementById('registerForm').classList.add('hidden');
                 document.getElementById('pendingMessage').classList.remove('hidden');
             } else {
-                alert('Error registering: ' + error.message);
+                alert('Error registering: ' + (error?.message || 'Unknown error'));
             }
-        }
+        };
 
-        async function login() {
+        window.handleLogin = async function() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
-            const { data, error } = await supabase
-                .from('admin_users')
-                .select('*')
-                .eq('email', email)
-                .eq('password', password)
-                .single();
+            if (!email || !password) {
+                alert('Please enter email and password');
+                return;
+            }
 
-            if (!error && data) {
+            try {
+                const { data, error } = await supabase
+                    .from('admin_users')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password)
+                    .single();
+
+                if (error) {
+                    alert('Invalid credentials');
+                    return;
+                }
+
                 if (data.status === 'pending') {
                     document.getElementById('loginForm').classList.add('hidden');
                     document.getElementById('pendingMessage').classList.remove('hidden');
                     return;
                 }
 
+                if (data.status === 'rejected') {
+                    alert('Your account has been rejected');
+                    return;
+                }
+
                 currentUser = data;
                 localStorage.setItem('adminUser', JSON.stringify(data));
                 showDashboard();
-            } else {
-                alert('Invalid credentials');
+            } catch (err) {
+                alert('Login failed: ' + err.message);
             }
-        }
+        };
 
-        function logout() {
+        window.logout = function() {
             currentUser = null;
             localStorage.removeItem('adminUser');
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('loginForm').classList.remove('hidden');
             document.getElementById('pendingMessage').classList.add('hidden');
-        }
+            document.getElementById('registerForm').classList.add('hidden');
+        };
 
         function showDashboard() {
             document.getElementById('loginScreen').classList.add('hidden');
@@ -657,7 +643,6 @@
             document.getElementById('adminName').textContent = currentUser.name;
             document.getElementById('adminRole').textContent = currentUser.role;
 
-            // Role-based access
             if (currentUser.role === 'admin') {
                 document.getElementById('adminsLink').classList.add('hidden');
             }
@@ -667,7 +652,7 @@
         }
 
         // Section Navigation
-        function showSection(section) {
+        window.showSection = function(section) {
             const sections = ['dashboard', 'bookings', 'tickets', 'payments', 'whatsapp', 'admins'];
             sections.forEach(s => {
                 document.getElementById(s + 'Section').classList.add('hidden');
@@ -679,20 +664,18 @@
             });
             document.querySelector(`[data-section="${section}"]`).classList.add('active');
 
-            // Close mobile menu
             document.getElementById('sidebar').classList.add('-translate-x-full');
 
-            // Load section data
             if (section === 'bookings') loadBookings();
             if (section === 'tickets') loadTickets();
             if (section === 'payments') loadPaymentMethods();
             if (section === 'whatsapp') loadWhatsappNumbers();
             if (section === 'admins') loadAdmins();
-        }
+        };
 
-        function toggleMobileMenu() {
+        window.toggleMobileMenu = function() {
             document.getElementById('sidebar').classList.toggle('-translate-x-full');
-        }
+        };
 
         // Dashboard Data
         async function loadDashboardData() {
@@ -707,7 +690,6 @@
                 const total = bookings.filter(b => b.status === 'confirmed').reduce((sum, b) => sum + parseFloat(b.total_amount || 0), 0);
                 document.getElementById('totalRevenue').textContent = 'LKR ' + total.toLocaleString();
 
-                // Recent bookings
                 const recent = bookings.slice(-5).reverse();
                 document.getElementById('recentBookings').innerHTML = recent.map(b => `
                     <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
@@ -717,7 +699,7 @@
                         </div>
                         <span class="text-sm font-medium status-${b.status}">${b.status}</span>
                     </div>
-                `).join('');
+                `).join('') || '<p class="text-gray-500 text-center">No bookings yet</p>';
             }
         }
 
@@ -732,9 +714,9 @@
             renderBookings();
         }
 
-        function filterBookings() {
+        window.filterBookings = function() {
             renderBookings();
-        }
+        };
 
         function renderBookings() {
             const filter = document.getElementById('bookingFilter').value;
@@ -742,6 +724,11 @@
 
             if (filter !== 'all') {
                 filtered = bookings.filter(b => b.status === filter);
+            }
+
+            if (filtered.length === 0) {
+                document.getElementById('bookingsTable').innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No bookings found</td></tr>';
+                return;
             }
 
             document.getElementById('bookingsTable').innerHTML = filtered.map(b => `
@@ -752,13 +739,13 @@
                     <td class="px-4 py-3 text-sm">LKR ${parseFloat(b.total_amount || 0).toLocaleString()}</td>
                     <td class="px-4 py-3"><span class="status-${b.status} font-medium">${b.status}</span></td>
                     <td class="px-4 py-3">
-                        <button onclick="viewBooking('${b.id}')" class="text-cyan text-sm hover:underline">View</button>
+                        <button type="button" onclick="viewBooking('${b.id}')" class="text-cyan text-sm hover:underline">View</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        async function viewBooking(id) {
+        window.viewBooking = async function(id) {
             const { data } = await supabase
                 .from('bookings')
                 .select('*, tickets(name, price), payment_methods(name)')
@@ -784,13 +771,13 @@
                 `;
                 document.getElementById('bookingModal').classList.remove('hidden');
             }
-        }
+        };
 
-        function closeBookingModal() {
+        window.closeBookingModal = function() {
             document.getElementById('bookingModal').classList.add('hidden');
-        }
+        };
 
-        async function updateBookingStatus(status) {
+        window.updateBookingStatus = async function(status) {
             if (!selectedBooking) return;
 
             const { error } = await supabase
@@ -803,7 +790,7 @@
                 loadBookings();
                 loadDashboardData();
             }
-        }
+        };
 
         // Tickets
         async function loadTickets() {
@@ -813,10 +800,15 @@
         }
 
         function renderTickets() {
+            if (tickets.length === 0) {
+                document.getElementById('ticketsList').innerHTML = '<p class="text-gray-500 col-span-2 text-center py-8">No tickets yet</p>';
+                return;
+            }
+
             document.getElementById('ticketsList').innerHTML = tickets.map(t => `
                 <div class="card-bg rounded-xl p-4 flex gap-4">
                     <div class="w-24 h-24 rounded-lg bg-gray-800 overflow-hidden flex-shrink-0">
-                        ${t.image_url ? `<img src="${t.image_url}" class="w-full h-full object-cover">` : '<div class="w-full h-full flex items-center justify-center text-cyan text-xs">No Image</div>'}
+                        ${t.image_url ? `<img src="${t.image_url}" class="w-full h-full object-cover" alt="${t.name}">` : '<div class="w-full h-full flex items-center justify-center text-cyan text-xs">No Image</div>'}
                     </div>
                     <div class="flex-1 min-w-0">
                         <h4 class="font-semibold truncate">${t.name}</h4>
@@ -824,25 +816,26 @@
                         <p class="font-bold text-magenta mt-1">LKR ${parseFloat(t.price).toLocaleString()}</p>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <button onclick="editTicket('${t.id}')" class="text-cyan text-sm hover:underline">Edit</button>
-                        <button onclick="deleteTicket('${t.id}')" class="text-magenta text-sm hover:underline">Delete</button>
+                        <button type="button" onclick="editTicket('${t.id}')" class="text-cyan text-sm hover:underline">Edit</button>
+                        <button type="button" onclick="deleteTicket('${t.id}')" class="text-magenta text-sm hover:underline">Delete</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function openTicketModal() {
+        window.openTicketModal = function() {
             document.getElementById('ticketForm').reset();
             document.getElementById('ticketId').value = '';
             document.getElementById('ticketModalTitle').textContent = 'Add Ticket';
+            document.getElementById('ticketActive').checked = true;
             document.getElementById('ticketModal').classList.remove('hidden');
-        }
+        };
 
-        function closeTicketModal() {
+        window.closeTicketModal = function() {
             document.getElementById('ticketModal').classList.add('hidden');
-        }
+        };
 
-        async function editTicket(id) {
+        window.editTicket = function(id) {
             const ticket = tickets.find(t => t.id === id);
             if (!ticket) return;
 
@@ -855,14 +848,14 @@
             document.getElementById('ticketActive').checked = ticket.is_active;
             document.getElementById('ticketModalTitle').textContent = 'Edit Ticket';
             document.getElementById('ticketModal').classList.remove('hidden');
-        }
+        };
 
-        async function deleteTicket(id) {
+        window.deleteTicket = async function(id) {
             if (!confirm('Are you sure you want to delete this ticket?')) return;
 
             await supabase.from('tickets').delete().eq('id', id);
             loadTickets();
-        }
+        };
 
         document.getElementById('ticketForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -894,6 +887,11 @@
         }
 
         function renderPaymentMethods() {
+            if (paymentMethods.length === 0) {
+                document.getElementById('paymentsList').innerHTML = '<p class="text-gray-500 col-span-2 text-center py-8">No payment methods yet</p>';
+                return;
+            }
+
             document.getElementById('paymentsList').innerHTML = paymentMethods.map(p => `
                 <div class="card-bg rounded-xl p-4">
                     <div class="flex justify-between items-start mb-3">
@@ -904,24 +902,25 @@
                     ${p.bank_name ? `<p class="text-sm">${p.bank_name} - ${p.account_number}</p>` : ''}
                     ${p.location ? `<p class="text-sm text-gray-400">${p.location}</p>` : ''}
                     <div class="flex gap-3 mt-3">
-                        <button onclick="editPayment('${p.id}')" class="text-cyan text-sm hover:underline">Edit</button>
-                        <button onclick="deletePayment('${p.id}')" class="text-magenta text-sm hover:underline">Delete</button>
+                        <button type="button" onclick="editPayment('${p.id}')" class="text-cyan text-sm hover:underline">Edit</button>
+                        <button type="button" onclick="deletePayment('${p.id}')" class="text-magenta text-sm hover:underline">Delete</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function openPaymentModal() {
+        window.openPaymentModal = function() {
             document.getElementById('paymentForm').reset();
             document.getElementById('paymentId').value = '';
+            document.getElementById('paymentActive').checked = true;
             document.getElementById('paymentModal').classList.remove('hidden');
-        }
+        };
 
-        function closePaymentModal() {
+        window.closePaymentModal = function() {
             document.getElementById('paymentModal').classList.add('hidden');
-        }
+        };
 
-        async function editPayment(id) {
+        window.editPayment = function(id) {
             const pm = paymentMethods.find(p => p.id === id);
             if (!pm) return;
 
@@ -934,13 +933,13 @@
             document.getElementById('paymentLocation').value = pm.location || '';
             document.getElementById('paymentActive').checked = pm.is_active;
             document.getElementById('paymentModal').classList.remove('hidden');
-        }
+        };
 
-        async function deletePayment(id) {
+        window.deletePayment = async function(id) {
             if (!confirm('Delete this payment method?')) return;
             await supabase.from('payment_methods').delete().eq('id', id);
             loadPaymentMethods();
-        }
+        };
 
         document.getElementById('paymentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -973,30 +972,36 @@
         }
 
         function renderWhatsappNumbers() {
+            if (whatsappNumbers.length === 0) {
+                document.getElementById('wpList').innerHTML = '<p class="text-gray-500 col-span-4 text-center py-8">No WhatsApp numbers yet</p>';
+                return;
+            }
+
             document.getElementById('wpList').innerHTML = whatsappNumbers.map(w => `
                 <div class="card-bg rounded-xl p-4">
                     <h4 class="font-semibold">${w.name}</h4>
                     <p class="text-cyan font-mono">${w.number}</p>
                     <span class="text-xs px-2 py-1 rounded ${w.is_active ? 'bg-cyan/20 text-cyan' : 'bg-gray-700 text-gray-400'}">${w.is_active ? 'Active' : 'Inactive'}</span>
                     <div class="flex gap-3 mt-3">
-                        <button onclick="editWp('${w.id}')" class="text-cyan text-sm hover:underline">Edit</button>
-                        <button onclick="deleteWp('${w.id}')" class="text-magenta text-sm hover:underline">Delete</button>
+                        <button type="button" onclick="editWp('${w.id}')" class="text-cyan text-sm hover:underline">Edit</button>
+                        <button type="button" onclick="deleteWp('${w.id}')" class="text-magenta text-sm hover:underline">Delete</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function openWpModal() {
+        window.openWpModal = function() {
             document.getElementById('wpForm').reset();
             document.getElementById('wpId').value = '';
+            document.getElementById('wpActive').checked = true;
             document.getElementById('wpModal').classList.remove('hidden');
-        }
+        };
 
-        function closeWpModal() {
+        window.closeWpModal = function() {
             document.getElementById('wpModal').classList.add('hidden');
-        }
+        };
 
-        async function editWp(id) {
+        window.editWp = function(id) {
             const wp = whatsappNumbers.find(w => w.id === id);
             if (!wp) return;
 
@@ -1005,13 +1010,13 @@
             document.getElementById('wpNumber').value = wp.number;
             document.getElementById('wpActive').checked = wp.is_active;
             document.getElementById('wpModal').classList.remove('hidden');
-        }
+        };
 
-        async function deleteWp(id) {
+        window.deleteWp = async function(id) {
             if (!confirm('Delete this number?')) return;
             await supabase.from('whatsapp_numbers').delete().eq('id', id);
             loadWhatsappNumbers();
-        }
+        };
 
         document.getElementById('wpForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1064,21 +1069,25 @@
             `).join('');
         }
 
-        async function updateAdmin(id, status) {
+        window.updateAdmin = async function(id, status) {
             await supabase.from('admin_users').update({ status }).eq('id', id);
             loadAdmins();
-        }
+        };
 
-        async function updateAdminRole(id, role) {
+        window.updateAdminRole = async function(id, role) {
             await supabase.from('admin_users').update({ role }).eq('id', id);
             loadAdmins();
-        }
+        };
 
-        // Check existing session
+        // Check existing session on load
         const savedUser = localStorage.getItem('adminUser');
         if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-            showDashboard();
+            try {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            } catch (e) {
+                localStorage.removeItem('adminUser');
+            }
         }
     </script>
 </body>
