@@ -2,1415 +2,200 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Inceptra25 Voting System</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inceptra 25 | Countdown</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #00f3ff;
-            --secondary: #bc13fe;
-            --accent: #00e676;
-            --boys-color: #2979FF;
-            --girls-color: #F50057;
-            --bg-dark: #0a0a12;
-            --card-bg: rgba(15, 15, 25, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #ffffff;
-            --text-muted: #888;
+            --bg: #0a0a0a;
+            --fg: #ffffff;
+            --accent-cyan: #00f5d4;
+            --accent-magenta: #f72585;
+            --card: rgba(20, 20, 20, 0.9);
+            --border: rgba(0, 245, 212, 0.3);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            font-family: 'Rajdhani', 'Noto Sans Sinhala', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .bg-animation {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(188, 19, 254, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 20%, rgba(0, 243, 255, 0.15) 0%, transparent 40%),
-                var(--bg-dark);
-        }
-
-        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 15px; position: relative; z-index: 1; flex: 1; }
-
-        /* Header */
-        .header { text-align: center; margin: 20px 0; position: relative; }
-        .logo-text { 
-            font-size: 3.5rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-            background: linear-gradient(135deg, #fff 0%, #a78bfa 40%, #22d3ee 80%, #fff 100%); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            text-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
-            line-height: 1.2;
             font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
         }
-        .logo-sub { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; margin-top: 5px; }
 
-        /* Countdown */
+        .font-display {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .neon-cyan {
+            text-shadow: 
+                0 0 5px var(--accent-cyan),
+                0 0 10px var(--accent-cyan),
+                0 0 20px var(--accent-cyan);
+        }
+
+        .neon-magenta {
+            text-shadow: 
+                0 0 5px var(--accent-magenta),
+                0 0 10px var(--accent-magenta),
+                0 0 20px var(--accent-magenta);
+        }
+
+        .neon-border-cyan {
+            box-shadow: 
+                0 0 5px var(--accent-cyan),
+                0 0 10px var(--accent-cyan);
+        }
+
+        .neon-border-magenta {
+            box-shadow: 
+                0 0 5px var(--accent-magenta),
+                0 0 10px var(--accent-magenta);
+        }
+
         .countdown-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 15px 30px;
-            display: inline-block;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-            min-width: 250px;
-        }
-        .countdown-timer { font-size: 1.8rem; font-weight: 700; color: var(--primary); letter-spacing: 2px; font-family: 'Rajdhani', sans-serif; }
-        
-        .ending-soon {
-            color: #ff0000 !important;
-            animation: pulse-red 1s infinite;
-            font-size: 2.5rem !important;
-            text-shadow: 0 0 20px red;
-        }
-        @keyframes pulse-red {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
+            background: var(--card);
+            border: 1px solid var(--border);
         }
 
-        .countdown-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px; letter-spacing: 1px; }
-
-        /* Wait Screen */
-        #view-waiting { text-align: center; padding: 40px 20px; }
-        .wait-icon { font-size: 4rem; margin-bottom: 20px; color: var(--secondary); animation: bounce 2s infinite; }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
-        .wait-title { font-size: 1.5rem; color: var(--primary); margin-bottom: 10px; }
-        .wait-msg { color: var(--text-muted); font-size: 1rem; margin-bottom: 30px; }
-        .wait-timer-container { background: rgba(0,0,0,0.3); border: 1px solid var(--secondary); border-radius: 15px; padding: 20px; display: inline-block; }
-
-        /* Buttons */
-        .btn { width: 100%; padding: 12px 20px; border: none; border-radius: 50px; font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; letter-spacing: 1px; }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 4px 20px rgba(0, 243, 255, 0.3); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 243, 255, 0.5); }
-        .btn-danger { background: rgba(245, 0, 87, 0.1); color: var(--girls-color); border: 1px solid var(--girls-color); padding: 8px 15px; width: auto; font-size: 0.8rem; border-radius: 8px; }
-        .btn-danger:hover { background: var(--girls-color); color: white; }
-        .btn-vote { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent); color: var(--accent); border-radius: 50px; }
-        .btn-vote:hover { background: var(--accent); color: #000; box-shadow: 0 0 25px var(--accent); }
-        .btn-vote:disabled { border-color: #444; color: #666; background: rgba(255,255,255,0.05); cursor: not-allowed; }
-        .btn-action { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 10px 20px; margin-right: 10px; margin-bottom: 10px; font-size: 0.9rem; }
-        .btn-action:hover { background: var(--primary); color: #000; }
-        .btn-action.active { background: var(--secondary); color: #fff; border-color: var(--secondary); }
-
-        /* Inputs */
-        .input-group { margin-bottom: 15px; }
-        .input-field { width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; font-size: 1rem; transition: 0.3s; }
-        .input-field:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); }
-
-        /* Cards */
-        .glass-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-
-        /* Category Tabs */
-        .category-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .cat-tab { padding: 10px 25px; background: transparent; border: 1px solid var(--glass-border); border-radius: 50px; text-align: center; cursor: pointer; transition: all 0.4s ease; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); flex: 1; max-width: 150px; }
-        .cat-tab.active-boys { border-color: var(--boys-color); color: #fff; background: rgba(41, 121, 255, 0.15); box-shadow: 0 0 20px rgba(41, 121, 255, 0.3); }
-        .cat-tab.active-girls { border-color: var(--girls-color); color: #fff; background: rgba(245, 0, 87, 0.15); box-shadow: 0 0 20px rgba(245, 0, 87, 0.3); }
-
-        /* Costume Grid */
-        .costume-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .costume-card { background: rgba(10, 10, 20, 0.6); border-radius: 15px; overflow: hidden; border: 1px solid transparent; transition: all 0.4s ease; position: relative; }
-        .costume-card:hover { transform: translateY(-5px) scale(1.02); border-color: var(--primary); box-shadow: 0 15px 40px rgba(0, 243, 255, 0.15); }
-        .costume-img { width: 100%; height: 220px; object-fit: cover; transition: transform 0.5s ease; }
-        .costume-card:hover .costume-img { transform: scale(1.05); }
-        .costume-info { padding: 15px; text-align: center; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); position: absolute; bottom: 0; left: 0; right: 0; }
-        .costume-name { font-size: 1rem; font-weight: 700; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-
-        /* WINNER VIEW */
-        #view-winners { text-align: center; padding: 20px 0; }
-        .winner-title { font-size: 2.5rem; color: #ffd700; text-transform: uppercase; margin-bottom: 30px; text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); animation: glow 2s infinite; }
-        .winner-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 40px; }
-        .winner-card { width: 300px; background: rgba(255, 255, 255, 0.05); border: 2px solid; border-radius: 20px; padding: 20px; backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .winner-card.boys { border-color: var(--boys-color); box-shadow: 0 0 20px var(--boys-color); }
-        .winner-card.girls { border-color: var(--girls-color); box-shadow: 0 0 20px var(--girls-color); }
-        .crown-icon { font-size: 3rem; margin-bottom: -20px; position: relative; z-index: 2; }
-        .winner-img { width: 150px; height: 150px; border-radius: 50%; border: 4px solid white; object-fit: cover; margin: 10px auto; display: block; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .winner-name { font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
-        .winner-votes { font-size: 1.2rem; color: #aaa; }
-        .thank-you-msg { margin-top: 50px; font-size: 1.2rem; color: var(--primary); }
-        @keyframes glow { 0% { text-shadow: 0 0 10px #ffd700; } 50% { text-shadow: 0 0 30px #ffd700, 0 0 10px orange; } 100% { text-shadow: 0 0 10px #ffd700; } }
-
-        /* Admin View Elements */
-        .projector-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
-        @media(min-width: 900px) { .projector-grid { grid-template-columns: 1fr 1fr; } }
-        .leaderboard-section { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 25px; border: 1px solid var(--glass-border); }
-        .leaderboard-title { text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; }
-        .title-boys { color: var(--boys-color); border-bottom: 2px solid var(--boys-color); padding-bottom: 5px; display: inline-block; }
-        .title-girls { color: var(--girls-color); border-bottom: 2px solid var(--girls-color); padding-bottom: 5px; display: inline-block; }
-        .live-item { display: flex; align-items: center; margin-bottom: 10px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; transition: all 0.5s ease; }
-        .live-rank { font-size: 1.2rem; font-weight: 700; color: rgba(255,255,255,0.2); width: 30px; text-align: center; }
-        .live-photo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 2px solid rgba(255,255,255,0.1); }
-        .live-info { flex: 1; }
-        .live-name { font-weight: 600; font-size: 0.9rem; }
-        .live-votes { font-weight: 800; font-size: 1.1rem; width: 50px; text-align: right; font-family: 'Rajdhani', sans-serif; }
-        .tab-nav { display: flex; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--glass-border); flex-wrap: wrap; }
-        .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 10px; font-family: inherit; font-weight: 600; transition: 0.3s; min-width: 80px; font-size: 0.9rem; }
-        .tab-btn.active { background: rgba(188, 19, 254, 0.2); color: var(--secondary); box-shadow: inset 0 0 0 1px var(--secondary); }
-
-        /* Toast Notifications */
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { padding: 15px 20px; background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideIn 0.5s ease forwards; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
-        .toast.fade-out { animation: slideOut 0.5s ease forwards; }
-        .toast.success { border-left: 4px solid var(--accent); }
-        .toast.error { border-left: 4px solid var(--girls-color); }
-        .toast.info { border-left: 4px solid var(--primary); }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-
-        /* Utilities */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; }
-        .status-box { background: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid yellow; font-size: 0.9rem; backdrop-filter: blur(5px); }
-        .status-success { border-color: var(--accent); color: var(--accent); }
-        .status-error { border-color: #ff4081; color: #ff4081; }
-        .user-header { background: linear-gradient(90deg, rgba(188,19,254,0.1), transparent); padding: 10px 20px; border-radius: 50px; margin-bottom: 20px; border: 1px solid rgba(188,19,254,0.2); display: inline-flex; width: 100%; justify-content: space-between; }
-        .setting-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .setting-row .input-group { flex: 1; margin-bottom: 0; min-width: 140px; }
-
-        /* Footer */
-        .footer-wrapper {
-            position: relative;
-            width: 100%;
-            background-color: #230a31; 
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            transition: all 0.3s ease;
         }
-        .footer-mini-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            color: #a0a0a0;
-        }
-        .footer-links-mini a, .forwarded-mini a { color: #ffffff; text-decoration: none; transition: color 0.3s ease; }
-        .footer-links-mini a:hover, .forwarded-mini a:hover { color: #3b82f6; }
-        .footer-links-mini .divider { margin: 0 10px; opacity: 0.5; }
-        @media (max-width: 768px) {
-            .footer-mini-inner { flex-direction: column; gap: 10px; text-align: center; }
-        }
-        
-        /* Switch Toggle */
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(24px); }
 
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--accent-cyan), 0 0 40px var(--accent-magenta);
+        }
+
+        .footer-link {
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-cyan);
+        }
+
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid var(--accent-cyan);
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body>
-
-    <div class="bg-animation"></div>
-    <div id="toast-container"></div>
-
-    <div class="container">
+    <main class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
         
-        <div class="header">
-            <div class="logo-text">Inceptra 25</div>
-            <div class="logo-sub">Where beginnings becomes Legacy</div>
-            <br>
-            <center><div class="countdown-box" id="main-countdown-box">
-                <span class="countdown-label" id="countdown-label-text">Time Remaining</span>
-                <div id="countdown-timer" class="countdown-timer">Loading...</div>
-            </div></center>
-        </div>
-
-        <div id="view-auth" class="hidden glass-card" style="max-width: 400px; margin: 0 auto;">
-            <h2 class="text-center" style="margin-bottom: 20px; font-size: 1.5rem;" id="auth-title">Welcome Back</h2>
-            <div class="input-group"><input type="text" id="fullname" placeholder="Full Name" class="input-field hidden"></div>
-            
-            <div class="input-group hidden" id="gender-group">
-                <select id="gender-select" class="input-field">
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                </select>
-            </div>
-            
-            <div class="input-group"><input type="email" id="email" placeholder="Email Address" class="input-field"></div>
-            <div class="input-group"><input type="password" id="password" placeholder="Password" class="input-field"></div>
-            <button onclick="handleAuth()" class="btn btn-primary" id="btn-auth">Login</button>
-            <p onclick="toggleAuth()" style="color:#8FECF1; cursor:pointer; margin-top:20px; text-align:center; font-size:0.9rem;">
-                <span id="text-toggle">New here? Create Account</span>
-            </p>
-        </div>
-
-        <div id="view-waiting" class="hidden">
-            <div class="glass-card text-center" style="max-width: 500px; margin: 0 auto;">
-                <div class="wait-icon"><i class="fas fa-hourglass-half"></i></div>
-                <h2 class="wait-title">Voting Hasn't Started Yet</h2>
-                <p class="wait-msg">You are successfully registered! Please wait until the voting begins.</p>
-                <div class="wait-timer-container">
-                    <span class="countdown-label">Voting Starts In</span>
-                    <div id="wait-timer" style="font-size: 2rem; color: var(--secondary); font-weight: 700;">--:--:--</div>
+        <!-- Event badge -->
+        <span class="inline-block px-4 py-2 border border-[var(--accent-cyan)] text-[var(--accent-cyan)] text-sm font-semibold tracking-widest uppercase rounded-full mb-6">
+            March 17, 2026
+        </span>
+        
+        <!-- Main title -->
+        <h1 class="font-display font-black text-5xl sm:text-7xl md:text-8xl text-center mb-4">
+            <span class="neon-cyan text-[var(--accent-cyan)]">INCEPTRA</span>
+            <span class="neon-magenta text-[var(--accent-magenta)]"> 25</span>
+        </h1>
+        
+        <!-- Tagline -->
+        <p class="text-lg sm:text-xl text-gray-400 text-center max-w-2xl mb-10 tracking-wide">
+            Where Beginnings Become Legacy
+        </p>
+        
+        <!-- Countdown Timer -->
+        <div class="w-full max-w-4xl mb-10">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 px-4">
+                
+                <!-- Days -->
+                <div class="countdown-box rounded-xl p-4 sm:p-6 text-center neon-border-cyan">
+                    <div class="font-display font-black text-4xl sm:text-5xl md:text-6xl text-[var(--accent-cyan)]" id="days">000</div>
+                    <div class="text-gray-400 uppercase tracking-widest text-xs sm:text-sm mt-2">Days</div>
+                </div>
+                
+                <!-- Hours -->
+                <div class="countdown-box rounded-xl p-4 sm:p-6 text-center neon-border-magenta">
+                    <div class="font-display font-black text-4xl sm:text-5xl md:text-6xl text-[var(--accent-magenta)]" id="hours">00</div>
+                    <div class="text-gray-400 uppercase tracking-widest text-xs sm:text-sm mt-2">Hours</div>
+                </div>
+                
+                <!-- Minutes -->
+                <div class="countdown-box rounded-xl p-4 sm:p-6 text-center neon-border-cyan">
+                    <div class="font-display font-black text-4xl sm:text-5xl md:text-6xl text-[var(--accent-cyan)]" id="minutes">00</div>
+                    <div class="text-gray-400 uppercase tracking-widest text-xs sm:text-sm mt-2">Minutes</div>
+                </div>
+                
+                <!-- Seconds -->
+                <div class="countdown-box rounded-xl p-4 sm:p-6 text-center neon-border-magenta">
+                    <div class="font-display font-black text-4xl sm:text-5xl md:text-6xl text-[var(--accent-magenta)]" id="seconds">00</div>
+                    <div class="text-gray-400 uppercase tracking-widest text-xs sm:text-sm mt-2">Seconds</div>
                 </div>
             </div>
         </div>
-
-        <div id="view-audience" class="hidden">
-            <div class="user-header flex-between">
-                <div>
-                    <div style="font-size:0.7rem; color:#aaa; text-transform:uppercase;">Logged in as (<span id="user-gender-display">User</span>)</div>
-                    <div style="font-weight:700; font-size:1rem;" id="user-name-display">User</div>
-                </div>
-                <button onclick="logout()" class="btn-danger">Logout</button>
+        
+        <!-- Buy Ticket Button -->
+        <a href="store.html" class="btn-primary inline-flex items-center gap-3 px-8 py-4 rounded-full font-display font-bold text-lg text-white tracking-wider">
+            <span>Buy Ticket</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+        
+    </main>
+    
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 py-6 px-4">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-gray-500 text-sm text-center sm:text-left">
+                2026 Inceptra. All Rights Reserved.
             </div>
-
-            <div id="broadcast-msg" class="hidden status-box status-error text-center" style="border-color: var(--secondary); color: var(--secondary); margin-bottom: 15px;"></div>
-            <div id="loc-status" class="status-box">📍 Detecting Location...</div>
-
-            <div class="category-tabs">
-                <div class="cat-tab active-boys" id="tab-boys" onclick="switchCategory('boys')">Boys</div>
-                <div class="cat-tab" id="tab-girls" onclick="switchCategory('girls')">Girls</div>
+            <div>
+                <a href="support.html" class="footer-link text-gray-400 text-sm font-medium">
+                    Support
+                </a>
             </div>
-            <div id="costume-list" class="costume-grid"></div>
-        </div>
-
-        <div id="view-winners" class="hidden">
-            <h1 class="winner-title">🎉 Voting Ended! 🎉</h1>
-            <p class="thank-you-msg">Thank you for voting! Here are the winners:</p>
-            <div class="winner-container">
-                <div class="winner-card boys">
-                    <div class="crown-icon">👑</div>
-                    <h2 style="color: var(--boys-color);">MR. INCEPTRA</h2>
-                    <img id="winner-boy-img" src="" class="winner-img">
-                    <div class="winner-name" id="winner-boy-name">Loading...</div>
-                    <div class="winner-votes" id="winner-boy-votes">0 Votes</div>
-                </div>
-                <div class="winner-card girls">
-                    <div class="crown-icon">👑</div>
-                    <h2 style="color: var(--girls-color);">MISS. INCEPTRA</h2>
-                    <img id="winner-girl-img" src="" class="winner-img">
-                    <div class="winner-name" id="winner-girl-name">Loading...</div>
-                    <div class="winner-votes" id="winner-girl-votes">0 Votes</div>
-                </div>
-            </div>
-            <div style="margin-top: 50px;"><button onclick="logout()" class="btn btn-danger" style="width: auto;">Logout</button></div>
-        </div>
-
-        <div id="view-admin" class="hidden">
-            <div class="flex-between" style="margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h2 style="color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem;">Admin Dashboard</h2>
-                <button onclick="logout()" class="btn-danger">Logout</button>
-            </div>
-
-            <div class="tab-nav">
-                <button onclick="showTab('chart')" class="tab-btn active" id="btn-tab-chart">Live Results</button>
-                <button onclick="showTab('manage')" class="tab-btn" id="btn-tab-manage">Manage</button>
-                <button onclick="showTab('settings')" class="tab-btn" id="btn-tab-settings">Settings</button>
-                <button onclick="showTab('users')" class="tab-btn" id="btn-tab-users">Users</button>
-            </div>
-
-            <div id="tab-chart">
-                <div class="flex-between" style="margin-bottom: 20px;">
-                    <button onclick="exportResults()" class="btn btn-action">⬇️ Export CSV</button>
-                    <button onclick="openProjector()" class="btn btn-action" style="border-color: var(--secondary); color: var(--secondary);">🖥️ Projector</button>
-                </div>
-                <div class="projector-grid">
-                    <div class="leaderboard-section">
-                        <div class="text-center"><div class="leaderboard-title title-boys">Boys</div></div>
-                        <div id="boys-results"></div>
-                    </div>
-                    <div class="leaderboard-section">
-                        <div class="text-center"><div class="leaderboard-title title-girls">Girls</div></div>
-                        <div id="girls-results"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-manage" class="hidden">
-                <div class="glass-card">
-                    <h3 style="margin-bottom: 15px; color: var(--secondary);">Add New Costume</h3>
-                    <div class="input-group"><input type="text" id="new-name" placeholder="Contestant Name" class="input-field"></div>
-                    <div class="input-group"><input type="text" id="new-img" placeholder="Image URL" class="input-field"></div>
-                    <div class="input-group">
-                        <select id="new-gender" class="input-field">
-                            <option value="boys">Boy</option>
-                            <option value="girls">Girl</option>
-                        </select>
-                    </div>
-                    <button onclick="addCostume()" class="btn btn-primary">Add Contestant</button>
-                </div>
-                <div id="manage-list"></div>
-            </div>
-
-            <div id="tab-settings" class="hidden">
-                <div class="glass-card">
-                    <h3 style="margin-bottom: 15px; color: var(--primary);">Event Timeline</h3>
-                    <div class="setting-row">
-                        <div class="input-group">
-                            <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:5px;">Start Time</label>
-                            <input type="datetime-local" id="start-time-input" class="input-field">
-                        </div>
-                        <div class="input-group">
-                            <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:5px;">End Time</label>
-                            <input type="datetime-local" id="end-time-input" class="input-field">
-                        </div>
-                    </div>
-                    <button onclick="saveTime()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save Timeline</button>
-                </div>
-
-                <div class="glass-card" style="margin-top: 15px;">
-                    <h3 style="margin-bottom: 15px; color: var(--accent);">Voting Permissions & Limits</h3>
-                    <div class="input-group" style="margin-bottom: 20px;">
-                        <label style="color:#aaa; font-size:0.8rem;">Votes Per Category (per user)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="vote-limit-input" class="input-field" placeholder="1">
-                            <button onclick="saveVoteLimit()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save Limit</button>
-                        </div>
-                    </div>
-                    
-                    <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
-                    
-                    <div class="setting-row">
-                        <div class="input-group">
-                            <label style="color:#fff; font-size:0.9rem; margin-bottom: 10px; display:block;">Male Users Can Vote For:</label>
-                            <div style="display:flex; gap:20px;">
-                                <label style="display:flex; align-items:center; gap:10px;">
-                                    <label class="switch"><input type="checkbox" id="male-vote-boys" onchange="savePermissions()"><span class="slider"></span></label> Boys
-                                </label>
-                                <label style="display:flex; align-items:center; gap:10px;">
-                                    <label class="switch"><input type="checkbox" id="male-vote-girls" onchange="savePermissions()"><span class="slider"></span></label> Girls
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-row" style="margin-top: 10px;">
-                        <div class="input-group">
-                            <label style="color:#fff; font-size:0.9rem; margin-bottom: 10px; display:block;">Female Users Can Vote For:</label>
-                            <div style="display:flex; gap:20px;">
-                                <label style="display:flex; align-items:center; gap:10px;">
-                                    <label class="switch"><input type="checkbox" id="female-vote-boys" onchange="savePermissions()"><span class="slider"></span></label> Boys
-                                </label>
-                                <label style="display:flex; align-items:center; gap:10px;">
-                                    <label class="switch"><input type="checkbox" id="female-vote-girls" onchange="savePermissions()"><span class="slider"></span></label> Girls
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-card" style="margin-top: 15px;">
-                    <h3 style="margin-bottom: 15px; color: var(--accent);">Location</h3>
-                    <div class="setting-row">
-                        <div class="input-group">
-                            <label style="color:#aaa; font-size:0.8rem;">Lat</label>
-                            <input type="number" step="any" id="loc-lat" class="input-field" placeholder="6.9271">
-                        </div>
-                        <div class="input-group">
-                            <label style="color:#aaa; font-size:0.8rem;">Long</label>
-                            <input type="number" step="any" id="loc-long" class="input-field" placeholder="79.8612">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label style="color:#aaa; font-size:0.8rem;">Radius (m)</label>
-                        <input type="number" id="loc-radius" class="input-field" placeholder="100">
-                    </div>
-                    <button onclick="saveLocation()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save</button>
-                </div>
-
-                <div class="glass-card" style="margin-top: 15px;">
-                    <h3 style="margin-bottom: 15px; color: var(--secondary);">📢 Announcement</h3>
-                    <div class="input-group">
-                        <input type="text" id="announcement-msg" placeholder="Message..." class="input-field">
-                    </div>
-                    <div class="flex-between">
-                        <button onclick="saveAnnouncement()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Send</button>
-                        <button onclick="clearAnnouncement()" class="btn btn-danger" style="padding:8px 20px;">Clear</button>
-                    </div>
-                </div>
-
-                <div class="glass-card" style="margin-top: 15px;">
-                    <h3 style="margin-bottom: 15px; color: #ffd700;">👑 Winner Control</h3>
-                    <div class="flex-between">
-                        <div style="display:flex; align-items:center; gap: 10px;">
-                            <label class="switch">
-                                <input type="checkbox" id="show-winners-toggle" onchange="toggleShowWinners(this.checked)">
-                                <span class="slider"></span>
-                            </label>
-                            <span>Force Show Winners</span>
-                        </div>
-                    </div>
-                    <p style="font-size:0.8rem; color:#666; margin-top:10px;">Turn ON to display winners on user screens immediately (ignores time).</p>
-                </div>
-
-                <div class="glass-card" style="margin-top: 15px; border-color: var(--secondary);">
-                    <h3 style="margin-bottom: 15px; color: var(--secondary);">🎬 Projector Remote</h3>
-                    <p style="font-size:0.8rem; color:#aaa; margin-bottom:15px;">Control the Projector View sequence. Click "Start Sequence" to begin the reveal.</p>
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <button onclick="setProjectorState('live')" class="btn btn-action">Live Mode</button>
-                        <button onclick="startWinnerSequence()" class="btn btn-primary" style="width:auto; flex:1;">▶ Start Sequence</button>
-                    </div>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                         <button onclick="setProjectorState('show_3rd')" class="btn btn-action">3rd</button>
-                         <button onclick="setProjectorState('show_2nd')" class="btn btn-action">2nd</button>
-                         <button onclick="setProjectorState('show_1st')" class="btn btn-action">1st</button>
-                         <button onclick="setProjectorState('thank_you')" class="btn btn-action">End</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-users" class="hidden">
-                <div id="user-list"></div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="footer-wrapper">
-        <div class="footer-mini-inner">
-            <nav class="footer-links-mini">
-                <a href="rules.html">Terms of Service</a>
-                <span class="divider">|</span>
-                <a href="error.html">Support</a>
-            </nav>
-            <div class="copyright-mini">&copy; 2026 Inceptra Team. All rights reserved.</div>
-            <div class="forwarded-mini">Powered by <a href="https://vezlo-web.vercel.app/" target="_blank">Vezlo Web Design</a></div>
         </div>
     </footer>
-    
-<script>
-    // --- CONFIGURATION ---
-    const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
-    const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
-    // --- STATE ---
-    let currentUser = null;
-    let userProfile = null;
-    let isRegister = false;
-    let activeCategory = 'boys'; 
-    let allCostumes = [];
-    let myVotes = []; 
-    let countdownInterval = null; 
-    let settings = {
-        startTime: new Date().getTime(),
-        endTime: new Date('2025-12-31T23:59:59').getTime(),
-        lat: 0, long: 0, radius: 100,
-        announcement: '',
-        votesPerCategory: 1,
-        showWinners: false,
-        projectorState: 'live',
-        maleCanVoteBoys: false,
-        maleCanVoteGirls: true,
-        femaleCanVoteBoys: true,
-        femaleCanVoteGirls: false
-    };
-
-    // --- TOAST ---
-    function showToast(message, type = 'info') {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        let icon = 'ℹ️'; if(type === 'success') icon = '✅'; if(type === 'error') icon = '❌';
-        toast.innerHTML = `<span style="font-size:1.2rem">${icon}</span> <span>${message}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 500); }, 4000);
-    }
-
-    // --- INIT ---
-    async function init() {
-        await loadSettings();
-        setupRealtime();
-
-        const { data: { session } } = await sb.auth.getSession();
-        if (session) {
-            currentUser = session.user;
-            
-            let { data: profile, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-            
-            if (error || !profile) {
-                 const gender = currentUser.user_metadata.gender || 'male';
-                 const name = currentUser.user_metadata.full_name || 'User';
-                 
-                 const { data: newProfile, error: insertError } = await sb.from('profiles').insert([{ 
-                    id: currentUser.id, 
-                    email: currentUser.email, 
-                    full_name: name, 
-                    role: 'audience',
-                    gender: gender
-                 }]).select().single();
-
-                 if(insertError) {
-                     console.error("Profile create error", insertError);
-                     showToast("Error loading profile. Contact Admin.", "error");
-                     return;
-                 }
-                 profile = newProfile;
-            }
-
-           userProfile = profile;
-
-            // මේ තියෙන්නේ අලුතෙන් ඇතුල් කරපු කොටස (Auto-heal)
-            if (!userProfile.gender && currentUser.user_metadata && currentUser.user_metadata.gender) {
-                userProfile.gender = currentUser.user_metadata.gender;
-                await sb.from('profiles').update({ gender: userProfile.gender }).eq('id', currentUser.id);
-            }
-
-            if(userProfile.role === 'admin') {
-                showView('view-admin');
-                initAdmin();
-            } else if(userProfile.role === 'blocked') {
-                showToast("Account Blocked!", "error"); 
-                logout();
-            } else {
-                decideView();
-            }
-        } else {
-            showView('view-auth');
-        }
-    }
-
-    function decideView() {
-        const now = new Date().getTime();
+    <script>
+        const targetDate = new Date('2026-03-17T10:00:00').getTime();
         
-        if (now < settings.startTime) {
-            showView('view-waiting');
-            startWaitCountdown();
-        } else if (now >= settings.startTime && now < settings.endTime) {
-            showView('view-audience');
-            document.getElementById('user-name-display').innerText = userProfile.full_name || "User";
-            document.getElementById('user-gender-display').innerText = userProfile.gender || "User";
-            initAudience();
-        } else {
-            endGame(); // වෙලාව ඉවර වුණාම අනිවාර්යයෙන්ම Voting ඉවර කරනවා
-        }
-    }
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
 
-    function startWaitCountdown() {
-        if(countdownInterval) clearInterval(countdownInterval);
-        const timerElem = document.getElementById('wait-timer');
-        
-        const updateTimer = () => {
+        function updateCountdown() {
             const now = new Date().getTime();
-            const distance = settings.startTime - now;
-            if (distance <= 0) { timerElem.innerHTML = "Starting Now!"; decideView(); return; }
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            timerElem.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        };
-        updateTimer();
-        countdownInterval = setInterval(updateTimer, 1000);
-    }
-
-    // --- SETTINGS & REALTIME ---
-    async function loadSettings() {
-        const { data } = await sb.from('system_settings').select('*').eq('id', 1).single();
-        if(data) {
-            if(data.voting_start_time) settings.startTime = new Date(data.voting_start_time).getTime();
-            settings.endTime = new Date(data.voting_end_time).getTime();
-            settings.lat = data.target_lat || 0;
-            settings.long = data.target_long || 0;
-            settings.radius = data.radius_meters || 100;
-            settings.announcement = data.announcement || '';
-            settings.votesPerCategory = data.votes_per_category || 1;
-            settings.showWinners = data.show_winners || false;
-            settings.projectorState = data.projector_state || 'live';
-            
-            settings.maleCanVoteBoys = data.male_can_vote_boys;
-            settings.maleCanVoteGirls = data.male_can_vote_girls;
-            settings.femaleCanVoteBoys = data.female_can_vote_boys;
-            settings.femaleCanVoteGirls = data.female_can_vote_girls;
-
-            updateCountdownDisplay();
-            updateAnnouncementUI();
-            
-           const startInput = document.getElementById('start-time-input');
-           if(startInput && data.voting_start_time) {
-               const d = new Date(data.voting_start_time);
-               startInput.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-           }
-           const endInput = document.getElementById('end-time-input');
-           if(endInput && data.voting_end_time) {
-               const d = new Date(data.voting_end_time);
-               endInput.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-           }
-            
-            const latInput = document.getElementById('loc-lat'); if(latInput) latInput.value = settings.lat;
-            const longInput = document.getElementById('loc-long'); if(longInput) longInput.value = settings.long;
-            const radInput = document.getElementById('loc-radius'); if(radInput) radInput.value = settings.radius;
-            const voteInput = document.getElementById('vote-limit-input'); if(voteInput) voteInput.value = settings.votesPerCategory;
-            const winToggle = document.getElementById('show-winners-toggle'); if(winToggle) winToggle.checked = settings.showWinners;
-            
-            const mvb = document.getElementById('male-vote-boys'); if(mvb) mvb.checked = settings.maleCanVoteBoys;
-            const mvg = document.getElementById('male-vote-girls'); if(mvg) mvg.checked = settings.maleCanVoteGirls;
-            const fvb = document.getElementById('female-vote-boys'); if(fvb) fvb.checked = settings.femaleCanVoteBoys;
-            const fvg = document.getElementById('female-vote-girls'); if(fvg) fvg.checked = settings.femaleCanVoteGirls;
-        }
-    }
-
-    function setupRealtime() {
-        sb.channel('system_changes').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'system_settings' }, payload => {
-            const data = payload.new;
-            if(data.voting_start_time) settings.startTime = new Date(data.voting_start_time).getTime();
-            settings.endTime = new Date(data.voting_end_time).getTime();
-            settings.showWinners = data.show_winners;
-            settings.projectorState = data.projector_state;
-            settings.votesPerCategory = data.votes_per_category;
-            
-            settings.maleCanVoteBoys = data.male_can_vote_boys;
-            settings.maleCanVoteGirls = data.male_can_vote_girls;
-            settings.femaleCanVoteBoys = data.female_can_vote_boys;
-            settings.femaleCanVoteGirls = data.female_can_vote_girls;
-            
-            if(document.getElementById('view-admin').classList.contains('hidden')) {
-                decideView();
-                if(!document.getElementById('view-audience').classList.contains('hidden')) renderVotingCards();
-            } else {
-                loadSettings(); 
-            }
-            showToast("System Updated!", "info");
-        }).subscribe();
-
-        sb.channel('votes_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, () => {
-            if(!document.getElementById('view-admin').classList.contains('hidden')) loadAdminData();
-            if(!document.getElementById('view-audience').classList.contains('hidden')) loadVotingData();
-        }).subscribe();
-    }
-
-    function updateCountdownDisplay() { }
-    function updateAnnouncementUI() {
-        const el = document.getElementById('broadcast-msg');
-        if(el) {
-            if(settings.announcement) {
-                el.innerText = "📢 " + settings.announcement;
-                el.classList.remove('hidden');
-            } else { el.classList.add('hidden'); }
-        }
-    }
-
-    // --- COUNTDOWN ---
-    function startCountdown() {
-        if(countdownInterval) clearInterval(countdownInterval);
-        const timerElem = document.getElementById('countdown-timer');
-        const labelElem = document.getElementById('countdown-label-text');
-        
-        const updateTimer = () => {
-            const now = new Date().getTime();
-            const distance = settings.endTime - now;
+            const distance = targetDate - now;
 
             if (distance < 0) {
-                timerElem.innerHTML = "VOTING ENDED";
-                timerElem.style.color = "#ff4081";
-                timerElem.classList.remove('ending-soon');
-                endGame();
+                daysEl.textContent = '000';
+                hoursEl.textContent = '00';
+                minutesEl.textContent = '00';
+                secondsEl.textContent = '00';
                 return;
             }
 
-            if (distance < 5000) timerElem.classList.add('ending-soon');
-            else timerElem.classList.remove('ending-soon');
-
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            timerElem.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-            timerElem.style.color = "var(--primary)";
-            labelElem.innerText = "Time Remaining";
-        };
-
-        updateTimer();
-        countdownInterval = setInterval(updateTimer, 1000);
-    }
-
-    // --- END GAME ---
-    async function endGame() {
-        if(countdownInterval) clearInterval(countdownInterval);
-        
-        if(!document.getElementById('view-audience').classList.contains('hidden') || !document.getElementById('view-waiting').classList.contains('hidden')) {
-            
-            showView('view-winners'); 
-
-            const container = document.querySelector('.winner-container');
-            const msg = document.querySelector('.thank-you-msg');
-
-            // Admin Toggle එක ON නම් විතරක් Winners ලව පෙන්නනවා
-            if (settings.showWinners) {
-                if(allCostumes.length === 0) {
-                    const { data } = await sb.from('costumes').select('*');
-                    allCostumes = data || [];
-                }
-
-                const boys = allCostumes.filter(c => c.gender === 'boys').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-                const girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-
-                const winnerBoy = boys[0];
-                const winnerGirl = girls[0];
-
-                if(winnerBoy) {
-                    document.getElementById('winner-boy-name').innerText = winnerBoy.name;
-                    document.getElementById('winner-boy-votes').innerText = (winnerBoy.vote_count || 0) + " Votes";
-                    document.getElementById('winner-boy-img').src = winnerBoy.image_url;
-                }
-                if(winnerGirl) {
-                    document.getElementById('winner-girl-name').innerText = winnerGirl.name;
-                    document.getElementById('winner-girl-votes').innerText = (winnerGirl.vote_count || 0) + " Votes";
-                    document.getElementById('winner-girl-img').src = winnerGirl.image_url;
-                }
-
-                // පින්තූර ටික පෙන්නනවා, Confetti දානවා
-                container.style.display = 'flex';
-                msg.innerText = "Thank you for voting! Here are the winners:";
-                confetti({ particleCount: 300, spread: 100, origin: { y: 0.6 } });
-                
-            } else {
-                // Toggle එක OFF නම් Winners ලව හංගනවා
-                container.style.display = 'none';
-                msg.innerText = "Voting has ended! Please wait for the final results to be revealed on the projector.";
-            }
-        }
-    }
-
-    // --- ADMIN SAVING ---
-    async function saveTime() {
-        const startVal = document.getElementById('start-time-input').value;
-        const endVal = document.getElementById('end-time-input').value;
-        if(!endVal) return showToast("End time required", "error");
-        const payload = { voting_end_time: new Date(endVal).toISOString() };
-        if(startVal) payload.voting_start_time = new Date(startVal).toISOString();
-        const { error } = await sb.from('system_settings').update(payload).eq('id', 1);
-        if(error) showToast("Error", "error"); else showToast("Timeline Updated!", "success");
-    }
-
-    async function saveVoteLimit() {
-        const val = parseInt(document.getElementById('vote-limit-input').value);
-        if(isNaN(val)) return;
-        const { error } = await sb.from('system_settings').update({ votes_per_category: val }).eq('id', 1);
-        
-        if(error) {
-            alert("DB Error: " + JSON.stringify(error)); 
-            showToast("Error", "error"); 
-        } else {
-            showToast("Vote Limit Set!", "success");
-        }
-    }
-    
-    async function savePermissions() {
-        const payload = {
-            male_can_vote_boys: document.getElementById('male-vote-boys').checked,
-            male_can_vote_girls: document.getElementById('male-vote-girls').checked,
-            female_can_vote_boys: document.getElementById('female-vote-boys').checked,
-            female_can_vote_girls: document.getElementById('female-vote-girls').checked
-        };
-        const { error } = await sb.from('system_settings').update(payload).eq('id', 1);
-        
-        if(error) {
-            alert("DB Error: " + JSON.stringify(error)); 
-        } else {
-            showToast("Permissions Updated!", "success");
-        }
-    }
-
-    async function toggleShowWinners(checked) {
-        const { error } = await sb.from('system_settings').update({ show_winners: checked }).eq('id', 1);
-        if(error) showToast("Error", "error"); else showToast(checked ? "Winners Revealed!" : "Winners Hidden", "success");
-    }
-
-    async function setProjectorState(state) {
-        const { error } = await sb.from('system_settings').update({ projector_state: state }).eq('id', 1);
-        if(error) showToast("Error", "error");
-    }
-
-    async function startWinnerSequence() {
-        await setProjectorState('show_3rd'); // මෙතනදි 3..2..1 ගිහින් තත්පර 3කින් 3rd පෙන්නනවා
-        setTimeout(() => setProjectorState('show_2nd'), 7000);  // 7s කින් 2nd ව පෙන්නනවා
-        setTimeout(() => setProjectorState('show_1st'), 11000); // 11s කින් 1st ව පෙන්නනවා
-        setTimeout(() => setProjectorState('thank_you'), 16000); // 16s කින් Thank You කියනවා
-        showToast("Projector Sequence Started!", "success");
-    }
-
-    async function saveLocation() {
-        const lat = parseFloat(document.getElementById('loc-lat').value);
-        const long = parseFloat(document.getElementById('loc-long').value);
-        const radius = parseInt(document.getElementById('loc-radius').value);
-        if(isNaN(lat) || isNaN(long)) return showToast("Invalid coords", "error");
-        const { error } = await sb.from('system_settings').update({ target_lat: lat, target_long: long, radius_meters: radius }).eq('id', 1);
-        if(error) showToast("Error", "error"); else showToast("Location Updated!", "success");
-    }
-
-    async function saveAnnouncement() {
-        const msg = document.getElementById('announcement-msg').value;
-        await sb.from('system_settings').update({ announcement: msg }).eq('id', 1);
-        showToast("Sent!", "success");
-    }
-
-    async function clearAnnouncement() {
-        document.getElementById('announcement-msg').value = '';
-        await sb.from('system_settings').update({ announcement: '' }).eq('id', 1);
-        showToast("Cleared", "info");
-    }
-
-    // --- AUTH ---
-    function toggleAuth() {
-        isRegister = !isRegister;
-        document.getElementById('auth-title').innerText = isRegister ? "Create Account" : "Welcome Back";
-        document.getElementById('btn-auth').innerText = isRegister ? "Register" : "Login";
-        document.getElementById('text-toggle').innerText = isRegister ? "Have account? Login" : "New here? Register";
-        document.getElementById('fullname').classList.toggle('hidden', !isRegister);
-        document.getElementById('gender-group').classList.toggle('hidden', !isRegister);
-    }
-
-    async function handleAuth() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const fullname = document.getElementById('fullname').value;
-        const gender = document.getElementById('gender-select').value;
-        if(!email || !password) return showToast("Enter details", "error");
-
-        if(isRegister) {
-            const { data, error } = await sb.auth.signUp({ 
-                email, password, 
-                options: { data: { full_name: fullname, gender: gender } }
-            });
-            if(!error && data.session) { showToast("Registered!", "success"); init(); } 
-            else if (!error && !data.session) { showToast("Check email to confirm!", "info"); } 
-            else { showToast(error.message, "error"); }
-        } else {
-            const { error } = await sb.auth.signInWithPassword({ email, password });
-            if(error) showToast(error.message, "error");
-            else init();
-        }
-    }
-
-    async function logout() { 
-        if(countdownInterval) clearInterval(countdownInterval);
-        await sb.auth.signOut(); 
-        window.location.reload(); 
-    }
-
-    // --- AUDIENCE LOGIC ---
-    function initAudience() {
-        startCountdown(); 
-        checkLocation();
-    }
-
-    function checkLocation() {
-        const locDiv = document.getElementById('loc-status');
-        if(settings.lat === 0 && settings.long === 0) {
-             locDiv.innerHTML = "⏳ Admin setting location..."; locDiv.className = "status-box status-error"; return;
-        }
-        if(!navigator.geolocation) { locDiv.innerHTML = "❌ GPS Not Supported"; locDiv.className = "status-box status-error"; return; }
-        locDiv.innerHTML = "⌛ Locating...";
-        
-        navigator.geolocation.getCurrentPosition(pos => {
-            const dist = getDist(pos.coords.latitude, pos.coords.longitude);
-            if(dist <= settings.radius) { 
-                locDiv.innerHTML = "✅ Location Verified";
-                locDiv.className = "status-box status-success";
-                loadVotingData();
-            } else {
-                locDiv.innerHTML = `❌ Out of Range (${Math.round(dist)}m)`;
-                locDiv.className = "status-box status-error";
-            }
-        }, (err) => {
-             let msg = "❌ Location Error"; if(err.code === 1) msg = "❌ Permission Denied";
-             locDiv.innerHTML = msg; locDiv.className = "status-box status-error";
-        }, { timeout: 10000, enableHighAccuracy: true });
-    }
-
-    function switchCategory(cat) {
-        activeCategory = cat;
-        document.getElementById('tab-boys').className = cat === 'boys' ? 'cat-tab active-boys' : 'cat-tab';
-        document.getElementById('tab-girls').className = cat === 'girls' ? 'cat-tab active-girls' : 'cat-tab';
-        
-        // Tab eka thawa kalin wage lock wenne na. Oyalata tab eka click karala balanna puluwan. 
-        renderVotingCards();
-    }
-
-    async function loadVotingData() {
-        const { data: costumes } = await sb.from('costumes').select('*');
-        allCostumes = costumes || [];
-        const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
-        myVotes = votes ? votes.map(v => v.costume_id) : [];
-        
-        // Default View eka gender eka anuwa wenas wenawa
-        if(userProfile.gender === 'male') {
-            activeCategory = 'girls';
-        } else {
-            activeCategory = 'boys';
-        }
-        
-        switchCategory(activeCategory);
-    }
-
-    function renderVotingCards() {
-        const list = document.getElementById('costume-list');
-        list.innerHTML = '';
-        
-        const userGender = userProfile.gender;
-        let canVoteInCategory = false;
-        
-        // Check permissions based on Admin Toggle switches
-        if (userGender === 'male') {
-            if (activeCategory === 'boys' && settings.maleCanVoteBoys) canVoteInCategory = true;
-            if (activeCategory === 'girls' && settings.maleCanVoteGirls) canVoteInCategory = true;
-        } else if (userGender === 'female') {
-            if (activeCategory === 'boys' && settings.femaleCanVoteBoys) canVoteInCategory = true;
-            if (activeCategory === 'girls' && settings.femaleCanVoteGirls) canVoteInCategory = true;
-        }
-        
-        const idsInCategory = allCostumes.filter(c => c.gender === activeCategory).map(c => c.id);
-        const votesUsedInCategory = myVotes.filter(id => idsInCategory.includes(id)).length;
-        const votesLeft = settings.votesPerCategory - votesUsedInCategory;
-
-        const filtered = allCostumes.filter(c => c.gender === activeCategory);
-        if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 20px; color:#555;'>No candidates.</p>";
-
-        filtered.forEach(c => {
-            const isThisOneVoted = myVotes.includes(c.id);
-            let btnHtml = '';
-
-            if (!canVoteInCategory) {
-                btnHtml = `<button class="btn btn-vote" disabled style="background:rgba(255,255,255,0.05); border-color:#333; color:#555;">View Only</button>`;
-            } else if (isThisOneVoted) {
-                btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent);">✓ Voted</button>`;
-            } else if (votesLeft <= 0) {
-                btnHtml = `<button class="btn btn-vote" disabled>Limit Reached</button>`;
-            } else {
-                btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote</button>`;
-            }
-
-            list.innerHTML += `
-                <div class="costume-card">
-                    <img src="${c.image_url}" onerror="this.src='https://via.placeholder.com/300x400?text=Photo'" class="costume-img">
-                    <div class="costume-info">
-                        <div class="costume-name">${c.name}</div>
-                        ${btnHtml}
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    function celebrateVote() { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe'] }); }
-
-    async function castVote(id) {
-        const costume = allCostumes.find(c => c.id === id);
-        if (!costume) return;
-
-        const userGender = userProfile.gender;
-        let allowed = false;
-        
-        // Final permission check before inserting into DB
-        if (userGender === 'male') {
-            if (costume.gender === 'boys' && settings.maleCanVoteBoys) allowed = true;
-            if (costume.gender === 'girls' && settings.maleCanVoteGirls) allowed = true;
-        } else if (userGender === 'female') {
-            if (costume.gender === 'boys' && settings.femaleCanVoteBoys) allowed = true;
-            if (costume.gender === 'girls' && settings.femaleCanVoteGirls) allowed = true;
+            daysEl.textContent = String(days).padStart(3, '0');
+            hoursEl.textContent = String(hours).padStart(2, '0');
+            minutesEl.textContent = String(minutes).padStart(2, '0');
+            secondsEl.textContent = String(seconds).padStart(2, '0');
         }
 
-        if (!allowed) return showToast("You do not have permission to vote in this category", "error");
-
-        const idsInCategory = allCostumes.filter(c => c.gender === costume.gender).map(c => c.id);
-        const votesUsed = myVotes.filter(vid => idsInCategory.includes(vid)).length;
-        if (votesUsed >= settings.votesPerCategory) return showToast("Vote limit reached for this category", "error");
-
-        if(!confirm("Confirm Vote?")) return;
-        
-        const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
-        if(error) {
-            showToast("Error: " + error.message, "error");
-        } else {
-            myVotes.push(id);
-            renderVotingCards();
-            celebrateVote();
-            showToast("Voted Successfully!", "success");
-        }
-    }
-
-    // --- ADMIN LOGIC ---
-    function initAdmin() {
-        loadAdminData();
-        startCountdown(); 
-    }
-
-    async function loadAdminData() {
-        const { data: costumes } = await sb.from('costumes').select('*');
-        allCostumes = costumes || [];
-        
-        let boys = allCostumes.filter(c => c.gender === 'boys').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-        let girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-
-        document.getElementById('boys-results').innerHTML = boys.map((c, i) => `
-            <div class="live-item"><div class="live-rank">#${i+1}</div><img src="${c.image_url}" class="live-photo"><div class="live-info"><div class="live-name">${c.name}</div></div><div class="live-votes">${c.vote_count || 0}</div></div>
-        `).join('');
-
-        document.getElementById('girls-results').innerHTML = girls.map((c, i) => `
-            <div class="live-item"><div class="live-rank">#${i+1}</div><img src="${c.image_url}" class="live-photo"><div class="live-info"><div class="live-name">${c.name}</div></div><div class="live-votes">${c.vote_count || 0}</div></div>
-        `).join('');
-
-        document.getElementById('manage-list').innerHTML = allCostumes.map(c => `
-            <div class="glass-card flex-between" style="padding:10px; margin-bottom:10px;">
-                <div style="display:flex; align-items:center; gap:10px;"><img src="${c.image_url}" style="width:40px; height:40px; object-fit:cover; border-radius:8px;"><span style="font-weight:600; font-size:0.9rem;">${c.name}</span></div>
-                <button onclick="delCostume(${c.id})" class="btn-danger" style="padding: 4px 8px; font-size: 0.7rem;">Del</button>
-            </div>
-        `).join('');
-
-        const { data: users } = await sb.from('profiles').select('*');
-        if(users) {
-            document.getElementById('user-list').innerHTML = users.map(u => `
-                <div class="glass-card" style="padding:15px; margin-bottom:10px;">
-                    <div class="flex-between" style="flex-wrap: wrap; gap:10px;">
-                        <div style="font-size:0.9rem;"><b>${u.full_name || 'No Name'}</b> <span style="opacity:0.5">(${u.gender || 'N/A'})</span><br><small style="color:#555">${u.email || ''}</small></div>
-                        <select onchange="changeUserRole('${u.id}', this.value)" class="input-field" style="width:auto; padding:5px 10px; border-radius:6px; font-size:0.8rem;">
-                            <option value="audience" ${u.role==='audience'?'selected':''}>Audience</option>
-                            <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-                            <option value="blocked" ${u.role==='blocked'?'selected':''}>Blocked</option>
-                        </select>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
-
-    async function addCostume() {
-        const name = document.getElementById('new-name').value;
-        const img = document.getElementById('new-img').value;
-        const gender = document.getElementById('new-gender').value;
-        if(!name || !img) return showToast("Name & URL required", "error");
-        const { error } = await sb.from('costumes').insert([{ name, image_url: img, gender }]);
-        if(error) showToast("Error", "error"); else { showToast("Added!", "success"); document.getElementById('new-name').value = ''; document.getElementById('new-img').value = ''; }
-    }
-
-    async function changeUserRole(uid, role) {
-        const { error } = await sb.from('profiles').update({ role }).eq('id', uid);
-        if(error) showToast("Failed", "error"); else showToast("Role Updated", "success");
-    }
-
-    // --- SUPER PROJECTOR MODE ---
-    function openProjector() {
-        const w = window.open('', '_blank');
-        
-        // අලුත් Tab එක ඇතුලට කෙලින්ම URL එකයි Key එකයි යවනවා
-        w.document.write(`
-            <html>
-            <head>
-                <title>Inceptra 25 - Live Projector</title>
-                <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
-                <style>
-                    body { background: #0a0a12; color: white; font-family: 'Rajdhani', sans-serif; text-align: center; padding: 0; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
-                    h1 { color: #00e5ff; font-size: 5vw; margin: 2vh 0; text-shadow: 0 0 20px rgba(0,229,255,0.5); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
-                    
-                    /* Split Layout (මැදින් බෙදපු ඩිසයින් එක) */
-                    .split-screen { display: flex; flex: 1; max-width: 95vw; margin: 0 auto; gap: 40px; width: 100%; padding-bottom: 20px;}
-                    .category-side { flex: 1; display: flex; flex-direction: column; background: rgba(26, 28, 35, 0.6); border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
-                    .center-divider { width: 3px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; margin: 0 10px; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
-                    
-                    .title { font-size: 3.5rem; margin-bottom: 20px; text-transform: uppercase; border-bottom: 3px solid; padding-bottom: 10px; font-weight: 800; letter-spacing: 2px; }
-                    .boys-title { color: #2979FF; border-color: #2979FF; text-shadow: 0 0 15px rgba(41,121,255,0.4); }
-                    .girls-title { color: #F50057; border-color: #F50057; text-shadow: 0 0 15px rgba(245,0,87,0.4); }
-                    
-                    /* List & Rows */
-                    .list-container { flex: 1; overflow-y: auto; padding-right: 10px; }
-                    .row { display: flex; align-items: center; background: rgba(37, 40, 54, 0.9); padding: 12px 20px; margin-bottom: 15px; border-radius: 12px; transition: all 0.5s ease; border-left: 5px solid transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-                    
-                    /* මුල් 3 දෙනාට විශේෂ පාට */
-                    .row:nth-child(1) { border-left-color: #ffd700; transform: scale(1.02); background: rgba(255, 215, 0, 0.05); }
-                    .row:nth-child(2) { border-left-color: #c0c0c0; }
-                    .row:nth-child(3) { border-left-color: #cd7f32; }
-                    
-                    .rank-badge { font-size: 2.5rem; font-weight: 800; color: rgba(255,255,255,0.3); width: 50px; text-align: left; font-family: sans-serif; }
-                    img { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.2); margin: 0 20px; }
-                    .name { flex: 1; text-align: left; font-size: 2.2rem; font-weight: 700; text-transform: capitalize; }
-                    .votes { font-size: 3rem; font-weight: 800; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
-
-                    
-                    /* WINNER STYLES - Updated for PC & Phone */
-.winner-view { 
-    display: none; 
-    flex: 1; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    padding: 20px;
-    background: radial-gradient(circle, rgba(188,19,254,0.15), #0a0a12); 
-    box-sizing: border-box;
-    width: 100%;
-}
-
-.winner-wrapper { 
-    display: flex; 
-    flex-direction: row; /* PC එකේ දෙපැත්තට */
-    gap: 40px; 
-    justify-content: center; 
-    align-items: stretch; /* දෙකම එකම උසට එන්න */
-    width: 100%; 
-    max-width: 1200px; /* උපරිම පළල ලිමිට් කරා */
-}
-
-/* ෆෝන් එකෙන් බලද්දි එක යට එක එන්න (Responsive) */
-@media (max-width: 768px) {
-    .winner-wrapper {
-        flex-direction: column; /* ෆෝන් එකේ පල්ලෙහාට */
-        align-items: center;
-        gap: 20px;
-    }
-}
-
-.winner-card { 
-    flex: 1; /* Box දෙකම සමානව ඉඩ ගන්නවා */
-    text-align: center; 
-    animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-    background: rgba(255,255,255,0.03); 
-    padding: 40px 20px; /* උඩින් පහලින් ලොකුවට, දෙපැත්තෙන් ගානට */
-    border-radius: 25px; 
-    border: 3px solid; 
-    backdrop-filter: blur(10px); 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.winner-card.boys { border-color: #2979FF; box-shadow: 0 0 40px rgba(41, 121, 255, 0.2); }
-.winner-card.girls { border-color: #F50057; box-shadow: 0 0 40px rgba(245, 0, 87, 0.2); }
-
-/* Text & Image Sizes - ගානට පේන්න හැදුවා */
-.w { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
-.w-sub { font-size: clamp(1.5rem, 3vw, 2.5rem); color: #ffd700; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
-
-/* ෆොටෝ එක ගානට ලොකු වෙන්න */
-.w-img { 
-    width: clamp(200px, 25vw, 350px); 
-    height: clamp(200px, 25vw, 350px); 
-    border-radius: 50%; 
-    border: 6px solid #fff; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-    object-fit: cover; 
-    margin: 0 auto 20px; 
-    display: block; 
-}
-
-.w-name { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; text-shadow: 0 5px 10px black; margin: 15px 0; }
-.w-votes { font-size: clamp(1.5rem, 3vw, 2.2rem); color: #aaa; font-weight: 700; }
-
-                    
-                    .w { font-size: 3rem; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px;}
-                    .w-img { width: 280px; height: 280px; border-radius: 50%; border: 6px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: cover; margin: 0 auto 20px; display: block; }
-                    .w-sub { font-size: 2.8rem; color: #ffd700; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
-                    .w-name { font-size: 3.5rem; font-weight: 800; text-shadow: 0 5px 10px black; margin: 10px 0; }
-                    .w-votes { font-size: 2.2rem; color: #aaa; font-weight: 700; }
-                    
-                    /* Thank You & Countdown Overlay */
-                    .thank-you { display: none; flex: 1; align-items: center; justify-content: center; font-size: 6rem; font-weight: 800; color: #fff; text-shadow: 0 0 30px #bc13fe; animation: pulse 2s infinite; text-transform: uppercase; }
-                    .countdown-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,18,0.95); z-index: 100; align-items: center; justify-content: center; font-size: 25vw; font-weight: 800; color: #ff0000; text-shadow: 0 0 80px red; font-family: sans-serif; }
-                    
-                    @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-                    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-                </style>
-            </head>
-            <body>
-                <div id="countdown-overlay" class="countdown-overlay">3</div>
-
-                <div id="live-view" style="display:flex; flex-direction:column; height:100%;">
-                    <h1>INCEPTRA 25 - LIVE</h1>
-                    <div class="split-screen">
-                        <div class="category-side">
-                            <div class="title boys-title">BOYS</div>
-                            <div class="list-container" id="boys-list"></div>
-                        </div>
-                        <div class="center-divider"></div>
-                        <div class="category-side">
-                            <div class="title girls-title">GIRLS</div>
-                            <div class="list-container" id="girls-list"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="winner-view" class="winner-view">
-                    <div class="winner-wrapper">
-                        <div class="winner-card boys" id="display-boy">
-                            <div class="w" style="color: #2979FF;">MR. INCEPTRA</div>
-                            <div id="w-boy-sub" class="w-sub"></div>
-                            <img id="w-boy-img" class="w-img">
-                            <div id="w-boy-name" class="w-name"></div>
-                            <div id="w-boy-votes" class="w-votes"></div>
-                        </div>
-                        <div class="winner-card girls" id="display-girl">
-                            <div class="w" style="color: #F50057;">MISS. INCEPTRA</div>
-                            <div id="w-girl-sub" class="w-sub"></div>
-                            <img id="w-girl-img" class="w-img">
-                            <div id="w-girl-name" class="w-name"></div>
-                            <div id="w-girl-votes" class="w-votes"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="thank-view" class="thank-you">
-                    Thank You For Voting! 🎉
-                </div>
-
-                <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
-                <script>
-                    const sbUrl = "${supabaseUrl}";
-                    const sbKey = "${supabaseKey}";
-                    const sb = supabase.createClient(sbUrl, sbKey);
-                    
-                    let allData = [];
-                    let lastState = 'live';
-                    let isCountingDown = false;
-                    
-                    async function fetchData() {
-                        const { data } = await sb.from('costumes').select('*').order('vote_count', { ascending: false });
-                        if(data) allData = data;
-                    }
-                    
-                    // ලයිව් ටේබල් එක අඳින ෆන්ක්ෂන් එක
-                    function renderList(containerId, items) {
-                        const html = items.map((c, index) => {
-                            let rankColor = 'rgba(255,255,255,0.3)';
-                            if(index === 0) rankColor = '#ffd700'; // 1st - Gold
-                            else if(index === 1) rankColor = '#c0c0c0'; // 2nd - Silver
-                            else if(index === 2) rankColor = '#cd7f32'; // 3rd - Bronze
-                            
-                            return '<div class="row"><div class="rank-badge" style="color:'+rankColor+'">'+(index+1)+'</div><img src="'+c.image_url+'"><div class="name">'+c.name+'</div><div class="votes">'+(c.vote_count||0)+'</div></div>';
-                        }).join('');
-                        document.getElementById(containerId).innerHTML = html;
-                    }
-
-                    // 3.. 2.. 1.. Countdown එක ප්ලේ කරන ෆන්ක්ෂන් එක
-                    function playCountdownAndShow(nextStateCallback) {
-                        if(isCountingDown) return;
-                        isCountingDown = true;
-                        const overlay = document.getElementById('countdown-overlay');
-                        overlay.style.display = 'flex';
-                        let count = 3;
-                        overlay.innerText = count;
-                        
-                        let timer = setInterval(() => {
-                            count--;
-                            if(count > 0) {
-                                overlay.innerText = count;
-                            } else {
-                                clearInterval(timer);
-                                overlay.style.display = 'none';
-                                isCountingDown = false;
-                                nextStateCallback();
-                            }
-                        }, 1000);
-                    }
-                    
-                    setInterval(async () => {
-                        if(isCountingDown) return; // Countdown එක යන වෙලාවට අප්ඩේට් වෙන එක නවත්තනවා
-
-                        const { data: setData } = await sb.from('system_settings').select('projector_state').eq('id', 1).single();
-                        const state = setData ? setData.projector_state : 'live';
-                        
-                        await fetchData(); 
-
-                        const boys = allData.filter(c => c.gender === 'boys');
-                        const girls = allData.filter(c => c.gender === 'girls');
-
-                        const liveView = document.getElementById('live-view');
-                        const winView = document.getElementById('winner-view');
-                        const thankView = document.getElementById('thank-view');
-
-                        // ලයිව් එකේ ඉඳන් Winner පේජ් එකකට යනවනම් Countdown එක trigger කරනවා
-                        if(lastState === 'live' && state.startsWith('show_') && !isCountingDown) {
-                            playCountdownAndShow(() => { lastState = state; });
-                            return; 
-                        }
-                        
-                        lastState = state;
-
-                        if(state === 'live') {
-                            liveView.style.display = 'flex'; winView.style.display = 'none'; thankView.style.display = 'none';
-                            renderList('boys-list', boys);
-                            renderList('girls-list', girls);
-                        } else if (state === 'thank_you') {
-                            liveView.style.display = 'none'; winView.style.display = 'none'; thankView.style.display = 'flex';
-                        } else {
-                            liveView.style.display = 'none'; winView.style.display = 'flex'; thankView.style.display = 'none';
-                            
-                            let boyObj = null; let girlObj = null; let subTitle = "";
-                            
-                            // ඔයා ඉල්ලපු විදියට 3rd Winner, 2nd Winner, 1st Winner 👑 දාලා තියෙන්නේ
-                            if(state === 'show_3rd') { boyObj = boys[2]; girlObj = girls[2]; subTitle = "3rd WINNER"; } 
-                            else if(state === 'show_2nd') { boyObj = boys[1]; girlObj = girls[1]; subTitle = "2nd WINNER"; } 
-                            else if(state === 'show_1st') { boyObj = boys[0]; girlObj = girls[0]; subTitle = "1st WINNER 👑"; }
-
-                            if(boyObj) {
-                                document.getElementById('display-boy').style.display = 'block';
-                                document.getElementById('w-boy-img').src = boyObj.image_url;
-                                document.getElementById('w-boy-name').innerText = boyObj.name;
-                                document.getElementById('w-boy-votes').innerText = (boyObj.vote_count||0) + " Votes";
-                                document.getElementById('w-boy-sub').innerText = subTitle;
-                            } else { document.getElementById('display-boy').style.display = 'none'; }
-
-                            if(girlObj) {
-                                document.getElementById('display-girl').style.display = 'block';
-                                document.getElementById('w-girl-img').src = girlObj.image_url;
-                                document.getElementById('w-girl-name').innerText = girlObj.name;
-                                document.getElementById('w-girl-votes').innerText = (girlObj.vote_count||0) + " Votes";
-                                document.getElementById('w-girl-sub').innerText = subTitle;
-                            } else { document.getElementById('display-girl').style.display = 'none'; }
-                        }
-                    }, 1000);
-                <\/script>
-            </body>
-            </html>
-        `);
-        w.document.close(); 
-    }
-    
-    async function delCostume(id) {
-        if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
-    }
-
-    function exportResults() {
-        let csv = 'Rank,Name,Gender,Votes\n';
-        const boys = allCostumes.filter(c => c.gender === 'boys').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-        boys.forEach((c, i) => { csv += `${i+1},"${c.name}",Boys,${c.vote_count || 0}\n`; });
-        const girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-        girls.forEach((c, i) => { csv += `${i+1},"${c.name}",Girls,${c.vote_count || 0}\n`; });
-        var hiddenElement = document.createElement('a');
-        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-        hiddenElement.target = '_blank';
-        hiddenElement.download = 'Inceptra25_Results.csv';
-        hiddenElement.click();
-    }
-
-    function showView(id) {
-        ['view-auth', 'view-waiting', 'view-audience', 'view-admin', 'view-winners'].forEach(v => document.getElementById(v).classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
-
-    function showTab(tab) {
-        ['chart', 'manage', 'settings', 'users'].forEach(t => {
-            if(document.getElementById('tab-' + t)) document.getElementById('tab-' + t).classList.add('hidden');
-            if(document.getElementById('btn-tab-' + t)) document.getElementById('btn-tab-' + t).classList.remove('active');
-        });
-        document.getElementById('tab-' + tab).classList.remove('hidden');
-        document.getElementById('btn-tab-' + tab).classList.add('active');
-    }
-
-    function getDist(lat1, lon1) {
-        const R = 6371e3; const φ1 = lat1 * Math.PI/180, φ2 = settings.lat * Math.PI/180; 
-        const Δφ = (settings.lat-lat1) * Math.PI/180, Δλ = (settings.long-lon1) * Math.PI/180;
-        const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2) * Math.sin(Δλ/2)**2;
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
-
-    init();
-</script>
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
 </body>
 </html>
