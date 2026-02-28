@@ -1,1076 +1,229 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Inceptra25 Voting System</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Disruption | Supabase</title>
     <style>
-        :root {
-            --primary: #00f3ff;
-            --secondary: #bc13fe;
-            --accent: #00e676;
-            --boys-color: #2979FF;
-            --girls-color: #F50057;
-            --bg-dark: #0a0a12;
-            --card-bg: rgba(15, 15, 25, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #ffffff;
-            --text-muted: #888;
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Rajdhani', 'Noto Sans Sinhala', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #1c1c1c; /* Supabase Dark Background */
+            color: #ededed;
             min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
         }
 
-        .bg-animation {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(188, 19, 254, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 20%, rgba(0, 243, 255, 0.15) 0%, transparent 40%),
-                var(--bg-dark);
+        /* Container */
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin-top: 60px;
         }
 
-        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 15px; position: relative; z-index: 1; }
+        /* Logo Area */
+        .logo-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 50px;
+        }
 
-        /* Header */
-        .header { text-align: center; margin: 20px 0; position: relative; }
-        .logo-text { 
-            font-size: 3rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-            background: linear-gradient(to right, #fff, var(--primary), var(--secondary)); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            text-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* Header Section */
+        .header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
             line-height: 1.2;
+            margin-bottom: 15px;
+            color: #fff;
         }
-        .logo-sub { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; }
 
-        /* Countdown */
-        .countdown-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 10px 20px;
+        /* Responsive Typography */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .container {
+                margin-top: 30px;
+            }
+        }
+
+        /* Content Box */
+        .content-box {
+            background-color: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-badge {
             display: inline-block;
+            padding: 6px 12px;
+            background-color: rgba(237, 137, 54, 0.15); /* Orange warning bg */
+            color: #ed8936; /* Orange warning text */
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
             margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-        }
-        .countdown-timer { font-size: 1.5rem; font-weight: 700; color: var(--primary); letter-spacing: 1px; font-family: 'Rajdhani', sans-serif; }
-        
-        /* Pulse Animation for ending */
-        .ending-soon {
-            color: #ff0000 !important;
-            animation: pulse-red 1s infinite;
-            font-size: 2.5rem !important;
-            text-shadow: 0 0 20px red;
-        }
-        @keyframes pulse-red {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
+            border: 1px solid rgba(237, 137, 54, 0.3);
         }
 
-        .countdown-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
 
-        /* Buttons */
-        .btn { width: 100%; padding: 12px 20px; border: none; border-radius: 50px; font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; letter-spacing: 1px; }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 4px 20px rgba(0, 243, 255, 0.3); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 243, 255, 0.5); }
-        .btn-danger { background: rgba(245, 0, 87, 0.1); color: var(--girls-color); border: 1px solid var(--girls-color); padding: 8px 15px; width: auto; font-size: 0.8rem; border-radius: 8px; }
-        .btn-danger:hover { background: var(--girls-color); color: white; }
-        .btn-vote { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent); color: var(--accent); border-radius: 50px; }
-        .btn-vote:hover { background: var(--accent); color: #000; box-shadow: 0 0 25px var(--accent); }
-        .btn-vote:disabled { border-color: #444; color: #666; background: rgba(255,255,255,0.05); cursor: not-allowed; box-shadow: none; transform: none; }
-        
-        .btn-action {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            width: auto;
-            padding: 10px 20px;
-            margin-right: 10px;
+        .description {
+            font-size: 1rem;
+            color: #a0a0a0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* Link Styling */
+        .status-link {
+            color: #3ecf8e; /* Supabase Green */
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .status-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Incident Details (Hidden cause revealed) */
+        .incident-details {
+            border-top: 1px solid #3a3a3a;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .incident-item {
             margin-bottom: 10px;
             font-size: 0.9rem;
+            color: #b0b0b0;
         }
-        .btn-action:hover { background: var(--primary); color: #000; }
 
-        /* Inputs */
-        .input-group { margin-bottom: 15px; }
-        .input-field { width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; font-size: 1rem; transition: 0.3s; }
-        .input-field:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); background: rgba(0, 0, 0, 0.8); }
-
-        /* Cards */
-        .glass-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-
-        /* Category Tabs */
-        .category-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; position: relative; }
-        .cat-tab { padding: 10px 25px; background: transparent; border: 1px solid var(--glass-border); border-radius: 50px; text-align: center; cursor: pointer; transition: all 0.4s ease; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); flex: 1; max-width: 150px; }
-        .cat-tab.active-boys { border-color: var(--boys-color); color: #fff; background: rgba(41, 121, 255, 0.15); box-shadow: 0 0 20px rgba(41, 121, 255, 0.3); }
-        .cat-tab.active-girls { border-color: var(--girls-color); color: #fff; background: rgba(245, 0, 87, 0.15); box-shadow: 0 0 20px rgba(245, 0, 87, 0.3); }
-
-        /* Costume Grid */
-        .costume-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .costume-card { background: rgba(10, 10, 20, 0.6); border-radius: 15px; overflow: hidden; border: 1px solid transparent; transition: all 0.4s ease; position: relative; }
-        .costume-card:hover { transform: translateY(-5px) scale(1.02); border-color: var(--primary); box-shadow: 0 15px 40px rgba(0, 243, 255, 0.15); }
-        .costume-img { width: 100%; height: 220px; object-fit: cover; transition: transform 0.5s ease; }
-        .costume-card:hover .costume-img { transform: scale(1.05); }
-        .costume-info { padding: 15px; text-align: center; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); position: absolute; bottom: 0; left: 0; right: 0; }
-        .costume-name { font-size: 1rem; font-weight: 700; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-
-        /* WINNER VIEW */
-        #view-winners { text-align: center; padding: 20px 0; }
-        .winner-title { font-size: 2.5rem; color: #ffd700; text-transform: uppercase; margin-bottom: 30px; text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); animation: glow 2s infinite; }
-        .winner-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 40px; }
-        .winner-card { 
-            width: 300px; 
-            background: rgba(255, 255, 255, 0.05); 
-            border: 2px solid; 
-            border-radius: 20px; 
-            padding: 20px; 
-            position: relative; 
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        .incident-item strong {
+            color: #d0d0d0;
         }
-        .winner-card.boys { border-color: var(--boys-color); box-shadow: 0 0 20px var(--boys-color); }
-        .winner-card.girls { border-color: var(--girls-color); box-shadow: 0 0 20px var(--girls-color); }
-        .crown-icon { font-size: 3rem; margin-bottom: -20px; position: relative; z-index: 2; }
-        .winner-img { width: 150px; height: 150px; border-radius: 50%; border: 4px solid white; object-fit: cover; margin: 10px auto; display: block; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .winner-name { font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
-        .winner-votes { font-size: 1.2rem; color: #aaa; }
-        .thank-you-msg { margin-top: 50px; font-size: 1.2rem; color: var(--primary); }
 
-        @keyframes glow { 0% { text-shadow: 0 0 10px #ffd700; } 50% { text-shadow: 0 0 30px #ffd700, 0 0 10px orange; } 100% { text-shadow: 0 0 10px #ffd700; } }
-
-        /* Admin Projector View */
-        .projector-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
-        @media(min-width: 900px) { .projector-grid { grid-template-columns: 1fr 1fr; } }
-        
-        .leaderboard-section { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 25px; border: 1px solid var(--glass-border); }
-        .leaderboard-title { text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; }
-        .title-boys { color: var(--boys-color); border-bottom: 2px solid var(--boys-color); padding-bottom: 5px; display: inline-block; }
-        .title-girls { color: var(--girls-color); border-bottom: 2px solid var(--girls-color); padding-bottom: 5px; display: inline-block; }
-
-        .live-item { display: flex; align-items: center; margin-bottom: 10px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; transition: all 0.5s ease; border: 1px solid transparent; }
-        .live-rank { font-size: 1.2rem; font-weight: 700; color: rgba(255,255,255,0.2); width: 30px; text-align: center; }
-        .live-photo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 2px solid rgba(255,255,255,0.1); }
-        .live-info { flex: 1; }
-        .live-name { font-weight: 600; font-size: 0.9rem; }
-        .live-votes { font-weight: 800; font-size: 1.1rem; width: 50px; text-align: right; font-family: 'Rajdhani', sans-serif; }
-
-        /* Admin Tabs */
-        .tab-nav { display: flex; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--glass-border); flex-wrap: wrap; }
-        .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 10px; font-family: inherit; font-weight: 600; transition: 0.3s; min-width: 80px; font-size: 0.9rem; }
-        .tab-btn.active { background: rgba(188, 19, 254, 0.2); color: var(--secondary); box-shadow: inset 0 0 0 1px var(--secondary); }
-
-        /* Toast Notifications */
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { padding: 15px 20px; background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-family: inherit; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideIn 0.5s ease forwards; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
-        .toast.fade-out { animation: slideOut 0.5s ease forwards; }
-        .toast.success { border-left: 4px solid var(--accent); }
-        .toast.error { border-left: 4px solid var(--girls-color); }
-        .toast.info { border-left: 4px solid var(--primary); }
-        
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-
-        /* Utilities */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; }
-        .status-box { background: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid yellow; font-size: 0.9rem; backdrop-filter: blur(5px); }
-        .status-success { border-color: var(--accent); color: var(--accent); }
-        .status-error { border-color: #ff4081; color: #ff4081; }
-        .user-header { background: linear-gradient(90deg, rgba(188,19,254,0.1), transparent); padding: 10px 20px; border-radius: 50px; margin-bottom: 20px; border: 1px solid rgba(188,19,254,0.2); display: inline-flex; width: 100%; justify-content: space-between; }
-        .action-icon { cursor: pointer; margin-left: 10px; opacity: 0.6; transition: 0.3s; font-size: 0.9rem; color: var(--primary); }
-        .action-icon:hover { opacity: 1; }
-        
-        /* Admin Setting Inputs */
-        .setting-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .setting-row .input-group { flex: 1; margin-bottom: 0; min-width: 140px; }
-
-        /* Mobile Media Queries */
-        @media (max-width: 600px) {
-            .logo-text { font-size: 2.2rem; }
-            .costume-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-            .costume-card { height: 100%; }
-            .costume-img { height: 180px; }
-            .costume-name { font-size: 0.9rem; }
-            .btn-vote { font-size: 0.8rem; padding: 8px 15px; }
-            .tab-nav { flex-direction: column; }
+        /* Pulse Animation for "Investigating" */
+        .pulse-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #ed8936;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
         }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding-top: 40px;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="bg-animation"></div>
-    <div id="toast-container"></div>
-
     <div class="container">
-        
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <svg class="logo-icon" viewBox="0 0 109 113" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z" fill="url(#paint0_linear)"/>
+                <path d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z" fill="url(#paint1_linear)" fill-opacity="0.2"/>
+                <path d="M45.317 2.07103C48.1765 -1.53037 53.9745 0.442937 54.0434 5.041L54.4849 72.2922H9.83113C1.64038 72.2922 -2.92781 62.8321 2.1655 56.4175L45.317 2.07103Z" fill="#3ECF8E"/>
+                <defs>
+                    <linearGradient id="paint0_linear" x1="53.9738" y1="54.974" x2="94.1635" y2="71.8295" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#249361"/>
+                        <stop offset="1" stop-color="#3ECF8E"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear" x1="36.1558" y1="30.578" x2="54.4844" y2="65.0806" gradientUnits="userSpaceOnUse">
+                        <stop/>
+                        <stop offset="1" stop-opacity="0"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <span class="logo-text">Supabase</span>
+        </div>
+
+        <!-- Main Content -->
         <div class="header">
-            <div class="logo-text">Inceptra25</div>
-            <div class="logo-sub">Where beginnings becomes Legacy</div>
-            <br>
-            <center><div class="countdown-box">
-                <span class="countdown-label">Time Remaining</span>
-                <div id="countdown-timer" class="countdown-timer">Loading...</div>
-            </div></center>
+            <h1>We are investigating a technical issue</h1>
         </div>
 
-        <div id="view-auth" class="hidden glass-card" style="max-width: 400px; margin: 0 auto;">
-            <h2 class="text-center" style="margin-bottom: 20px; font-size: 1.5rem;" id="auth-title">Welcome Back</h2>
-            <div class="input-group"><input type="text" id="fullname" placeholder="Full Name" class="input-field hidden"></div>
-            <div class="input-group"><input type="email" id="email" placeholder="Email Address" class="input-field"></div>
-            <div class="input-group"><input type="password" id="password" placeholder="Password" class="input-field"></div>
-            <button onclick="handleAuth()" class="btn btn-primary" id="btn-auth">Login</button>
-            <p onclick="toggleAuth()" style="color:#8FECF1; cursor:pointer; margin-top:20px; text-align:center; font-size:0.9rem;">
-                <span id="text-toggle">New here? Create Account</span>
+        <div class="content-box">
+            <span class="status-badge"><span class="pulse-dot"></span>Investigating</span>
+            <h2 class="title">Database Service Disruption</h2>
+            <p class="description">
+                We are currently investigating a service disruption affecting our database infrastructure.
+                Follow the <a href="https://status.supabase.com/" target="_blank" class="status-link">status page(click here)</a> for updates.
             </p>
-        </div>
 
-        <div id="view-audience" class="hidden">
-            <div class="user-header flex-between">
-                <div>
-                    <div style="font-size:0.7rem; color:#aaa; text-transform:uppercase;">Logged in as</div>
-                    <div style="font-weight:700; font-size:1rem;" id="user-name-display">User</div>
+            <!-- Context Details from previous request -->
+            <div class="incident-details">
+                <div class="incident-item">
+                    <strong>Impacted Region:</strong> ap-south-1 (Mumbai, India)
                 </div>
-                <button onclick="logout()" class="btn-danger">Logout</button>
-            </div>
-
-            <div id="broadcast-msg" class="hidden status-box status-error text-center" style="border-color: var(--secondary); color: var(--secondary); margin-bottom: 15px;"></div>
-
-            <div id="loc-status" class="status-box">📍 Detecting Location...</div>
-
-            <div class="category-tabs">
-                <div class="cat-tab active-boys" id="tab-boys" onclick="switchCategory('boys')">Boys</div>
-                <div class="cat-tab" id="tab-girls" onclick="switchCategory('girls')">Girls</div>
-            </div>
-
-            <div id="costume-list" class="costume-grid"></div>
-        </div>
-
-        <div id="view-winners" class="hidden">
-            <h1 class="winner-title">🎉 Voting Ended! 🎉</h1>
-            <p class="thank-you-msg">Thank you for voting! Here are the winners:</p>
-            
-            <div class="winner-container">
-                <div class="winner-card boys">
-                    <div class="crown-icon">👑</div>
-                    <h2 style="color: var(--boys-color);">MR. INCEPTRA</h2>
-                    <img id="winner-boy-img" src="" class="winner-img">
-                    <div class="winner-name" id="winner-boy-name">Loading...</div>
-                    <div class="winner-votes" id="winner-boy-votes">0 Votes</div>
+                <div class="incident-item">
+                    <strong>Issue:</strong> Connectivity issues detected due to an ISP-level block affecting Indian traffic.
                 </div>
-
-                <div class="winner-card girls">
-                    <div class="crown-icon">👑</div>
-                    <h2 style="color: var(--girls-color);">MISS. INCEPTRA</h2>
-                    <img id="winner-girl-img" src="" class="winner-img">
-                    <div class="winner-name" id="winner-girl-name">Loading...</div>
-                    <div class="winner-votes" id="winner-girl-votes">0 Votes</div>
+                <div class="incident-item">
+                    <strong>Next Update:</strong> We will provide an update as soon as the root cause is identified.
                 </div>
-            </div>
-            
-            <div style="margin-top: 50px;">
-                <button onclick="logout()" class="btn btn-danger" style="width: auto;">Logout</button>
-            </div>
-        </div>
-
-        <div id="view-admin" class="hidden">
-            <div class="flex-between" style="margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h2 style="color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem;">Admin Dashboard</h2>
-                <button onclick="logout()" class="btn-danger">Logout</button>
-            </div>
-
-            <div class="tab-nav">
-                <button onclick="showTab('chart')" class="tab-btn active" id="btn-tab-chart">Live Results</button>
-                <button onclick="showTab('manage')" class="tab-btn" id="btn-tab-manage">Manage</button>
-                <button onclick="showTab('settings')" class="tab-btn" id="btn-tab-settings">Settings</button>
-                <button onclick="showTab('users')" class="tab-btn" id="btn-tab-users">Users</button>
-            </div>
-
-            <div id="tab-chart">
-                <div class="flex-between" style="margin-bottom: 20px;">
-                    <button onclick="exportResults()" class="btn btn-action">⬇️ Export CSV</button>
-                    <button onclick="openProjector()" class="btn btn-action" style="border-color: var(--secondary); color: var(--secondary);">🖥️ Projector</button>
-                </div>
-                <div class="projector-grid">
-                    <div class="leaderboard-section">
-                        <div class="text-center"><div class="leaderboard-title title-boys">Boys</div></div>
-                        <div id="boys-results"></div>
-                    </div>
-                    <div class="leaderboard-section">
-                        <div class="text-center"><div class="leaderboard-title title-girls">Girls</div></div>
-                        <div id="girls-results"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-manage" class="hidden">
-                <div class="glass-card">
-                    <h3 style="margin-bottom: 15px; color: var(--secondary);">Add New Costume</h3>
-                    <div class="input-group"><input type="text" id="new-name" placeholder="Contestant Name" class="input-field"></div>
-                    <div class="input-group"><input type="text" id="new-img" placeholder="Image URL" class="input-field"></div>
-                    <div class="input-group">
-                        <select id="new-gender" class="input-field">
-                            <option value="boys">Boy</option>
-                            <option value="girls">Girl</option>
-                        </select>
-                    </div>
-                    <button onclick="addCostume()" class="btn btn-primary">Add Contestant</button>
-                </div>
-                <div id="manage-list"></div>
-            </div>
-
-            <div id="tab-settings" class="hidden">
-                <div class="glass-card">
-                    <h3 style="margin-bottom: 15px; color: var(--primary);">Voting Time</h3>
-                    <div class="input-group">
-                        <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:5px;">End Time</label>
-                        <input type="datetime-local" id="end-time-input" class="input-field">
-                    </div>
-                    <button onclick="saveTime()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save</button>
-                </div>
-
-                <div class="glass-card" style="margin-top: 15px;">
-                    <h3 style="margin-bottom: 15px; color: var(--accent);">Location</h3>
-                    <div class="setting-row">
-                        <div class="input-group">
-                            <label style="color:#aaa; font-size:0.8rem;">Lat</label>
-                            <input type="number" step="any" id="loc-lat" class="input-field" placeholder="6.9271">
-                        </div>
-                        <div class="input-group">
-                            <label style="color:#aaa; font-size:0.8rem;">Long</label>
-                            <input type="number" step="any" id="loc-long" class="input-field" placeholder="79.8612">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label style="color:#aaa; font-size:0.8rem;">Radius (m)</label>
-                        <input type="number" id="loc-radius" class="input-field" placeholder="100">
-                    </div>
-                    <button onclick="saveLocation()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Save</button>
-                </div>
-
-                <div class="glass-card" style="margin-top: 15px;">
-                    <h3 style="margin-bottom: 15px; color: var(--secondary);">📢 Announcement</h3>
-                    <div class="input-group">
-                        <input type="text" id="announcement-msg" placeholder="Message..." class="input-field">
-                    </div>
-                    <div class="flex-between">
-                        <button onclick="saveAnnouncement()" class="btn btn-primary" style="width:auto; padding:8px 20px;">Send</button>
-                        <button onclick="clearAnnouncement()" class="btn btn-danger" style="padding:8px 20px;">Clear</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-users" class="hidden">
-                <div id="user-list"></div>
             </div>
         </div>
     </div>
 
-    <footer style="background-color: #1a1a1a; color: #ffffff; text-align: center; padding: 20px; font-family: Arial, sans-serif; font-size: 14px; margin-top: 40px;">
-    <p style="margin: 5px 0;">&copy; 2026 Inceptra Team. All rights reserved.</p>
-    
-    <p style="margin: 5px 0;">
-        <a href="rules.html" style="color: #00aaff; text-decoration: none;">Privacy Policy</a> 
-        &nbsp;|&nbsp; 
-        <a href="rules.html" style="color: #00aaff; text-decoration: none;">Terms of Service</a>
-    </p>
-    
-    <p style="margin: 10px 0 0 0; font-size: 12px; color: #cccccc;">
-        Forwarded by <a href="https://dmkaawya.vercel.app" target="_blank" style="color: #00aaff; text-decoration: none;">DMC Group</a>
-    </p>
-</footer>
-    
-<script>
-    // --- CONFIGURATION ---
-    const supabaseUrl = 'https://vegemuqhinyxeojfbdxd.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
-    const sb = supabase.createClient(supabaseUrl, supabaseKey);
+    <!-- Footer -->
+    <div class="footer">
+        &copy; 2026 Supabase Inc. All rights reserved. <br>
+        Forwarded by <a href="https://vezlo-web.vercel.app/" target="_blank">vezlo web</a> | 
+        <a href="clickhere.html" target="_blank">click here</a>
+    </div>
 
-    // --- STATE ---
-    let currentUser = null;
-    let isRegister = false;
-    let activeCategory = 'boys'; 
-    let allCostumes = [];
-    let myVotes = []; 
-    let countdownInterval = null; 
-    let settings = {
-        endTime: new Date('2025-12-31T23:59:59').getTime(),
-        lat: 0,
-        long: 0,
-        radius: 100,
-        announcement: ''
-    };
-
-    // --- TOAST NOTIFICATION SYSTEM ---
-    function showToast(message, type = 'info') {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        
-        let icon = 'ℹ️';
-        if(type === 'success') icon = '✅';
-        if(type === 'error') icon = '❌';
-        
-        toast.innerHTML = `<span style="font-size:1.2rem">${icon}</span> <span>${message}</span>`;
-        container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.classList.add('fade-out');
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
-    }
-
-    // --- INIT ---
-    async function init() {
-        await loadSettings();
-        setupRealtime();
-
-        const { data: { session } } = await sb.auth.getSession();
-        if (session) {
-            currentUser = session.user;
-            // Check role
-            const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-            
-            if (!profile) {
-                // FIX: If profile is missing (new user), create it as Audience
-                await sb.from('profiles').insert([{ 
-                    id: currentUser.id, 
-                    email: currentUser.email, 
-                    full_name: currentUser.user_metadata.full_name || 'User', 
-                    role: 'audience' 
-                }]);
-                showView('view-audience');
-                initAudience();
-            } else {
-                if(profile.role === 'admin') {
-                    showView('view-admin');
-                    initAdmin();
-                } else if(profile.role === 'blocked') {
-                    showToast("Account Blocked!", "error"); logout();
-                } else {
-                    showView('view-audience');
-                    document.getElementById('user-name-display').innerText = profile?.full_name || "User";
-                    initAudience();
-                }
-            }
-        } else {
-            showView('view-auth');
-        }
-    }
-
-    // --- SETTINGS & REALTIME ---
-    async function loadSettings() {
-        const { data } = await sb.from('system_settings').select('*').eq('id', 1).single();
-        if(data) {
-            settings.endTime = new Date(data.voting_end_time).getTime();
-            settings.lat = data.target_lat || 0;
-            settings.long = data.target_long || 0;
-            settings.radius = data.radius_meters || 100;
-            settings.announcement = data.announcement || '';
-
-            updateCountdownDisplay();
-            updateAnnouncementUI();
-            
-           const timeInput = document.getElementById('end-time-input');
-           if(timeInput && data.voting_end_time) {
-               const d = new Date(data.voting_end_time);
-               // Local Timezone Offset එක අරගෙන datetime-local input එකට ගැලපෙන විදියට හැරවීම
-               const localISOTime = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-               timeInput.value = localISOTime;
-           }
-            
-            const latInput = document.getElementById('loc-lat');
-            if(latInput) latInput.value = settings.lat;
-            
-            const longInput = document.getElementById('loc-long');
-            if(longInput) longInput.value = settings.long;
-            
-            const radInput = document.getElementById('loc-radius');
-            if(radInput) radInput.value = settings.radius;
-        }
-    }
-
-    function setupRealtime() {
-        // System Settings Table එකට විතරක් සවන් දෙන්න
-        sb.channel('system_settings_changes').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'system_settings' }, payload => {
-            const data = payload.new;
-            settings.endTime = new Date(data.voting_end_time).getTime();
-            settings.lat = data.target_lat;
-            settings.long = data.target_long;
-            settings.radius = data.radius_meters;
-            settings.announcement = data.announcement;
-            
-            updateCountdownDisplay();
-            updateAnnouncementUI();
-            startCountdown(); // Restart countdown with new time
-            
-            if(document.getElementById('view-audience').classList.contains('hidden') === false) {
-                checkLocation(); 
-            }
-            
-            showToast("System Updated!", "info");
-        }).subscribe();
-
-        // Votes Table එකට විතරක් සවන් දෙන්න
-        sb.channel('votes_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, () => {
-            if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
-        }).subscribe();
-        
-        // Costumes Table එකට විතරක් සවන් දෙන්න
-        sb.channel('costumes_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'costumes' }, () => {
-             if(document.getElementById('view-admin').classList.contains('hidden') === false) loadAdminData();
-        }).subscribe();
-    }
-
-    function updateCountdownDisplay() { }
-    function updateAnnouncementUI() {
-        const el = document.getElementById('broadcast-msg');
-        if(el) {
-            if(settings.announcement) {
-                el.innerText = "📢 " + settings.announcement;
-                el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
-        }
-    }
-
-    // --- COUNTDOWN LOGIC ---
-    function startCountdown() {
-        if(countdownInterval) clearInterval(countdownInterval);
-        const timerElem = document.getElementById('countdown-timer');
-        
-        const updateTimer = () => {
-            const now = new Date().getTime();
-            const distance = settings.endTime - now;
-
-            if (distance < 0) {
-                timerElem.innerHTML = "VOTING ENDED";
-                timerElem.style.color = "#ff4081";
-                timerElem.classList.remove('ending-soon');
-                endGame(); // Trigger End Game
-                return;
-            }
-
-            // Pulse Effect in last 5 seconds
-            if (distance < 5000) {
-                timerElem.classList.add('ending-soon');
-            } else {
-                timerElem.classList.remove('ending-soon');
-            }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            timerElem.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-            timerElem.style.color = "var(--primary)";
-        };
-
-        updateTimer();
-        countdownInterval = setInterval(updateTimer, 1000);
-    }
-
-    // --- END GAME LOGIC ---
-    async function endGame() {
-        if(countdownInterval) clearInterval(countdownInterval);
-        
-        // If audience, show winners
-        if(!document.getElementById('view-audience').classList.contains('hidden')) {
-            // Calculate winners from local data (or fetch fresh if needed)
-            // We use the allCostumes array if populated, else fetch
-            if(allCostumes.length === 0) {
-                const { data } = await sb.from('costumes').select('*');
-                allCostumes = data || [];
-            }
-
-            const boys = allCostumes.filter(c => c.gender === 'boys').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-            const girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-
-            const winnerBoy = boys[0];
-            const winnerGirl = girls[0];
-
-            if(winnerBoy) {
-                document.getElementById('winner-boy-name').innerText = winnerBoy.name;
-                document.getElementById('winner-boy-votes').innerText = (winnerBoy.vote_count || 0) + " Votes";
-                document.getElementById('winner-boy-img').src = winnerBoy.image_url;
-            }
-            if(winnerGirl) {
-                document.getElementById('winner-girl-name').innerText = winnerGirl.name;
-                document.getElementById('winner-girl-votes').innerText = (winnerGirl.vote_count || 0) + " Votes";
-                document.getElementById('winner-girl-img').src = winnerGirl.image_url;
-            }
-
-            showView('view-winners');
-            confetti({ particleCount: 300, spread: 100, origin: { y: 0.6 } });
-        }
-    }
-
-    // --- ADMIN SAVING FUNCTIONS ---
-    async function saveTime() {
-    const val = document.getElementById('end-time-input').value;
-    if(!val) return showToast("Select date", "error");
-
-    // Local time එක හඳුනාගෙන ඒක Database එකට ගැලපෙන ISO (UTC) format එකට හැරවීම
-    const localDate = new Date(val);
-    const isoString = localDate.toISOString();
-
-    const { error } = await sb.from('system_settings').update({ voting_end_time: isoString }).eq('id', 1);
-    if(error) showToast("Error", "error"); else showToast("Time Updated!", "success");
-}
-
-    async function saveLocation() {
-        const lat = parseFloat(document.getElementById('loc-lat').value);
-        const long = parseFloat(document.getElementById('loc-long').value);
-        const radius = parseInt(document.getElementById('loc-radius').value);
-        
-        if(isNaN(lat) || isNaN(long)) return showToast("Invalid coords", "error");
-        
-        const { error } = await sb.from('system_settings').update({ 
-            target_lat: lat, 
-            target_long: long, 
-            radius_meters: radius 
-        }).eq('id', 1);
-        
-        if(error) showToast("Error", "error"); else showToast("Location Updated!", "success");
-    }
-
-    async function saveAnnouncement() {
-        const msg = document.getElementById('announcement-msg').value;
-        const { error } = await sb.from('system_settings').update({ announcement: msg }).eq('id', 1);
-        if(error) showToast("Error", "error"); else showToast("Sent!", "success");
-    }
-
-    async function clearAnnouncement() {
-        document.getElementById('announcement-msg').value = '';
-        await sb.from('system_settings').update({ announcement: '' }).eq('id', 1);
-        showToast("Cleared", "info");
-    }
-
-    // --- AUTH ---
-    function toggleAuth() {
-        isRegister = !isRegister;
-        document.getElementById('auth-title').innerText = isRegister ? "Create Account" : "Welcome Back";
-        document.getElementById('btn-auth').innerText = isRegister ? "Register" : "Login";
-        document.getElementById('text-toggle').innerText = isRegister ? "Have account? Login" : "New here? Register";
-        document.getElementById('fullname').classList.toggle('hidden', !isRegister);
-    }
-
-    async function handleAuth() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const fullname = document.getElementById('fullname').value;
-        if(!email || !password) return showToast("Enter details", "error");
-
-        if(isRegister) {
-            const { error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullname } } });
-            if(!error) {
-                showToast("Registered! Please Login.", "success");
-                toggleAuth();
-            } else {
-                showToast(error.message, "error");
-            }
-        } else {
-            const { error } = await sb.auth.signInWithPassword({ email, password });
-            if(error) showToast(error.message, "error");
-        }
-        if(!document.getElementById('view-auth').classList.contains('hidden')) window.location.reload();
-    }
-
-    async function logout() { 
-        if(countdownInterval) clearInterval(countdownInterval);
-        await sb.auth.signOut(); 
-        window.location.reload(); 
-    }
-
-    // --- AUDIENCE LOGIC ---
-    function initAudience() {
-        startCountdown(); 
-        checkLocation();
-    }
-
-    function checkLocation() {
-        const locDiv = document.getElementById('loc-status');
-        if(settings.lat === 0 && settings.long === 0) {
-             locDiv.innerHTML = "⏳ Admin setting location...";
-             locDiv.className = "status-box status-error";
-             return;
-        }
-
-        if(!navigator.geolocation) {
-            locDiv.innerHTML = "❌ GPS Not Supported";
-            locDiv.className = "status-box status-error";
-            return;
-        };
-        
-        locDiv.innerHTML = "⌛ Locating...";
-        
-        navigator.geolocation.getCurrentPosition(pos => {
-            const dist = getDist(pos.coords.latitude, pos.coords.longitude);
-            if(dist <= settings.radius) { 
-                locDiv.innerHTML = "✅ Location Verified";
-                locDiv.className = "status-box status-success";
-                loadVotingData();
-            } else {
-                locDiv.innerHTML = `❌ Out of Range (${Math.round(dist)}m)`;
-                locDiv.className = "status-box status-error";
-            }
-        }, (err) => {
-             let msg = "❌ Location Error";
-             if(err.code === 1) msg = "❌ Permission Denied";
-             locDiv.innerHTML = msg;
-             locDiv.className = "status-box status-error";
-        }, { timeout: 10000, enableHighAccuracy: true });
-    }
-
-    function switchCategory(cat) {
-        activeCategory = cat;
-        document.getElementById('tab-boys').className = cat === 'boys' ? 'cat-tab active-boys' : 'cat-tab';
-        document.getElementById('tab-girls').className = cat === 'girls' ? 'cat-tab active-girls' : 'cat-tab';
-        renderVotingCards();
-    }
-
-    async function loadVotingData() {
-        const { data: costumes } = await sb.from('costumes').select('*');
-        allCostumes = costumes || [];
-        // Fetch MY votes specifically to prevent refresh bug
-        const { data: votes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
-        myVotes = votes ? votes.map(v => v.costume_id) : [];
-        renderVotingCards();
-    }
-
-    function renderVotingCards() {
-        const list = document.getElementById('costume-list');
-        list.innerHTML = '';
-
-        const filtered = allCostumes.filter(c => c.gender === activeCategory);
-        
-        // Check against DB data (myVotes)
-        const hasVotedInThisCategory = allCostumes.some(c => 
-            c.gender === activeCategory && myVotes.includes(c.id)
-        );
-
-        if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 20px; color:#555;'>No candidates.</p>";
-
-        filtered.forEach(c => {
-            const isThisOneVoted = myVotes.includes(c.id);
-            let btnHtml = '';
-
-            if (hasVotedInThisCategory) {
-                if (isThisOneVoted) {
-                    btnHtml = `<button class="btn btn-vote" disabled style="border-color:var(--accent); color:var(--accent);">✓ Voted</button>`;
-                } else {
-                    btnHtml = `<button class="btn btn-vote" disabled>Locked</button>`;
-                }
-            } else {
-                btnHtml = `<button onclick="castVote(${c.id})" class="btn btn-vote">Vote</button>`;
-            }
-
-            list.innerHTML += `
-                <div class="costume-card">
-                    <img src="${c.image_url}" onerror="this.src='https://via.placeholder.com/300x400?text=Photo'" class="costume-img">
-                    <div class="costume-info">
-                        <div class="costume-name">${c.name}</div>
-                        ${btnHtml}
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    function celebrateVote() {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00f3ff', '#bc13fe'] });
-    }
-
-    async function castVote(id) {
-        // Double check DB state to prevent refresh exploit
-        const { data: currentVotes } = await sb.from('votes').select('costume_id').eq('user_id', currentUser.id);
-        const currentIds = currentVotes ? currentVotes.map(v => v.costume_id) : [];
-        
-        const costume = allCostumes.find(c => c.id === id);
-        if (!costume) return;
-
-        // Check if already voted in this category in DB
-        const alreadyVoted = allCostumes.some(c => c.gender === costume.gender && currentIds.includes(c.id));
-
-        if (alreadyVoted) {
-            showToast("Already voted in this category!", "error");
-            loadVotingData(); // Sync UI
-            return;
-        }
-
-        if(!confirm("Confirm Vote?")) return;
-        
-        const { error } = await sb.from('votes').insert([{ user_id: currentUser.id, costume_id: id }]);
-        if(error) {
-            showToast("Error: " + error.message, "error");
-        } else {
-            myVotes.push(id);
-            renderVotingCards(); // Update UI without re-checking GPS or doing heavy reloads
-            celebrateVote();
-            showToast("Voted! You can vote in the other category.", "success");
-        }
-    }
-
-    // --- ADMIN LOGIC ---
-    function initAdmin() {
-        loadAdminData();
-        startCountdown(); 
-    }
-
-    async function loadAdminData() {
-        const { data: costumes } = await sb.from('costumes').select('*');
-        allCostumes = costumes || [];
-        
-        let boys = allCostumes.filter(c => c.gender === 'boys').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-        let girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-
-        document.getElementById('boys-results').innerHTML = boys.map((c, i) => `
-            <div class="live-item">
-                <div class="live-rank">#${i+1}</div>
-                <img src="${c.image_url}" class="live-photo">
-                <div class="live-info">
-                    <div class="live-name">${c.name}</div>
-                </div>
-                <div class="live-votes">${c.vote_count || 0}</div>
-            </div>
-        `).join('');
-
-        document.getElementById('girls-results').innerHTML = girls.map((c, i) => `
-            <div class="live-item">
-                <div class="live-rank">#${i+1}</div>
-                <img src="${c.image_url}" class="live-photo">
-                <div class="live-info">
-                    <div class="live-name">${c.name}</div>
-                </div>
-                <div class="live-votes">${c.vote_count || 0}</div>
-            </div>
-        `).join('');
-
-        // Manage List
-        document.getElementById('manage-list').innerHTML = allCostumes.map(c => `
-            <div class="glass-card flex-between" style="padding:10px; margin-bottom:10px;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <img src="${c.image_url}" style="width:40px; height:40px; object-fit:cover; border-radius:8px;">
-                    <span style="font-weight:600; font-size:0.9rem;">${c.name}</span>
-                </div>
-                <button onclick="delCostume(${c.id})" class="btn-danger" style="padding: 4px 8px; font-size: 0.7rem;">Del</button>
-            </div>
-        `).join('');
-
-        // User List
-        const { data: users } = await sb.from('profiles').select('*');
-        if(users) {
-            document.getElementById('user-list').innerHTML = users.map(u => `
-                <div class="glass-card" style="padding:15px; margin-bottom:10px;">
-                    <div class="flex-between" style="flex-wrap: wrap; gap:10px;">
-                        <div style="font-size:0.9rem;">
-                            <b>${u.full_name || 'No Name'}</b><br>
-                            <small style="color:#555">${u.email || ''}</small>
-                        </div>
-                        <select onchange="changeUserRole('${u.id}', this.value)" class="input-field" style="width:auto; padding:5px 10px; border-radius:6px; font-size:0.8rem;">
-                            <option value="audience" ${u.role==='audience'?'selected':''}>Audience</option>
-                            <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-                            <option value="blocked" ${u.role==='blocked'?'selected':''}>Blocked</option>
-                        </select>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
-
-    async function addCostume() {
-        const name = document.getElementById('new-name').value;
-        const img = document.getElementById('new-img').value;
-        const gender = document.getElementById('new-gender').value;
-        if(!name || !img) return showToast("Name & URL required", "error");
-        
-        const { error } = await sb.from('costumes').insert([{ name, image_url: img, gender }]);
-        if(error) showToast("Error", "error");
-        else {
-            showToast("Added!", "success");
-            document.getElementById('new-name').value = '';
-            document.getElementById('new-img').value = '';
-        }
-    }
-
-    async function changeUserRole(uid, role) {
-        // FIX: Ensure proper update
-        const { error } = await sb.from('profiles').update({ role }).eq('id', uid);
-        if(error) {
-            console.error(error);
-            showToast("Failed to update role", "error");
-        } else {
-            showToast("Role Updated", "success");
-        }
-    }
-
-    // --- SUPER PROJECTOR MODE ---
-    function openProjector() {
-        const w = window.open('', '_blank');
-        w.document.write(`
-            <html>
-            <head>
-                <title>Projector</title>
-                <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
-                <style>
-                    body { background: #0a0a12; color: white; font-family: 'Rajdhani', sans-serif; text-align: center; padding: 0; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
-                    h1 { color: #00f3ff; font-size: 5vw; margin: 2vh 0; text-shadow: 0 0 20px cyan; }
-                    .grid { display: flex; flex: 1; gap: 2vw; padding: 2vw; }
-                    .col { flex: 1; display: flex; flex-direction: column; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; }
-                    .title { font-size: 3rem; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid white; padding-bottom: 10px; }
-                    .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 15px; border-radius: 10px; }
-                    img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
-                    .name { flex: 1; text-align: left; font-size: 2rem; margin-left: 20px; }
-                    .votes { font-size: 3rem; font-weight: 800; color: #00f3ff; min-width: 80px; text-align: right; }
-                    
-                    /* WINNER STYLES */
-                    .winner-view { display: none; flex: 1; align-items: center; justify-content: center; gap: 50px; background: radial-gradient(circle, rgba(188,19,254,0.2), transparent); }
-                    .winner-card { text-align: center; animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-                    .w { font-size: 5rem; }
-                    .w-img { width: 250px; height: 250px; border-radius: 50%; border: 5px solid gold; box-shadow: 0 0 50px gold; object-fit: cover; margin: 20px auto; }
-                    .w-name { font-size: 3rem; font-weight: 800; text-shadow: 0 5px 10px black; }
-                    .w-votes { font-size: 2rem; color: #aaa; }
-                    
-                    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-                </style>
-            </head>
-            <body>
-                <div id="live-view">
-                    <h1>INCEPTRA 25 - LIVE</h1>
-                    <div class="grid">
-                        <div class="col"><div class="title" style="color: #2979FF; border-color: #2979FF;">BOYS</div><div id="boys-list"></div></div>
-                        <div class="col"><div class="title" style="color: #F50057; border-color: #F50057;">GIRLS</div><div id="girls-list"></div></div>
-                    </div>
-                </div>
-
-                <div id="winner-view" class="winner-view">
-                    <div class="winner-card">
-                        <div class="w" style="color: #2979FF;">MR. INCEPTRA</div>
-                        <img id="w-boy-img" class="w-img">
-                        <div id="w-boy-name" class="w-name"></div>
-                        <div id="w-boy-votes" class="w-votes"></div>
-                    </div>
-                    <div class="winner-card">
-                        <div class="w" style="color: #F50057;">MISS. INCEPTRA</div>
-                        <img id="w-girl-img" class="w-img">
-                        <div id="w-girl-name" class="w-name"></div>
-                        <div id="w-girl-votes" class="w-votes"></div>
-                    </div>
-                </div>
-
-                <script>
-                    const supabaseUrl = '${supabaseUrl}';
-                    const supabaseKey = '${supabaseKey}';
-                    const apiEndpoint = supabaseUrl + '/rest/v1/costumes?select=*&order=vote_count.desc';
-                    const headers = { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey, 'Content-Type': 'application/json' };
-                    
-                    let endTime = ${settings.endTime}; // Initial load
-
-                    async function fetchData() {
-                        const res = await fetch(apiEndpoint, { headers: headers });
-                        const data = await res.json();
-                        const boys = data.filter(c => c.gender === 'boys');
-                        const girls = data.filter(c => c.gender === 'girls');
-
-                        // Check Time
-                        const now = new Date().getTime();
-                        if(now > endTime) {
-                            document.getElementById('live-view').style.display = 'none';
-                            document.getElementById('winner-view').style.display = 'flex';
-                            
-                            if(boys[0]) {
-                                document.getElementById('w-boy-img').src = boys[0].image_url;
-                                document.getElementById('w-boy-name').innerText = boys[0].name;
-                                document.getElementById('w-boy-votes').innerText = boys[0].vote_count + " Votes";
-                            }
-                            if(girls[0]) {
-                                document.getElementById('w-girl-img').src = girls[0].image_url;
-                                document.getElementById('w-girl-name').innerText = girls[0].name;
-                                document.getElementById('w-girl-votes').innerText = girls[0].vote_count + " Votes";
-                            }
-                        } else {
-                            document.getElementById('live-view').style.display = 'block';
-                            document.getElementById('winner-view').style.display = 'none';
-
-                            document.getElementById('boys-list').innerHTML = boys.map(c => \`
-                                <div class="row">
-                                    <img src="\${c.image_url}">
-                                    <div class="name">\${c.name}</div>
-                                    <div class="votes">\${c.vote_count || 0}</div>
-                                </div>
-                            \`).join('');
-                            document.getElementById('girls-list').innerHTML = girls.map(c => \`
-                                <div class="row">
-                                    <img src="\${c.image_url}">
-                                    <div class="name">\${c.name}</div>
-                                    <div class="votes">\${c.vote_count || 0}</div>
-                                </div>
-                            \`).join('');
-                        }
-                    }
-
-                    setInterval(fetchData, 3000);
-                    fetchData();
-                <\/script>
-            </body>
-            </html>
-        `);
-    }
-
-    async function delCostume(id) {
-        if(confirm("Delete?")) await sb.from('costumes').delete().eq('id', id);
-    }
-
-    function exportResults() {
-        let csv = 'Rank,Name,Gender,Votes\n';
-        const boys = allCostumes.filter(c => c.gender === 'boys').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-        boys.forEach((c, i) => { csv += `${i+1},"${c.name}",Boys,${c.vote_count || 0}\n`; });
-        const girls = allCostumes.filter(c => c.gender === 'girls').sort((a,b) => (b.vote_count || 0) - (a.vote_count || 0));
-        girls.forEach((c, i) => { csv += `${i+1},"${c.name}",Girls,${c.vote_count || 0}\n`; });
-        var hiddenElement = document.createElement('a');
-        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-        hiddenElement.target = '_blank';
-        hiddenElement.download = 'Inceptra25_Results.csv';
-        hiddenElement.click();
-    }
-
-    function showView(id) {
-        ['view-auth', 'view-audience', 'view-admin', 'view-winners'].forEach(v => document.getElementById(v).classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
-
-    function showTab(tab) {
-        ['chart', 'manage', 'settings', 'users'].forEach(t => {
-            if(document.getElementById('tab-' + t)) document.getElementById('tab-' + t).classList.add('hidden');
-            if(document.getElementById('btn-tab-' + t)) document.getElementById('btn-tab-' + t).classList.remove('active');
-        });
-        document.getElementById('tab-' + tab).classList.remove('hidden');
-        document.getElementById('btn-tab-' + tab).classList.add('active');
-    }
-
-    function getDist(lat1, lon1) {
-        const R = 6371e3; 
-        const φ1 = lat1 * Math.PI/180, φ2 = settings.lat * Math.PI/180; 
-        const Δφ = (settings.lat-lat1) * Math.PI/180, Δλ = (settings.long-lon1) * Math.PI/180;
-        const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2) * Math.sin(Δλ/2)**2;
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
-
-    init();
-</script>
 </body>
 </html>
