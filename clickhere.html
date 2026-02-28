@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRITICAL FAILURE | SYSTEM DOWN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #050505;
+            color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Scary Pulsing Background */
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 0%, #0a0000 95%), #ff0000;
+            opacity: 0.2;
+            z-index: -1;
+            animation: pulse-bg 3s infinite alternate;
+        }
+
+        @keyframes pulse-bg {
+            0% { opacity: 0.1; }
+            100% { opacity: 0.4; }
+        }
+
+        /* Glitch Effect Title */
+        .glitch-wrapper {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .glitch {
+            font-family: 'Creepster', cursive;
+            font-size: 4.5rem;
+            color: #fff;
+            text-transform: uppercase;
+            position: relative;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 #ff0000;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 #00b8ff;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(31px, 9999px, 94px, 0); transform: skew(0.85deg); }
+            5% { clip: rect(70px, 9999px, 71px, 0); transform: skew(0.34deg); }
+            10% { clip: rect(29px, 9999px, 24px, 0); transform: skew(0.99deg); }
+            /* ... more glitch steps ... */
+            100% { clip: rect(67px, 9999px, 85px, 0); transform: skew(0.24deg); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 99px, 0); transform: skew(0.3deg); }
+            5% { clip: rect(20px, 9999px, 40px, 0); transform: skew(0.64deg); }
+            /* ... more glitch steps ... */
+            100% { clip: rect(12px, 9999px, 60px, 0); transform: skew(0.88deg); }
+        }
+
+        /* Main Container */
+        .container {
+            background: rgba(10, 0, 0, 0.85);
+            border: 2px solid #ff0000;
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.3);
+            position: relative;
+            border-radius: 4px;
+        }
+
+        /* Warning Stripe Top */
+        .warning-strip {
+            height: 10px;
+            background: repeating-linear-gradient(
+                45deg,
+                #000,
+                #000 10px,
+                #ff0000 10px,
+                #ff0000 20px
+            );
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin: 20px 0;
+            animation: shake 0.5s infinite;
+            display: inline-block;
+            cursor: default;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #ff3333;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* The Sinhala Prank Message Box */
+        .prank-box {
+            background: #000;
+            border: 1px dashed #444;
+            padding: 20px;
+            margin-top: 30px;
+            color: #ddd;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Readable Sinhala font */
+        }
+
+        .prank-text {
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .status-link {
+            color: #aaa;
+            font-size: 0.9rem;
+            text-decoration: underline;
+            transition: color 0.3s;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .status-link:hover {
+            color: #fff;
+        }
+
+        /* FAKE Badge */
+        .fake-badge {
+            position: absolute;
+            bottom: 20px;
+            right: -15px;
+            background: #ff0055;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transform: rotate(-5deg);
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+            z-index: 10;
+            border: 2px solid #fff;
+            font-family: 'Creepster', cursive;
+            font-size: 1.2rem;
+        }
+
+        .fake-badge span {
+            display: block;
+            font-size: 0.8rem;
+            color: #ffe0e0;
+            margin-top: 2px;
+            font-weight: normal;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #666;
+            padding-bottom: 20px;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+            border-bottom: 1px solid #ff0000;
+            padding-bottom: 2px;
+            transition: all 0.3s;
+        }
+
+        .footer a:hover {
+            color: #ff0000;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .glitch { font-size: 2.5rem; }
+            .icon { font-size: 2.5rem; }
+            .container { padding: 20px; }
+            .fake-badge { right: 0px; bottom: 10px; transform: rotate(-2deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-overlay"></div>
+
+    <div class="container">
+        <div class="warning-strip"></div>
+
+        <!-- Glitch Header -->
+        <div class="glitch-wrapper">
+            <h1 class="glitch" data-text="SYSTEM DOWN">SYSTEM DOWN</h1>
+        </div>
+
+        <div class="icon">💀</div>
+
+        <div class="subtitle">
+            FATAL ERROR 503 // CONNECTION TERMINATED
+        </div>
+
+        <!-- The Message -->
+        <div class="prank-box">
+            <p class="prank-text">
+                සෙවර්ස් නම් ඩවුන් එකක් ගියා හැබැයි දැන් එක හරියට හදාගෙන යන ගමන් අපිට නම් කෙස් එකක් නැ දැන් බය නොවි නිදාගන්න 😴
+            </p>
+            <a href="https://status.supabase.com/" target="_blank" class="status-link">
+                Check Supabase Status (For Real)
+            </a>
+        </div>
+
+        <!-- Fake Badge -->
+        <div class="fake-badge">
+            FAKE
+            <span>හූ හු හූ රෑවටුනා නෙද 😉</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Powered by <a href="https://vezlo-web.vercel.app/" target="_blank">vezlo web</a>
+    </div>
+
+</body>
+</html>
