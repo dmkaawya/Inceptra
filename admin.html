@@ -98,8 +98,15 @@
         .status-rejected { color: #f72585; }
         .status-cancelled { color: #f72585; }
         
-        @media (prefers-reduced-motion: reduce) {
-            * { animation-duration: 0.01ms !important; }
+        .gender-btn {
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+        
+        .gender-btn.active {
+            border-color: #00f5d4;
+            background: rgba(0, 245, 212, 0.2);
+            color: #00f5d4;
         }
     </style>
 </head>
@@ -148,8 +155,12 @@
                         <input type="password" id="regPassword" class="input-field w-full px-4 py-3 rounded-lg" placeholder="Create password">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-2">WhatsApp Number</label>
-                        <input type="tel" id="regWp" class="input-field w-full px-4 py-3 rounded-lg" placeholder="+94 77 123 4567">
+                        <label class="block text-sm font-medium mb-2">Gender</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" onclick="selectGender('male')" id="genderMale" class="gender-btn px-4 py-3 rounded-lg text-center">Male</button>
+                            <button type="button" onclick="selectGender('female')" id="genderFemale" class="gender-btn px-4 py-3 rounded-lg text-center">Female</button>
+                        </div>
+                        <input type="hidden" id="regGender" value="">
                     </div>
                 </div>
                 <button type="button" onclick="handleRegister()" class="btn-primary w-full py-3 rounded-lg font-semibold text-white mb-4">Register</button>
@@ -158,22 +169,11 @@
                     <button type="button" onclick="showLogin()" class="text-cyan hover:underline">Sign In</button>
                 </p>
             </div>
-
-            <div id="pendingMessage" class="hidden text-center py-8">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gold/20 flex items-center justify-center">
-                    <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <h3 class="font-display font-bold text-xl mb-2 text-gold">Pending Approval</h3>
-                <p class="text-gray-400 text-sm">Your account is waiting for admin approval. Please check back later.</p>
-            </div>
         </div>
     </div>
 
     <!-- Admin Dashboard -->
     <div id="dashboard" class="hidden">
-        <!-- Mobile Header -->
         <header class="lg:hidden sticky top-0 z-50 backdrop-blur-lg border-b border-gray-800 px-4 py-4 flex items-center justify-between">
             <h1 class="font-display font-bold text-lg">
                 <span class="text-cyan">INCEPTRA</span>
@@ -187,7 +187,6 @@
         </header>
 
         <div class="flex">
-            <!-- Sidebar -->
             <aside id="sidebar" class="fixed lg:sticky top-0 left-0 h-screen w-64 card-bg border-r border-gray-800 z-50 transform -translate-x-full lg:translate-x-0 transition-transform">
                 <div class="p-6 border-b border-gray-800">
                     <h1 class="font-display font-bold text-xl">
@@ -254,7 +253,6 @@
                 </div>
             </aside>
 
-            <!-- Main Content -->
             <main class="flex-1 min-h-screen p-4 lg:p-8">
                 <!-- Dashboard Section -->
                 <section id="dashboardSection" class="space-y-6">
@@ -352,6 +350,7 @@
                                     <tr>
                                         <th class="px-4 py-3 text-left text-sm font-medium">Name</th>
                                         <th class="px-4 py-3 text-left text-sm font-medium">Email</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Gender</th>
                                         <th class="px-4 py-3 text-left text-sm font-medium">Role</th>
                                         <th class="px-4 py-3 text-left text-sm font-medium">Status</th>
                                         <th class="px-4 py-3 text-left text-sm font-medium">Actions</th>
@@ -515,13 +514,11 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // Supabase Configuration
         const SUPABASE_URL = 'https://vegemuqhinyyxeojfbdxd.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
         
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // State
         let currentUser = null;
         let bookings = [];
         let tickets = [];
@@ -543,7 +540,6 @@
             localStorage.setItem('adminTheme', isDark ? 'light' : 'dark');
         };
 
-        // Initialize theme
         const savedTheme = localStorage.getItem('adminTheme');
         if (savedTheme === 'light') {
             document.body.classList.add('light');
@@ -551,7 +547,15 @@
             document.documentElement.classList.add('dark');
         }
 
-        // Auth Functions
+        // Gender Selection
+        window.selectGender = function(gender) {
+            document.getElementById('regGender').value = gender;
+            document.getElementById('genderMale').classList.remove('active');
+            document.getElementById('genderFemale').classList.remove('active');
+            document.getElementById(gender === 'male' ? 'genderMale' : 'genderFemale').classList.add('active');
+        };
+
+        // Auth
         window.showRegister = function() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('registerForm').classList.remove('hidden');
@@ -566,23 +570,39 @@
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
-            const wpNumber = document.getElementById('regWp').value;
+            const gender = document.getElementById('regGender').value;
 
-            if (!name || !email || !password) {
-                alert('Please fill all required fields');
+            if (!name || !email || !password || !gender) {
+                alert('Please fill all fields including gender');
                 return;
             }
 
-            const { data, error } = await supabase
-                .from('admin_users')
-                .insert([{ name, email, password, wp_number: wpNumber, role: 'admin', status: 'pending' }])
-                .select();
+            try {
+                const { data, error } = await supabase
+                    .from('admin_users')
+                    .insert([{ 
+                        name, 
+                        email, 
+                        password, 
+                        gender,
+                        role: 'admin', 
+                        status: 'approved' // Auto-approve
+                    }])
+                    .select();
 
-            if (!error && data) {
-                document.getElementById('registerForm').classList.add('hidden');
-                document.getElementById('pendingMessage').classList.remove('hidden');
-            } else {
-                alert('Error registering: ' + (error?.message || 'Unknown error'));
+                if (error) {
+                    alert('Error registering: ' + error.message);
+                    return;
+                }
+
+                if (data && data[0]) {
+                    currentUser = data[0];
+                    localStorage.setItem('adminUser', JSON.stringify(data[0]));
+                    alert('Registration successful!');
+                    showDashboard();
+                }
+            } catch (err) {
+                alert('Registration failed: ' + err.message);
             }
         };
 
@@ -603,19 +623,8 @@
                     .eq('password', password)
                     .single();
 
-                if (error) {
+                if (error || !data) {
                     alert('Invalid credentials');
-                    return;
-                }
-
-                if (data.status === 'pending') {
-                    document.getElementById('loginForm').classList.add('hidden');
-                    document.getElementById('pendingMessage').classList.remove('hidden');
-                    return;
-                }
-
-                if (data.status === 'rejected') {
-                    alert('Your account has been rejected');
                     return;
                 }
 
@@ -633,7 +642,6 @@
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('pendingMessage').classList.add('hidden');
             document.getElementById('registerForm').classList.add('hidden');
         };
 
@@ -645,13 +653,14 @@
 
             if (currentUser.role === 'admin') {
                 document.getElementById('adminsLink').classList.add('hidden');
+            } else {
+                document.getElementById('adminsLink').classList.remove('hidden');
             }
 
             loadDashboardData();
             showSection('dashboard');
         }
 
-        // Section Navigation
         window.showSection = function(section) {
             const sections = ['dashboard', 'bookings', 'tickets', 'payments', 'whatsapp', 'admins'];
             sections.forEach(s => {
@@ -677,7 +686,7 @@
             document.getElementById('sidebar').classList.toggle('-translate-x-full');
         };
 
-        // Dashboard Data
+        // Dashboard
         async function loadDashboardData() {
             const { data: allBookings } = await supabase.from('bookings').select('*, tickets(name)');
 
@@ -691,7 +700,7 @@
                 document.getElementById('totalRevenue').textContent = 'LKR ' + total.toLocaleString();
 
                 const recent = bookings.slice(-5).reverse();
-                document.getElementById('recentBookings').innerHTML = recent.map(b => `
+                document.getElementById('recentBookings').innerHTML = recent.length > 0 ? recent.map(b => `
                     <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
                         <div>
                             <p class="font-medium">${b.full_name}</p>
@@ -699,7 +708,7 @@
                         </div>
                         <span class="text-sm font-medium status-${b.status}">${b.status}</span>
                     </div>
-                `).join('') || '<p class="text-gray-500 text-center">No bookings yet</p>';
+                `).join('') : '<p class="text-gray-500 text-center">No bookings yet</p>';
             }
         }
 
@@ -779,17 +788,10 @@
 
         window.updateBookingStatus = async function(status) {
             if (!selectedBooking) return;
-
-            const { error } = await supabase
-                .from('bookings')
-                .update({ status })
-                .eq('id', selectedBooking.id);
-
-            if (!error) {
-                closeBookingModal();
-                loadBookings();
-                loadDashboardData();
-            }
+            await supabase.from('bookings').update({ status }).eq('id', selectedBooking.id);
+            closeBookingModal();
+            loadBookings();
+            loadDashboardData();
         };
 
         // Tickets
@@ -838,7 +840,6 @@
         window.editTicket = function(id) {
             const ticket = tickets.find(t => t.id === id);
             if (!ticket) return;
-
             document.getElementById('ticketId').value = ticket.id;
             document.getElementById('ticketName').value = ticket.name;
             document.getElementById('ticketDesc').value = ticket.description || '';
@@ -851,8 +852,7 @@
         };
 
         window.deleteTicket = async function(id) {
-            if (!confirm('Are you sure you want to delete this ticket?')) return;
-
+            if (!confirm('Delete this ticket?')) return;
             await supabase.from('tickets').delete().eq('id', id);
             loadTickets();
         };
@@ -874,7 +874,6 @@
             } else {
                 await supabase.from('tickets').insert([data]);
             }
-
             closeTicketModal();
             loadTickets();
         });
@@ -888,7 +887,7 @@
 
         function renderPaymentMethods() {
             if (paymentMethods.length === 0) {
-                document.getElementById('paymentsList').innerHTML = '<p class="text-gray-500 col-span-2 text-center py-8">No payment methods yet</p>';
+                document.getElementById('paymentsList').innerHTML = '<p class="text-gray-500 col-span-2 text-center py-8">No payment methods</p>';
                 return;
             }
 
@@ -923,7 +922,6 @@
         window.editPayment = function(id) {
             const pm = paymentMethods.find(p => p.id === id);
             if (!pm) return;
-
             document.getElementById('paymentId').value = pm.id;
             document.getElementById('paymentName').value = pm.name;
             document.getElementById('paymentType').value = pm.type;
@@ -959,12 +957,11 @@
             } else {
                 await supabase.from('payment_methods').insert([data]);
             }
-
             closePaymentModal();
             loadPaymentMethods();
         });
 
-        // WhatsApp Numbers
+        // WhatsApp
         async function loadWhatsappNumbers() {
             const { data } = await supabase.from('whatsapp_numbers').select('*');
             if (data) whatsappNumbers = data;
@@ -973,7 +970,7 @@
 
         function renderWhatsappNumbers() {
             if (whatsappNumbers.length === 0) {
-                document.getElementById('wpList').innerHTML = '<p class="text-gray-500 col-span-4 text-center py-8">No WhatsApp numbers yet</p>';
+                document.getElementById('wpList').innerHTML = '<p class="text-gray-500 col-span-4 text-center py-8">No WhatsApp numbers</p>';
                 return;
             }
 
@@ -1004,7 +1001,6 @@
         window.editWp = function(id) {
             const wp = whatsappNumbers.find(w => w.id === id);
             if (!wp) return;
-
             document.getElementById('wpId').value = wp.id;
             document.getElementById('wpName').value = wp.name;
             document.getElementById('wpNumber').value = wp.number;
@@ -1032,7 +1028,6 @@
             } else {
                 await supabase.from('whatsapp_numbers').insert([data]);
             }
-
             closeWpModal();
             loadWhatsappNumbers();
         });
@@ -1049,16 +1044,12 @@
                 <tr class="hover:bg-gray-800/50">
                     <td class="px-4 py-3">${a.name}</td>
                     <td class="px-4 py-3 text-sm">${a.email}</td>
+                    <td class="px-4 py-3 text-sm capitalize">${a.gender || '-'}</td>
                     <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs ${a.role === 'owner' ? 'bg-gold/20 text-gold' : a.role === 'manager' ? 'bg-magenta/20 text-magenta' : 'bg-cyan/20 text-cyan'}">${a.role}</span></td>
                     <td class="px-4 py-3"><span class="status-${a.status}">${a.status}</span></td>
                     <td class="px-4 py-3">
                         ${currentUser?.role !== 'admin' ? `
-                            <select onchange="updateAdmin('${a.id}', this.value)" class="input-field px-2 py-1 rounded text-sm">
-                                <option value="pending" ${a.status === 'pending' ? 'selected' : ''}>Pending</option>
-                                <option value="approved" ${a.status === 'approved' ? 'selected' : ''}>Approved</option>
-                                <option value="rejected" ${a.status === 'rejected' ? 'selected' : ''}>Rejected</option>
-                            </select>
-                            <select onchange="updateAdminRole('${a.id}', this.value)" class="input-field px-2 py-1 rounded text-sm mt-1">
+                            <select onchange="updateAdminRole('${a.id}', this.value)" class="input-field px-2 py-1 rounded text-sm">
                                 <option value="admin" ${a.role === 'admin' ? 'selected' : ''}>Admin</option>
                                 <option value="manager" ${a.role === 'manager' ? 'selected' : ''}>Manager</option>
                                 <option value="owner" ${a.role === 'owner' ? 'selected' : ''}>Owner</option>
@@ -1069,17 +1060,12 @@
             `).join('');
         }
 
-        window.updateAdmin = async function(id, status) {
-            await supabase.from('admin_users').update({ status }).eq('id', id);
-            loadAdmins();
-        };
-
         window.updateAdminRole = async function(id, role) {
             await supabase.from('admin_users').update({ role }).eq('id', id);
             loadAdmins();
         };
 
-        // Check existing session on load
+        // Check session
         const savedUser = localStorage.getItem('adminUser');
         if (savedUser) {
             try {
