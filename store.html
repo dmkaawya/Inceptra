@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inceptra 25 | Buy Tickets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Orbitron', 'sans-serif'],
+                        body: ['Rajdhani', 'sans-serif'],
+                    },
+                    colors: {
+                        cyan: '#00f5d4',
+                        magenta: '#f72585',
+                        gold: '#ffd60a',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --fg: #ffffff;
+            --muted: #6b7280;
+            --accent-cyan: #00f5d4;
+            --accent-magenta: #f72585;
+            --card: rgba(20, 20, 20, 0.9);
+            --border: rgba(0, 245, 212, 0.3);
+        }
+        
+        .light {
+            --bg: #f8fafc;
+            --fg: #0f172a;
+            --muted: #64748b;
+            --card: rgba(255, 255, 255, 0.9);
+            --border: rgba(0, 245, 212, 0.5);
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+        }
+        
+        .font-display {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .neon-cyan {
+            text-shadow: 0 0 5px var(--accent-cyan), 0 0 10px var(--accent-cyan);
+        }
+        
+        .neon-magenta {
+            text-shadow: 0 0 5px var(--accent-magenta), 0 0 10px var(--accent-magenta);
+        }
+        
+        .card-bg {
+            background: var(--card);
+            border: 1px solid var(--border);
+        }
+        
+        .input-field {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--fg);
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px var(--accent-cyan), 0 0 40px var(--accent-magenta);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--accent-cyan);
+            color: var(--bg);
+        }
+        
+        .ticket-card {
+            transition: all 0.3s ease;
+        }
+        
+        .ticket-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 245, 212, 0.2);
+        }
+        
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+        
+        .step-active {
+            background: var(--accent-cyan);
+            color: var(--bg);
+        }
+        
+        .step-completed {
+            background: var(--accent-magenta);
+            color: white;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 backdrop-blur-lg border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.html" class="font-display font-bold text-xl sm:text-2xl">
+                <span class="text-cyan neon-cyan">INCEPTRA</span>
+                <span class="text-magenta neon-magenta"> 25</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <!-- Theme Toggle -->
+                <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-800 transition-colors" aria-label="Toggle theme">
+                    <svg id="darkIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                    <svg id="lightIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </button>
+                <a href="admin.html" class="text-sm font-medium text-gray-400 hover:text-cyan transition-colors">Admin</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Page Title -->
+        <div class="text-center mb-12">
+            <h1 class="font-display font-black text-4xl sm:text-5xl md:text-6xl mb-4">
+                <span class="text-cyan neon-cyan">BUY</span>
+                <span class="text-magenta neon-magenta"> TICKETS</span>
+            </h1>
+            <p class="text-gray-400 text-lg">Secure your spot at Inceptra 25</p>
+        </div>
+
+        <!-- Tickets Grid -->
+        <div id="ticketsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <!-- Tickets will be loaded here -->
+            <div class="col-span-full text-center py-12">
+                <div class="w-12 h-12 border-4 border-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p class="text-gray-400">Loading tickets...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
+        <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
+            <div class="card-bg rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <!-- Modal Header -->
+                <div class="sticky top-0 card-bg border-b border-gray-700 px-6 py-4 flex items-center justify-between">
+                    <h2 class="font-display font-bold text-xl">Book Your Ticket</h2>
+                    <button onclick="closeModal()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Step Indicators -->
+                <div class="px-6 py-4 border-b border-gray-700">
+                    <div class="flex items-center justify-center gap-2">
+                        <div id="step1Indicator" class="step-indicator w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold step-active">1</div>
+                        <div class="w-8 h-0.5 bg-gray-600"></div>
+                        <div id="step2Indicator" class="step-indicator w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-gray-700">2</div>
+                        <div class="w-8 h-0.5 bg-gray-600"></div>
+                        <div id="step3Indicator" class="step-indicator w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-gray-700">3</div>
+                        <div class="w-8 h-0.5 bg-gray-600"></div>
+                        <div id="step4Indicator" class="step-indicator w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-gray-700">4</div>
+                    </div>
+                    <div class="flex justify-center gap-8 mt-2 text-xs text-gray-400">
+                        <span>Details</span>
+                        <span>Payment</span>
+                        <span>Confirm</span>
+                        <span>Complete</span>
+                    </div>
+                </div>
+
+                <!-- Step 1: Personal Details -->
+                <div id="step1" class="p-6">
+                    <div class="mb-6 p-4 rounded-xl bg-gray-800/50">
+                        <p class="text-sm text-gray-400">Selected Ticket:</p>
+                        <p id="selectedTicketName" class="font-display font-bold text-lg text-cyan"></p>
+                        <p id="selectedTicketPrice" class="text-magenta font-bold"></p>
+                    </div>
+
+                    <form id="bookingForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Full Name *</label>
+                            <input type="text" name="fullName" required class="input-field w-full px-4 py-3 rounded-lg" placeholder="Enter your full name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Address *</label>
+                            <textarea name="address" required rows="2" class="input-field w-full px-4 py-3 rounded-lg resize-none" placeholder="Enter your address"></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">WhatsApp Number *</label>
+                                <input type="tel" name="wpNumber" required class="input-field w-full px-4 py-3 rounded-lg" placeholder="+94 77 123 4567">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Work/Contact Number *</label>
+                                <input type="tel" name="workNumber" required class="input-field w-full px-4 py-3 rounded-lg" placeholder="+94 77 123 4567">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Email Address *</label>
+                            <input type="email" name="email" required class="input-field w-full px-4 py-3 rounded-lg" placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Special Note (Optional)</label>
+                            <textarea name="specialNote" rows="2" class="input-field w-full px-4 py-3 rounded-lg resize-none" placeholder="Any special requirements or notes"></textarea>
+                        </div>
+                    </form>
+
+                    <div class="mt-6 flex justify-end">
+                        <button onclick="goToStep(2)" class="btn-primary px-6 py-3 rounded-lg font-semibold text-white">
+                            Continue to Payment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Payment Method -->
+                <div id="step2" class="p-6 hidden">
+                    <h3 class="font-display font-bold text-lg mb-4">Select Payment Method</h3>
+                    
+                    <div id="paymentMethods" class="space-y-3 mb-6">
+                        <!-- Payment methods loaded here -->
+                    </div>
+
+                    <div id="bankDetails" class="hidden p-4 rounded-xl bg-gray-800/50 mb-6">
+                        <h4 class="font-semibold mb-3 text-cyan">Bank Transfer Details</h4>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="text-gray-400">Bank:</span> <span id="bankName"></span></p>
+                            <p><span class="text-gray-400">Account Number:</span> <span id="accountNumber"></span></p>
+                            <p><span class="text-gray-400">Account Name:</span> <span id="accountName"></span></p>
+                            <p><span class="text-gray-400">Location:</span> <span id="bankLocation"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-2">Select Contact Number for Confirmation *</label>
+                        <div id="whatsappNumbers" class="grid grid-cols-2 gap-3">
+                            <!-- WhatsApp numbers loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <button onclick="goToStep(1)" class="btn-secondary px-6 py-3 rounded-lg font-semibold">
+                            Back
+                        </button>
+                        <button onclick="goToStep(3)" class="btn-primary px-6 py-3 rounded-lg font-semibold text-white">
+                            Continue to Summary
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Summary & Confirmation -->
+                <div id="step3" class="p-6 hidden">
+                    <h3 class="font-display font-bold text-lg mb-4">Booking Summary</h3>
+                    
+                    <div class="p-4 rounded-xl bg-gray-800/50 mb-6 space-y-3">
+                        <div class="flex justify-between border-b border-gray-700 pb-2">
+                            <span class="text-gray-400">Ticket:</span>
+                            <span id="summaryTicket" class="font-semibold"></span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-700 pb-2">
+                            <span class="text-gray-400">Name:</span>
+                            <span id="summaryName" class="font-semibold"></span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-700 pb-2">
+                            <span class="text-gray-400">Email:</span>
+                            <span id="summaryEmail" class="font-semibold"></span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-700 pb-2">
+                            <span class="text-gray-400">WhatsApp:</span>
+                            <span id="summaryWp" class="font-semibold"></span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-700 pb-2">
+                            <span class="text-gray-400">Contact:</span>
+                            <span id="summaryContact" class="font-semibold"></span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-700 pb-2">
+                            <span class="text-gray-400">Payment Method:</span>
+                            <span id="summaryPayment" class="font-semibold"></span>
+                        </div>
+                        <div class="flex justify-between pt-2">
+                            <span class="text-gray-400">Total Amount:</span>
+                            <span id="summaryAmount" class="font-bold text-lg text-magenta"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="checkbox" id="agreeRules" class="mt-1 w-5 h-5 rounded border-gray-600 text-cyan focus:ring-cyan">
+                            <span class="text-sm text-gray-300">
+                                I agree to the <a href="rules.html" target="_blank" class="text-cyan hover:underline">Terms and Conditions</a> and event rules.
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <button onclick="goToStep(2)" class="btn-secondary px-6 py-3 rounded-lg font-semibold">
+                            Back
+                        </button>
+                        <button onclick="submitBooking()" id="confirmBtn" class="btn-primary px-6 py-3 rounded-lg font-semibold text-white opacity-50 cursor-not-allowed" disabled>
+                            Confirm Booking
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Complete -->
+                <div id="step4" class="p-6 hidden text-center">
+                    <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-cyan to-magenta flex items-center justify-center">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display font-bold text-2xl mb-2">Booking Submitted!</h3>
+                    <p class="text-gray-400 mb-6">Your booking has been successfully submitted. Please check your WhatsApp for confirmation.</p>
+                    
+                    <div class="p-4 rounded-xl bg-gray-800/50 mb-6 text-left">
+                        <p class="text-sm text-gray-400 mb-2">Booking Reference:</p>
+                        <p id="bookingRef" class="font-display font-bold text-lg text-cyan"></p>
+                    </div>
+
+                    <a id="whatsappLink" href="#" target="_blank" class="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-white">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        Send WhatsApp Confirmation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 py-8 px-4 mt-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
+                <div>
+                    <a href="support.html" class="text-gray-400 hover:text-cyan transition-colors">Support</a>
+                </div>
+                <div>
+                    <a href="rules.html" class="text-gray-400 hover:text-cyan transition-colors">Terms and Services</a>
+                </div>
+                <div class="text-gray-500 text-sm">
+                    2026 Inceptra. All Rights Reserved.
+                </div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-gray-800 text-center">
+                <a href="https://vezlo-web.vercel.app/" target="_blank" class="text-gray-500 text-sm hover:text-cyan transition-colors">
+                    Powered by Vezlo Web
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://vegemuqhinyyxeojfbdxd.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // State
+        let tickets = [];
+        let paymentMethods = [];
+        let whatsappNumbers = [];
+        let selectedTicket = null;
+        let selectedPaymentMethod = null;
+        let selectedWpNumber = null;
+        let currentBookingId = null;
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const darkIcon = document.getElementById('darkIcon');
+        const lightIcon = document.getElementById('lightIcon');
+
+        function setTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                document.body.classList.remove('light');
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.add('light');
+                darkIcon.classList.remove('hidden');
+                lightIcon.classList.add('hidden');
+            }
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            setTheme(!isDark);
+        });
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            setTheme(false);
+        } else {
+            setTheme(true);
+        }
+
+        // Load Data
+        async function loadTickets() {
+            const { data, error } = await supabase
+                .from('tickets')
+                .select('*')
+                .eq('is_active', true)
+                .order('position', { ascending: true });
+
+            if (!error && data) {
+                tickets = data;
+                renderTickets();
+            }
+        }
+
+        async function loadPaymentMethods() {
+            const { data, error } = await supabase
+                .from('payment_methods')
+                .select('*')
+                .eq('is_active', true);
+
+            if (!error && data) {
+                paymentMethods = data;
+            }
+        }
+
+        async function loadWhatsappNumbers() {
+            const { data, error } = await supabase
+                .from('whatsapp_numbers')
+                .select('*')
+                .eq('is_active', true);
+
+            if (!error && data) {
+                whatsappNumbers = data;
+            }
+        }
+
+        // Render Tickets
+        function renderTickets() {
+            const grid = document.getElementById('ticketsGrid');
+            
+            if (tickets.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-gray-400">No tickets available at the moment.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = tickets.map((ticket, index) => `
+                <div class="ticket-card card-bg rounded-2xl overflow-hidden" style="animation-delay: ${index * 0.1}s">
+                    <div class="aspect-video bg-gray-800 relative overflow-hidden">
+                        ${ticket.image_url 
+                            ? `<img src="${ticket.image_url}" alt="${ticket.name}" class="w-full h-full object-cover">`
+                            : `<div class="w-full h-full flex items-center justify-center">
+                                <span class="font-display font-bold text-3xl text-cyan opacity-30">INCEPTRA</span>
+                               </div>`
+                        }
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-display font-bold text-xl mb-2">${ticket.name}</h3>
+                        ${ticket.description ? `<p class="text-gray-400 text-sm mb-4">${ticket.description}</p>` : ''}
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-magenta">LKR ${parseFloat(ticket.price).toLocaleString()}</span>
+                            <button onclick="openBookingModal('${ticket.id}')" class="btn-primary px-5 py-2 rounded-lg font-semibold text-white text-sm">
+                                Buy Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Modal Functions
+        function openBookingModal(ticketId) {
+            selectedTicket = tickets.find(t => t.id === ticketId);
+            if (!selectedTicket) return;
+
+            document.getElementById('selectedTicketName').textContent = selectedTicket.name;
+            document.getElementById('selectedTicketPrice').textContent = `LKR ${parseFloat(selectedTicket.price).toLocaleString()}`;
+            
+            document.getElementById('bookingModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            goToStep(1);
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('bookingForm').reset();
+            selectedPaymentMethod = null;
+            selectedWpNumber = null;
+            document.getElementById('agreeRules').checked = false;
+            document.getElementById('confirmBtn').disabled = true;
+            document.getElementById('confirmBtn').classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // Step Navigation
+        function goToStep(step) {
+            // Hide all steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).classList.add('hidden');
+                document.getElementById(`step${i}Indicator`).classList.remove('step-active', 'step-completed');
+                document.getElementById(`step${i}Indicator`).classList.add('bg-gray-700');
+            }
+
+            // Show current step
+            document.getElementById(`step${step}`).classList.remove('hidden');
+
+            // Update indicators
+            for (let i = 1; i < step; i++) {
+                document.getElementById(`step${i}Indicator`).classList.remove('bg-gray-700');
+                document.getElementById(`step${i}Indicator`).classList.add('step-completed');
+            }
+            document.getElementById(`step${step}Indicator`).classList.remove('bg-gray-700');
+            document.getElementById(`step${step}Indicator`).classList.add('step-active');
+
+            // Load step-specific content
+            if (step === 2) {
+                renderPaymentMethods();
+                renderWhatsappNumbers();
+            } else if (step === 3) {
+                updateSummary();
+            }
+        }
+
+        // Render Payment Methods
+        function renderPaymentMethods() {
+            const container = document.getElementById('paymentMethods');
+            
+            container.innerHTML = paymentMethods.map(pm => `
+                <label class="flex items-center gap-4 p-4 rounded-xl bg-gray-800/50 cursor-pointer hover:bg-gray-800 transition-colors ${selectedPaymentMethod?.id === pm.id ? 'ring-2 ring-cyan' : ''}">
+                    <input type="radio" name="paymentMethod" value="${pm.id}" class="w-5 h-5 text-cyan" ${selectedPaymentMethod?.id === pm.id ? 'checked' : ''} onchange="selectPaymentMethod('${pm.id}')">
+                    <div>
+                        <p class="font-semibold">${pm.name}</p>
+                        <p class="text-sm text-gray-400">${pm.type === 'bank' ? 'Bank Transfer' : pm.type}</p>
+                    </div>
+                </label>
+            `).join('');
+        }
+
+        function selectPaymentMethod(id) {
+            selectedPaymentMethod = paymentMethods.find(pm => pm.id === id);
+            
+            const bankDetails = document.getElementById('bankDetails');
+            if (selectedPaymentMethod?.type === 'bank') {
+                document.getElementById('bankName').textContent = selectedPaymentMethod.bank_name || '-';
+                document.getElementById('accountNumber').textContent = selectedPaymentMethod.account_number || '-';
+                document.getElementById('accountName').textContent = selectedPaymentMethod.account_name || '-';
+                document.getElementById('bankLocation').textContent = selectedPaymentMethod.location || '-';
+                bankDetails.classList.remove('hidden');
+            } else {
+                bankDetails.classList.add('hidden');
+            }
+            
+            renderPaymentMethods();
+        }
+
+        // Render WhatsApp Numbers
+        function renderWhatsappNumbers() {
+            const container = document.getElementById('whatsappNumbers');
+            
+            container.innerHTML = whatsappNumbers.map(wp => `
+                <label class="flex items-center gap-3 p-3 rounded-xl bg-gray-800/50 cursor-pointer hover:bg-gray-800 transition-colors ${selectedWpNumber?.id === wp.id ? 'ring-2 ring-cyan' : ''}">
+                    <input type="radio" name="wpNumber" value="${wp.id}" class="w-4 h-4 text-cyan" ${selectedWpNumber?.id === wp.id ? 'checked' : ''} onchange="selectWpNumber('${wp.id}')">
+                    <div>
+                        <p class="font-medium text-sm">${wp.name}</p>
+                        <p class="text-xs text-gray-400">${wp.number}</p>
+                    </div>
+                </label>
+            `).join('');
+        }
+
+        function selectWpNumber(id) {
+            selectedWpNumber = whatsappNumbers.find(wp => wp.id === id);
+            renderWhatsappNumbers();
+        }
+
+        // Update Summary
+        function updateSummary() {
+            const form = document.getElementById('bookingForm');
+            const formData = new FormData(form);
+
+            document.getElementById('summaryTicket').textContent = selectedTicket?.name || '-';
+            document.getElementById('summaryName').textContent = formData.get('fullName') || '-';
+            document.getElementById('summaryEmail').textContent = formData.get('email') || '-';
+            document.getElementById('summaryWp').textContent = formData.get('wpNumber') || '-';
+            document.getElementById('summaryContact').textContent = formData.get('workNumber') || '-';
+            document.getElementById('summaryPayment').textContent = selectedPaymentMethod?.name || '-';
+            document.getElementById('summaryAmount').textContent = `LKR ${parseFloat(selectedTicket?.price || 0).toLocaleString()}`;
+        }
+
+        // Agree to Rules
+        document.getElementById('agreeRules').addEventListener('change', function() {
+            const btn = document.getElementById('confirmBtn');
+            if (this.checked) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
+        // Submit Booking
+        async function submitBooking() {
+            const form = document.getElementById('bookingForm');
+            const formData = new FormData(form);
+
+            const bookingData = {
+                ticket_id: selectedTicket.id,
+                full_name: formData.get('fullName'),
+                address: formData.get('address'),
+                work_wp_number: formData.get('wpNumber'),
+                work_number: formData.get('workNumber'),
+                email: formData.get('email'),
+                special_note: formData.get('specialNote') || null,
+                payment_method_id: selectedPaymentMethod?.id,
+                selected_wp_number: selectedWpNumber?.number,
+                total_amount: selectedTicket.price,
+                status: 'pending'
+            };
+
+            const { data, error } = await supabase
+                .from('bookings')
+                .insert([bookingData])
+                .select();
+
+            if (!error && data) {
+                currentBookingId = data[0].id;
+                generateWhatsAppMessage(data[0]);
+                goToStep(4);
+            } else {
+                alert('Error submitting booking. Please try again.');
+                console.error(error);
+            }
+        }
+
+        // Generate WhatsApp Message
+        function generateWhatsAppMessage(booking) {
+            const message = `*INCEPTRA 25 - TICKET BOOKING*
+
+*Booking Reference:* ${booking.id}
+*Ticket:* ${selectedTicket.name}
+*Amount:* LKR ${parseFloat(selectedTicket.price).toLocaleString()}
+
+*Personal Details:*
+Name: ${booking.full_name}
+Email: ${booking.email}
+WhatsApp: ${booking.work_wp_number}
+Contact: ${booking.work_number}
+Address: ${booking.address}
+ ${booking.special_note ? `Note: ${booking.special_note}` : ''}
+
+*Payment Method:* ${selectedPaymentMethod?.name}
+
+I confirm this booking and agree to the event terms and conditions.`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const wpLink = `https://wa.me/${selectedWpNumber?.number?.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
+            
+            document.getElementById('bookingRef').textContent = booking.id;
+            document.getElementById('whatsappLink').href = wpLink;
+        }
+
+        // Initialize
+        async function init() {
+            await Promise.all([
+                loadTickets(),
+                loadPaymentMethods(),
+                loadWhatsappNumbers()
+            ]);
+        }
+
+        init();
+    </script>
+</body>
+</html>
