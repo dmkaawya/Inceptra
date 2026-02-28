@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inceptra 25 | Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Orbitron', 'sans-serif'],
+                        body: ['Rajdhani', 'sans-serif'],
+                    },
+                    colors: {
+                        cyan: '#00f5d4',
+                        magenta: '#f72585',
+                        gold: '#ffd60a',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --fg: #ffffff;
+            --muted: #6b7280;
+            --card: rgba(20, 20, 20, 0.9);
+            --border: rgba(0, 245, 212, 0.3);
+        }
+        
+        .light {
+            --bg: #f8fafc;
+            --fg: #0f172a;
+            --card: rgba(255, 255, 255, 0.9);
+            --border: rgba(0, 245, 212, 0.5);
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+        }
+        
+        .font-display {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .card-bg {
+            background: var(--card);
+            border: 1px solid var(--border);
+        }
+        
+        .input-field {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--fg);
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #00f5d4;
+            box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.2);
+        }
+        
+        .sidebar-link {
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-link:hover, .sidebar-link.active {
+            background: rgba(0, 245, 212, 0.1);
+            border-left: 3px solid #00f5d4;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00f5d4, #f72585);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.02);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #00f5d4;
+            color: #00f5d4;
+        }
+        
+        .btn-secondary:hover {
+            background: #00f5d4;
+            color: #0a0a0a;
+        }
+        
+        .status-pending { color: #ffd60a; }
+        .status-approved { color: #00f5d4; }
+        .status-rejected { color: #f72585; }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="card-bg rounded-2xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="font-display font-bold text-2xl mb-2">
+                    <span class="text-cyan">INCEPTRA</span>
+                    <span class="text-magenta"> ADMIN</span>
+                </h1>
+                <p class="text-gray-400">Sign in to access admin panel</p>
+            </div>
+
+            <div id="loginForm">
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" id="loginEmail" class="input-field w-full px-4 py-3 rounded-lg" placeholder="admin@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="loginPassword" class="input-field w-full px-4 py-3 rounded-lg" placeholder="Enter password">
+                    </div>
+                </div>
+                <button onclick="login()" class="btn-primary w-full py-3 rounded-lg font-semibold text-white mb-4">Sign In</button>
+                <p class="text-center text-gray-400 text-sm">
+                    Don't have an account? 
+                    <button onclick="showRegister()" class="text-cyan hover:underline">Register</button>
+                </p>
+            </div>
+
+            <div id="registerForm" class="hidden">
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Full Name</label>
+                        <input type="text" id="regName" class="input-field w-full px-4 py-3 rounded-lg" placeholder="Your name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" id="regEmail" class="input-field w-full px-4 py-3 rounded-lg" placeholder="admin@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="regPassword" class="input-field w-full px-4 py-3 rounded-lg" placeholder="Create password">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">WhatsApp Number</label>
+                        <input type="tel" id="regWp" class="input-field w-full px-4 py-3 rounded-lg" placeholder="+94 77 123 4567">
+                    </div>
+                </div>
+                <button onclick="register()" class="btn-primary w-full py-3 rounded-lg font-semibold text-white mb-4">Register</button>
+                <p class="text-center text-gray-400 text-sm">
+                    Already have an account? 
+                    <button onclick="showLogin()" class="text-cyan hover:underline">Sign In</button>
+                </p>
+            </div>
+
+            <div id="pendingMessage" class="hidden text-center py-8">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gold/20 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="font-display font-bold text-xl mb-2 text-gold">Pending Approval</h3>
+                <p class="text-gray-400 text-sm">Your account is waiting for admin approval. Please check back later.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="dashboard" class="hidden">
+        <!-- Mobile Header -->
+        <header class="lg:hidden sticky top-0 z-50 backdrop-blur-lg border-b border-gray-800 px-4 py-4 flex items-center justify-between">
+            <h1 class="font-display font-bold text-lg">
+                <span class="text-cyan">INCEPTRA</span>
+                <span class="text-magenta"> ADMIN</span>
+            </h1>
+            <button onclick="toggleMobileMenu()" class="p-2 hover:bg-gray-800 rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </header>
+
+        <div class="flex">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="fixed lg:sticky top-0 left-0 h-screen w-64 card-bg border-r border-gray-800 z-50 transform -translate-x-full lg:translate-x-0 transition-transform">
+                <div class="p-6 border-b border-gray-800">
+                    <h1 class="font-display font-bold text-xl">
+                        <span class="text-cyan">INCEPTRA</span>
+                        <span class="text-magenta"> ADMIN</span>
+                    </h1>
+                </div>
+
+                <nav class="p-4 space-y-2">
+                    <button onclick="showSection('dashboard')" class="sidebar-link active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="dashboard">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        Dashboard
+                    </button>
+                    <button onclick="showSection('bookings')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="bookings">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        Bookings
+                    </button>
+                    <button onclick="showSection('tickets')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="tickets">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                        </svg>
+                        Tickets
+                    </button>
+                    <button onclick="showSection('payments')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="payments">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                        Payment Methods
+                    </button>
+                    <button onclick="showSection('whatsapp')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="whatsapp">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        WhatsApp Numbers
+                    </button>
+                    <button onclick="showSection('admins')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-section="admins" id="adminsLink">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        Admin Users
+                    </button>
+                </nav>
+
+                <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm text-gray-400">Theme</span>
+                        <button onclick="toggleTheme()" id="themeBtn" class="p-2 hover:bg-gray-800 rounded-lg">
+                            <svg id="themeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p id="adminName" class="font-medium text-sm"></p>
+                            <p id="adminRole" class="text-xs text-gray-400"></p>
+                        </div>
+                        <button onclick="logout()" class="text-sm text-magenta hover:underline">Logout</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 min-h-screen p-4 lg:p-8">
+                <!-- Dashboard Section -->
+                <section id="dashboardSection" class="space-y-6">
+                    <h2 class="font-display font-bold text-2xl">Dashboard</h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="card-bg rounded-xl p-6">
+                            <p class="text-gray-400 text-sm mb-1">Total Bookings</p>
+                            <p id="totalBookings" class="font-display font-bold text-3xl text-cyan">0</p>
+                        </div>
+                        <div class="card-bg rounded-xl p-6">
+                            <p class="text-gray-400 text-sm mb-1">Pending</p>
+                            <p id="pendingBookings" class="font-display font-bold text-3xl text-gold">0</p>
+                        </div>
+                        <div class="card-bg rounded-xl p-6">
+                            <p class="text-gray-400 text-sm mb-1">Confirmed</p>
+                            <p id="confirmedBookings" class="font-display font-bold text-3xl text-cyan">0</p>
+                        </div>
+                        <div class="card-bg rounded-xl p-6">
+                            <p class="text-gray-400 text-sm mb-1">Total Revenue</p>
+                            <p id="totalRevenue" class="font-display font-bold text-3xl text-magenta">LKR 0</p>
+                        </div>
+                    </div>
+
+                    <div class="card-bg rounded-xl p-6">
+                        <h3 class="font-semibold mb-4">Recent Bookings</h3>
+                        <div id="recentBookings" class="space-y-3">
+                            <!-- Loaded dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bookings Section -->
+                <section id="bookingsSection" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <h2 class="font-display font-bold text-2xl">Bookings</h2>
+                        <div class="flex gap-2">
+                            <select id="bookingFilter" onchange="filterBookings()" class="input-field px-4 py-2 rounded-lg text-sm">
+                                <option value="all">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card-bg rounded-xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-800/50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Reference</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Name</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Ticket</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Amount</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Status</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingsTable" class="divide-y divide-gray-700">
+                                    <!-- Loaded dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tickets Section -->
+                <section id="ticketsSection" class="hidden space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-display font-bold text-2xl">Tickets</h2>
+                        <button onclick="openTicketModal()" class="btn-primary px-4 py-2 rounded-lg font-semibold text-white text-sm">Add Ticket</button>
+                    </div>
+
+                    <div id="ticketsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </section>
+
+                <!-- Payment Methods Section -->
+                <section id="paymentsSection" class="hidden space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-display font-bold text-2xl">Payment Methods</h2>
+                        <button onclick="openPaymentModal()" class="btn-primary px-4 py-2 rounded-lg font-semibold text-white text-sm">Add Method</button>
+                    </div>
+
+                    <div id="paymentsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </section>
+
+                <!-- WhatsApp Numbers Section -->
+                <section id="whatsappSection" class="hidden space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-display font-bold text-2xl">WhatsApp Numbers</h2>
+                        <button onclick="openWpModal()" class="btn-primary px-4 py-2 rounded-lg font-semibold text-white text-sm">Add Number</button>
+                    </div>
+
+                    <div id="wpList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </section>
+
+                <!-- Admin Users Section -->
+                <section id="adminsSection" class="hidden space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-display font-bold text-2xl">Admin Users</h2>
+                    </div>
+
+                    <div class="card-bg rounded-xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-800/50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Name</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Email</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Role</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Status</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminsTable" class="divide-y divide-gray-700">
+                                    <!-- Loaded dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Ticket Modal -->
+    <div id="ticketModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80" onclick="closeTicketModal()"></div>
+        <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
+            <div class="card-bg rounded-2xl w-full max-w-lg p-6">
+                <h3 class="font-display font-bold text-xl mb-6" id="ticketModalTitle">Add Ticket</h3>
+                <form id="ticketForm" class="space-y-4">
+                    <input type="hidden" id="ticketId">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Ticket Name</label>
+                        <input type="text" id="ticketName" class="input-field w-full px-4 py-3 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Description</label>
+                        <textarea id="ticketDesc" rows="2" class="input-field w-full px-4 py-3 rounded-lg resize-none"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Price (LKR)</label>
+                            <input type="number" id="ticketPrice" class="input-field w-full px-4 py-3 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Position</label>
+                            <input type="number" id="ticketPos" class="input-field w-full px-4 py-3 rounded-lg" value="0">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Image URL</label>
+                        <input type="url" id="ticketImage" class="input-field w-full px-4 py-3 rounded-lg" placeholder="https://...">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="ticketActive" checked class="w-4 h-4 rounded">
+                        <label class="text-sm">Active</label>
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeTicketModal()" class="btn-secondary flex-1 py-3 rounded-lg font-semibold">Cancel</button>
+                        <button type="submit" class="btn-primary flex-1 py-3 rounded-lg font-semibold text-white">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80" onclick="closePaymentModal()"></div>
+        <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
+            <div class="card-bg rounded-2xl w-full max-w-lg p-6">
+                <h3 class="font-display font-bold text-xl mb-6">Add Payment Method</h3>
+                <form id="paymentForm" class="space-y-4">
+                    <input type="hidden" id="paymentId">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Method Name</label>
+                        <input type="text" id="paymentName" class="input-field w-full px-4 py-3 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Type</label>
+                        <select id="paymentType" class="input-field w-full px-4 py-3 rounded-lg">
+                            <option value="bank">Bank Transfer</option>
+                            <option value="cash">Cash Payment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Bank Name</label>
+                        <input type="text" id="paymentBank" class="input-field w-full px-4 py-3 rounded-lg">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Account Number</label>
+                            <input type="text" id="paymentAccNum" class="input-field w-full px-4 py-3 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Account Name</label>
+                            <input type="text" id="paymentAccName" class="input-field w-full px-4 py-3 rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Location</label>
+                        <input type="text" id="paymentLocation" class="input-field w-full px-4 py-3 rounded-lg">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="paymentActive" checked class="w-4 h-4 rounded">
+                        <label class="text-sm">Active</label>
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closePaymentModal()" class="btn-secondary flex-1 py-3 rounded-lg font-semibold">Cancel</button>
+                        <button type="submit" class="btn-primary flex-1 py-3 rounded-lg font-semibold text-white">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- WhatsApp Modal -->
+    <div id="wpModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80" onclick="closeWpModal()"></div>
+        <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
+            <div class="card-bg rounded-2xl w-full max-w-md p-6">
+                <h3 class="font-display font-bold text-xl mb-6">Add WhatsApp Number</h3>
+                <form id="wpForm" class="space-y-4">
+                    <input type="hidden" id="wpId">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Name</label>
+                        <input type="text" id="wpName" class="input-field w-full px-4 py-3 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Number (with country code)</label>
+                        <input type="text" id="wpNumber" class="input-field w-full px-4 py-3 rounded-lg" placeholder="94710000000" required>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="wpActive" checked class="w-4 h-4 rounded">
+                        <label class="text-sm">Active</label>
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeWpModal()" class="btn-secondary flex-1 py-3 rounded-lg font-semibold">Cancel</button>
+                        <button type="submit" class="btn-primary flex-1 py-3 rounded-lg font-semibold text-white">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Details Modal -->
+    <div id="bookingModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80" onclick="closeBookingModal()"></div>
+        <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
+            <div class="card-bg rounded-2xl w-full max-w-lg p-6">
+                <h3 class="font-display font-bold text-xl mb-6">Booking Details</h3>
+                <div id="bookingDetails" class="space-y-3 mb-6">
+                    <!-- Loaded dynamically -->
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="updateBookingStatus('confirmed')" class="btn-primary flex-1 py-3 rounded-lg font-semibold text-white">Confirm</button>
+                    <button onclick="updateBookingStatus('cancelled')" class="btn-secondary flex-1 py-3 rounded-lg font-semibold text-magenta border-magenta">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 py-6 px-4 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <a href="support.html" class="text-gray-400 hover:text-cyan text-sm">Support</a>
+            <a href="rules.html" class="text-gray-400 hover:text-cyan text-sm">Terms and Services</a>
+            <span class="text-gray-500 text-sm">2026 Inceptra. All Rights Reserved.</span>
+            <a href="https://vezlo-web.vercel.app/" target="_blank" class="text-gray-500 text-sm hover:text-cyan">Powered by Vezlo Web</a>
+        </div>
+    </footer>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://vegemuqhinyyxeojfbdxd.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // State
+        let currentUser = null;
+        let bookings = [];
+        let tickets = [];
+        let paymentMethods = [];
+        let whatsappNumbers = [];
+        let admins = [];
+        let selectedBooking = null;
+
+        // Theme
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            if (isDark) {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.add('light');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.body.classList.remove('light');
+            }
+            localStorage.setItem('adminTheme', isDark ? 'light' : 'dark');
+        }
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('adminTheme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Auth Functions
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        async function register() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const wpNumber = document.getElementById('regWp').value;
+
+            if (!name || !email || !password) {
+                alert('Please fill all required fields');
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('admin_users')
+                .insert([{ name, email, password, wp_number: wpNumber, role: 'admin', status: 'pending' }])
+                .select();
+
+            if (!error) {
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('pendingMessage').classList.remove('hidden');
+            } else {
+                alert('Error registering: ' + error.message);
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const { data, error } = await supabase
+                .from('admin_users')
+                .select('*')
+                .eq('email', email)
+                .eq('password', password)
+                .single();
+
+            if (!error && data) {
+                if (data.status === 'pending') {
+                    document.getElementById('loginForm').classList.add('hidden');
+                    document.getElementById('pendingMessage').classList.remove('hidden');
+                    return;
+                }
+
+                currentUser = data;
+                localStorage.setItem('adminUser', JSON.stringify(data));
+                showDashboard();
+            } else {
+                alert('Invalid credentials');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('adminUser');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('pendingMessage').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('adminName').textContent = currentUser.name;
+            document.getElementById('adminRole').textContent = currentUser.role;
+
+            // Role-based access
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminsLink').classList.add('hidden');
+            }
+
+            loadDashboardData();
+            showSection('dashboard');
+        }
+
+        // Section Navigation
+        function showSection(section) {
+            const sections = ['dashboard', 'bookings', 'tickets', 'payments', 'whatsapp', 'admins'];
+            sections.forEach(s => {
+                document.getElementById(s + 'Section').classList.add('hidden');
+            });
+            document.getElementById(section + 'Section').classList.remove('hidden');
+
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+
+            // Close mobile menu
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+
+            // Load section data
+            if (section === 'bookings') loadBookings();
+            if (section === 'tickets') loadTickets();
+            if (section === 'payments') loadPaymentMethods();
+            if (section === 'whatsapp') loadWhatsappNumbers();
+            if (section === 'admins') loadAdmins();
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        }
+
+        // Dashboard Data
+        async function loadDashboardData() {
+            const { data: allBookings } = await supabase.from('bookings').select('*, tickets(name)');
+
+            if (allBookings) {
+                bookings = allBookings;
+                document.getElementById('totalBookings').textContent = bookings.length;
+                document.getElementById('pendingBookings').textContent = bookings.filter(b => b.status === 'pending').length;
+                document.getElementById('confirmedBookings').textContent = bookings.filter(b => b.status === 'confirmed').length;
+                
+                const total = bookings.filter(b => b.status === 'confirmed').reduce((sum, b) => sum + parseFloat(b.total_amount || 0), 0);
+                document.getElementById('totalRevenue').textContent = 'LKR ' + total.toLocaleString();
+
+                // Recent bookings
+                const recent = bookings.slice(-5).reverse();
+                document.getElementById('recentBookings').innerHTML = recent.map(b => `
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+                        <div>
+                            <p class="font-medium">${b.full_name}</p>
+                            <p class="text-sm text-gray-400">${b.tickets?.name || 'Unknown Ticket'}</p>
+                        </div>
+                        <span class="text-sm font-medium status-${b.status}">${b.status}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Bookings
+        async function loadBookings() {
+            const { data } = await supabase
+                .from('bookings')
+                .select('*, tickets(name), payment_methods(name)')
+                .order('created_at', { ascending: false });
+
+            if (data) bookings = data;
+            renderBookings();
+        }
+
+        function filterBookings() {
+            renderBookings();
+        }
+
+        function renderBookings() {
+            const filter = document.getElementById('bookingFilter').value;
+            let filtered = bookings;
+
+            if (filter !== 'all') {
+                filtered = bookings.filter(b => b.status === filter);
+            }
+
+            document.getElementById('bookingsTable').innerHTML = filtered.map(b => `
+                <tr class="hover:bg-gray-800/50">
+                    <td class="px-4 py-3 text-sm font-mono">${b.id.slice(0, 8)}...</td>
+                    <td class="px-4 py-3">${b.full_name}</td>
+                    <td class="px-4 py-3 text-sm">${b.tickets?.name || '-'}</td>
+                    <td class="px-4 py-3 text-sm">LKR ${parseFloat(b.total_amount || 0).toLocaleString()}</td>
+                    <td class="px-4 py-3"><span class="status-${b.status} font-medium">${b.status}</span></td>
+                    <td class="px-4 py-3">
+                        <button onclick="viewBooking('${b.id}')" class="text-cyan text-sm hover:underline">View</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function viewBooking(id) {
+            const { data } = await supabase
+                .from('bookings')
+                .select('*, tickets(name, price), payment_methods(name)')
+                .eq('id', id)
+                .single();
+
+            if (data) {
+                selectedBooking = data;
+                document.getElementById('bookingDetails').innerHTML = `
+                    <div class="p-4 rounded-lg bg-gray-800/50 space-y-2">
+                        <p><span class="text-gray-400">Reference:</span> ${data.id}</p>
+                        <p><span class="text-gray-400">Ticket:</span> ${data.tickets?.name || '-'}</p>
+                        <p><span class="text-gray-400">Amount:</span> LKR ${parseFloat(data.total_amount || 0).toLocaleString()}</p>
+                        <p><span class="text-gray-400">Name:</span> ${data.full_name}</p>
+                        <p><span class="text-gray-400">Email:</span> ${data.email}</p>
+                        <p><span class="text-gray-400">WhatsApp:</span> ${data.work_wp_number}</p>
+                        <p><span class="text-gray-400">Contact:</span> ${data.work_number}</p>
+                        <p><span class="text-gray-400">Address:</span> ${data.address}</p>
+                        <p><span class="text-gray-400">Payment:</span> ${data.payment_methods?.name || '-'}</p>
+                        <p><span class="text-gray-400">Status:</span> <span class="status-${data.status}">${data.status}</span></p>
+                        ${data.special_note ? `<p><span class="text-gray-400">Note:</span> ${data.special_note}</p>` : ''}
+                    </div>
+                `;
+                document.getElementById('bookingModal').classList.remove('hidden');
+            }
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.add('hidden');
+        }
+
+        async function updateBookingStatus(status) {
+            if (!selectedBooking) return;
+
+            const { error } = await supabase
+                .from('bookings')
+                .update({ status })
+                .eq('id', selectedBooking.id);
+
+            if (!error) {
+                closeBookingModal();
+                loadBookings();
+                loadDashboardData();
+            }
+        }
+
+        // Tickets
+        async function loadTickets() {
+            const { data } = await supabase.from('tickets').select('*').order('position');
+            if (data) tickets = data;
+            renderTickets();
+        }
+
+        function renderTickets() {
+            document.getElementById('ticketsList').innerHTML = tickets.map(t => `
+                <div class="card-bg rounded-xl p-4 flex gap-4">
+                    <div class="w-24 h-24 rounded-lg bg-gray-800 overflow-hidden flex-shrink-0">
+                        ${t.image_url ? `<img src="${t.image_url}" class="w-full h-full object-cover">` : '<div class="w-full h-full flex items-center justify-center text-cyan text-xs">No Image</div>'}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold truncate">${t.name}</h4>
+                        <p class="text-sm text-gray-400 truncate">${t.description || 'No description'}</p>
+                        <p class="font-bold text-magenta mt-1">LKR ${parseFloat(t.price).toLocaleString()}</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="editTicket('${t.id}')" class="text-cyan text-sm hover:underline">Edit</button>
+                        <button onclick="deleteTicket('${t.id}')" class="text-magenta text-sm hover:underline">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openTicketModal() {
+            document.getElementById('ticketForm').reset();
+            document.getElementById('ticketId').value = '';
+            document.getElementById('ticketModalTitle').textContent = 'Add Ticket';
+            document.getElementById('ticketModal').classList.remove('hidden');
+        }
+
+        function closeTicketModal() {
+            document.getElementById('ticketModal').classList.add('hidden');
+        }
+
+        async function editTicket(id) {
+            const ticket = tickets.find(t => t.id === id);
+            if (!ticket) return;
+
+            document.getElementById('ticketId').value = ticket.id;
+            document.getElementById('ticketName').value = ticket.name;
+            document.getElementById('ticketDesc').value = ticket.description || '';
+            document.getElementById('ticketPrice').value = ticket.price;
+            document.getElementById('ticketPos').value = ticket.position;
+            document.getElementById('ticketImage').value = ticket.image_url || '';
+            document.getElementById('ticketActive').checked = ticket.is_active;
+            document.getElementById('ticketModalTitle').textContent = 'Edit Ticket';
+            document.getElementById('ticketModal').classList.remove('hidden');
+        }
+
+        async function deleteTicket(id) {
+            if (!confirm('Are you sure you want to delete this ticket?')) return;
+
+            await supabase.from('tickets').delete().eq('id', id);
+            loadTickets();
+        }
+
+        document.getElementById('ticketForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('ticketId').value;
+            const data = {
+                name: document.getElementById('ticketName').value,
+                description: document.getElementById('ticketDesc').value,
+                price: parseFloat(document.getElementById('ticketPrice').value),
+                position: parseInt(document.getElementById('ticketPos').value) || 0,
+                image_url: document.getElementById('ticketImage').value || null,
+                is_active: document.getElementById('ticketActive').checked
+            };
+
+            if (id) {
+                await supabase.from('tickets').update(data).eq('id', id);
+            } else {
+                await supabase.from('tickets').insert([data]);
+            }
+
+            closeTicketModal();
+            loadTickets();
+        });
+
+        // Payment Methods
+        async function loadPaymentMethods() {
+            const { data } = await supabase.from('payment_methods').select('*');
+            if (data) paymentMethods = data;
+            renderPaymentMethods();
+        }
+
+        function renderPaymentMethods() {
+            document.getElementById('paymentsList').innerHTML = paymentMethods.map(p => `
+                <div class="card-bg rounded-xl p-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <h4 class="font-semibold">${p.name}</h4>
+                        <span class="text-xs px-2 py-1 rounded ${p.is_active ? 'bg-cyan/20 text-cyan' : 'bg-gray-700 text-gray-400'}">${p.is_active ? 'Active' : 'Inactive'}</span>
+                    </div>
+                    <p class="text-sm text-gray-400">${p.type}</p>
+                    ${p.bank_name ? `<p class="text-sm">${p.bank_name} - ${p.account_number}</p>` : ''}
+                    ${p.location ? `<p class="text-sm text-gray-400">${p.location}</p>` : ''}
+                    <div class="flex gap-3 mt-3">
+                        <button onclick="editPayment('${p.id}')" class="text-cyan text-sm hover:underline">Edit</button>
+                        <button onclick="deletePayment('${p.id}')" class="text-magenta text-sm hover:underline">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openPaymentModal() {
+            document.getElementById('paymentForm').reset();
+            document.getElementById('paymentId').value = '';
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+
+        async function editPayment(id) {
+            const pm = paymentMethods.find(p => p.id === id);
+            if (!pm) return;
+
+            document.getElementById('paymentId').value = pm.id;
+            document.getElementById('paymentName').value = pm.name;
+            document.getElementById('paymentType').value = pm.type;
+            document.getElementById('paymentBank').value = pm.bank_name || '';
+            document.getElementById('paymentAccNum').value = pm.account_number || '';
+            document.getElementById('paymentAccName').value = pm.account_name || '';
+            document.getElementById('paymentLocation').value = pm.location || '';
+            document.getElementById('paymentActive').checked = pm.is_active;
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        async function deletePayment(id) {
+            if (!confirm('Delete this payment method?')) return;
+            await supabase.from('payment_methods').delete().eq('id', id);
+            loadPaymentMethods();
+        }
+
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('paymentId').value;
+            const data = {
+                name: document.getElementById('paymentName').value,
+                type: document.getElementById('paymentType').value,
+                bank_name: document.getElementById('paymentBank').value || null,
+                account_number: document.getElementById('paymentAccNum').value || null,
+                account_name: document.getElementById('paymentAccName').value || null,
+                location: document.getElementById('paymentLocation').value || null,
+                is_active: document.getElementById('paymentActive').checked
+            };
+
+            if (id) {
+                await supabase.from('payment_methods').update(data).eq('id', id);
+            } else {
+                await supabase.from('payment_methods').insert([data]);
+            }
+
+            closePaymentModal();
+            loadPaymentMethods();
+        });
+
+        // WhatsApp Numbers
+        async function loadWhatsappNumbers() {
+            const { data } = await supabase.from('whatsapp_numbers').select('*');
+            if (data) whatsappNumbers = data;
+            renderWhatsappNumbers();
+        }
+
+        function renderWhatsappNumbers() {
+            document.getElementById('wpList').innerHTML = whatsappNumbers.map(w => `
+                <div class="card-bg rounded-xl p-4">
+                    <h4 class="font-semibold">${w.name}</h4>
+                    <p class="text-cyan font-mono">${w.number}</p>
+                    <span class="text-xs px-2 py-1 rounded ${w.is_active ? 'bg-cyan/20 text-cyan' : 'bg-gray-700 text-gray-400'}">${w.is_active ? 'Active' : 'Inactive'}</span>
+                    <div class="flex gap-3 mt-3">
+                        <button onclick="editWp('${w.id}')" class="text-cyan text-sm hover:underline">Edit</button>
+                        <button onclick="deleteWp('${w.id}')" class="text-magenta text-sm hover:underline">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openWpModal() {
+            document.getElementById('wpForm').reset();
+            document.getElementById('wpId').value = '';
+            document.getElementById('wpModal').classList.remove('hidden');
+        }
+
+        function closeWpModal() {
+            document.getElementById('wpModal').classList.add('hidden');
+        }
+
+        async function editWp(id) {
+            const wp = whatsappNumbers.find(w => w.id === id);
+            if (!wp) return;
+
+            document.getElementById('wpId').value = wp.id;
+            document.getElementById('wpName').value = wp.name;
+            document.getElementById('wpNumber').value = wp.number;
+            document.getElementById('wpActive').checked = wp.is_active;
+            document.getElementById('wpModal').classList.remove('hidden');
+        }
+
+        async function deleteWp(id) {
+            if (!confirm('Delete this number?')) return;
+            await supabase.from('whatsapp_numbers').delete().eq('id', id);
+            loadWhatsappNumbers();
+        }
+
+        document.getElementById('wpForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('wpId').value;
+            const data = {
+                name: document.getElementById('wpName').value,
+                number: document.getElementById('wpNumber').value,
+                is_active: document.getElementById('wpActive').checked
+            };
+
+            if (id) {
+                await supabase.from('whatsapp_numbers').update(data).eq('id', id);
+            } else {
+                await supabase.from('whatsapp_numbers').insert([data]);
+            }
+
+            closeWpModal();
+            loadWhatsappNumbers();
+        });
+
+        // Admin Users
+        async function loadAdmins() {
+            const { data } = await supabase.from('admin_users').select('*');
+            if (data) admins = data;
+            renderAdmins();
+        }
+
+        function renderAdmins() {
+            document.getElementById('adminsTable').innerHTML = admins.map(a => `
+                <tr class="hover:bg-gray-800/50">
+                    <td class="px-4 py-3">${a.name}</td>
+                    <td class="px-4 py-3 text-sm">${a.email}</td>
+                    <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs ${a.role === 'owner' ? 'bg-gold/20 text-gold' : a.role === 'manager' ? 'bg-magenta/20 text-magenta' : 'bg-cyan/20 text-cyan'}">${a.role}</span></td>
+                    <td class="px-4 py-3"><span class="status-${a.status}">${a.status}</span></td>
+                    <td class="px-4 py-3">
+                        ${currentUser?.role !== 'admin' ? `
+                            <select onchange="updateAdmin('${a.id}', this.value)" class="input-field px-2 py-1 rounded text-sm">
+                                <option value="pending" ${a.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="approved" ${a.status === 'approved' ? 'selected' : ''}>Approved</option>
+                                <option value="rejected" ${a.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                            </select>
+                            <select onchange="updateAdminRole('${a.id}', this.value)" class="input-field px-2 py-1 rounded text-sm mt-1">
+                                <option value="admin" ${a.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                <option value="manager" ${a.role === 'manager' ? 'selected' : ''}>Manager</option>
+                                <option value="owner" ${a.role === 'owner' ? 'selected' : ''}>Owner</option>
+                            </select>
+                        ` : '-'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function updateAdmin(id, status) {
+            await supabase.from('admin_users').update({ status }).eq('id', id);
+            loadAdmins();
+        }
+
+        async function updateAdminRole(id, role) {
+            await supabase.from('admin_users').update({ role }).eq('id', id);
+            loadAdmins();
+        }
+
+        // Check existing session
+        const savedUser = localStorage.getItem('adminUser');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            showDashboard();
+        }
+    </script>
+</body>
+</html>
