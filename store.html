@@ -14,9 +14,10 @@
             --border: #262626;
             --text-main: #ffffff;
             --text-muted: #a3a3a3;
-            --accent: #ff0066; /* Main Accent: Electric Pink from poster flowers */
-            --accent-soft: rgba(255, 0, 102, 0.1);
-            --secondary: #8b5cf6; /* Subtle secondary purple */
+            --accent: #8b5cf6; /* Main Accent: Vibrant Purple */
+            --accent-hover: #7c3aed;
+            --accent-soft: rgba(139, 92, 246, 0.1);
+            --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         }
 
         * {
@@ -68,7 +69,7 @@
         .orb-2 {
             width: 500px;
             height: 500px;
-            background: var(--secondary);
+            background: #ec4899; /* Pink secondary */
             bottom: -100px;
             left: -200px;
             opacity: 0.1;
@@ -105,7 +106,7 @@
 
         /* Buttons */
         .btn-primary {
-            background: var(--accent);
+            background: var(--accent-gradient);
             color: white;
             font-weight: 600;
             padding: 14px 28px;
@@ -113,11 +114,13 @@
             transition: all 0.2s;
             border: none;
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
 
         .btn-primary:hover {
             filter: brightness(1.1);
             transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
         }
 
         .btn-primary:disabled {
@@ -126,6 +129,7 @@
             cursor: not-allowed;
             transform: none;
             filter: none;
+            box-shadow: none;
         }
 
         .btn-secondary {
@@ -211,6 +215,51 @@
         ::-webkit-scrollbar-thumb {
             background: #333;
             border-radius: 10px;
+        }
+
+        /* Copy Button Style */
+        .copy-btn {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent);
+            cursor: pointer;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .copy-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Info Row for Copy */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+        .info-label {
+            color: #737373;
+            font-size: 11px;
+            width: 80px;
+        }
+        .info-val-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .info-value {
+            font-size: 12px;
+            font-weight: 500;
+            text-align: right;
         }
 
         /* Animations */
@@ -322,7 +371,7 @@
                             <p class="text-sm text-[var(--text-muted)] mb-4">Choose an organizer to send your booking request via WhatsApp.</p>
                             
                             <div class="grid grid-cols-2 gap-3" id="contactGrid">
-                                <!-- Contacts will be populated by JS based on real data -->
+                                <!-- Contacts populated by JS -->
                             </div>
                         </div>
 
@@ -382,7 +431,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-2">Email Address *</label>
+                    <label class="block text-sm font-medium mb-2">Email Address (Optional)</label>
                     <input type="email" id="email" class="input-field" placeholder="your@email.com">
                 </div>
                 <div>
@@ -394,7 +443,14 @@
 
             <!-- Step 2: Payment Method -->
             <div id="step2" class="step-panel p-6 hidden">
-                <p class="text-sm text-[var(--text-muted)] mb-4">Choose how you want to pay.</p>
+                
+                <!-- Online Payment Notice -->
+                <div class="bg-amber-500/10 border border-amber-500/20 text-amber-300 p-3 rounded-lg text-xs mb-5 flex items-start gap-2">
+                    <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span>Online bank transfers must be confirmed by sending the payment receipt to the organizer via WhatsApp.</span>
+                </div>
+
+                <p class="text-sm text-[var(--text-muted)] mb-4">Choose a payment method. Use <span class="text-[var(--accent)]">Copy</span> to save details.</p>
                 
                 <div class="space-y-3">
                     <!-- Bank 1 -->
@@ -408,9 +464,37 @@
                                 <p class="text-xs text-[var(--text-muted)]">Ceylon Banking Corporation</p>
                             </div>
                         </div>
-                        <div class="bank-details hidden mt-3 pt-3 border-t border-[var(--border)] text-xs space-y-1 pl-13">
-                            <p>Acc: 0094709986</p>
-                            <p>Name: MR.PAT Dulmika</p>
+                        
+                        <!-- Updated Bank Details Structure -->
+                        <div class="bank-details hidden mt-3 pt-3 border-t border-[var(--border)] text-xs space-y-2">
+                            <div class="info-row">
+                                <span class="info-label">Bank</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">Ceylon Banking Corporation</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('Ceylon Banking Corporation', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Branch</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">Monaragala Branch</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('Monaragala Branch', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Acc Name</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">MR.PAT Dulmika</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('MR.PAT Dulmika', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Acc Number</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">0094709986</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('0094709986', this)">Copy</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -425,9 +509,37 @@
                                 <p class="text-xs text-[var(--text-muted)]">Peoples Bank</p>
                             </div>
                         </div>
-                        <div class="bank-details hidden mt-3 pt-3 border-t border-[var(--border)] text-xs space-y-1 pl-13">
-                            <p>Acc: 068 2 001 10084831</p>
-                            <p>Name: MR.MJKDT Nimsara</p>
+                        
+                        <!-- Updated Bank Details Structure -->
+                        <div class="bank-details hidden mt-3 pt-3 border-t border-[var(--border)] text-xs space-y-2">
+                            <div class="info-row">
+                                <span class="info-label">Bank</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">Peoples Bank</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('Peoples Bank', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Branch</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">Monaragala Branch</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('Monaragala Branch', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Acc Name</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">MR.MJKDT Nimsara</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('MR.MJKDT Nimsara', this)">Copy</button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Acc Number</span>
+                                <div class="info-val-box">
+                                    <span class="info-value">068 2 001 10084831</span>
+                                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('068 2 001 10084831', this)">Copy</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -491,7 +603,7 @@
     </div>
 
     <script>
-        // Real Data from Images
+        // Real Data
         const contacts = [
             { id: 1, name: 'Teran', phone: '0782493599' },
             { id: 2, name: 'Nadeepa', phone: '0764710965' },
@@ -504,12 +616,10 @@
         let selectedPaymentMethod = null;
         let rulesAccepted = false;
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             renderContacts();
         });
 
-        // Render Contact Cards
         function renderContacts() {
             const grid = document.getElementById('contactGrid');
             grid.innerHTML = '';
@@ -529,7 +639,6 @@
             });
         }
 
-        // Selection Logic
         function selectContact(contact, el) {
             document.querySelectorAll('#contactGrid .select-card').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
@@ -587,13 +696,11 @@
         }
 
         function nextStep(step) {
-            // Validation for step 1
             if (step === 2) {
                 const name = document.getElementById('name').value;
                 const wp = document.getElementById('wp').value;
-                const email = document.getElementById('email').value;
-                if (!name || !wp || !email) {
-                    alert("Please fill all required fields.");
+                if (!name || !wp) {
+                    alert("Please fill Name and WhatsApp Number.");
                     return;
                 }
             }
@@ -613,32 +720,67 @@
             document.getElementById('sumPay').textContent = payText;
         }
 
+        // Copy Function
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.backgroundColor = 'var(--accent)';
+                btn.style.color = 'white';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback for older browsers
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 1500);
+            });
+        }
+
         function confirmBooking() {
             const name = document.getElementById('name').value;
             const wp = document.getElementById('wp').value;
             const work = document.getElementById('work').value || 'N/A';
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value || 'Not Provided';
             const note = document.getElementById('note').value || 'None';
 
-            const msg = `*INCEPTRRA 25 BOOKING*
-------------------------------
-*Ticket:* Entrance
-*Price:* ${ticketPrice}
+            const msg = `🎉 *INCEPTRRA 25 - TICKET BOOKING*
+━━━━━━━━━━━━━━━━━━━━━
+👤 *Customer Details*
+Name: ${name}
+WhatsApp: ${wp}
+Work No: ${work}
+Email: ${email}
+Note: ${note}
 
-*Name:* ${name}
-*WhatsApp:* ${wp}
-*Work No:* ${work}
-*Email:* ${email}
-*Note:* ${note}
+🎫 *Ticket Info*
+Type: Standard Access
+Amount: ${ticketPrice}
 
-*Payment Method:* ${document.getElementById('sumPay').textContent}`;
+💳 *Payment Method*
+ ${document.getElementById('sumPay').textContent}
+
+👨‍💼 *Selected Organizer*
+ ${selectedContact.name}
+
+━━━━━━━━━━━━━━━━━━━━━
+✅ *Please confirm payment and release ticket.*
+_Thank you for booking with Inceptrra 25!_`;
 
             const waLink = `https://wa.me/94${selectedContact.phone.substring(1)}?text=${encodeURIComponent(msg)}`;
             
             document.getElementById('waBtn').href = waLink;
             showStep(4);
             
-            // Auto open
             window.open(waLink, '_blank');
         }
     </script>
