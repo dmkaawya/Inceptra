@@ -3,131 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voting Guidelines - INCEPTRA 2025</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Voting Guidelines - INCEPTRA 25</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --accent-purple: #a855f7;
-            --accent-blue: #3b82f6;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --danger: #ef4444;
-            --bg-dark: #050505;
+            --primary: #9B6BFF;
+            --secondary: #7C4DFF;
+            --accent-glow: #B388FF;
+            --bg-base: #0F0B1F;
+            --bg-mid: #14102A;
+            --bg-light: #1A1333;
+            --card-bg: rgba(28, 28, 30, 0.6);
+            --text-main: #FFFFFF;
+            --text-sub: #A0A0A5;
+            --border: rgba(155, 107, 255, 0.2);
+            --danger: #ff4d4d;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
 
         body {
-            background-color: var(--bg-dark);
+            background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-mid) 50%, var(--bg-light) 100%);
             color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
             min-height: 100vh;
             overflow-x: hidden;
-            position: relative;
-            line-height: 1.7;
+            line-height: 1.6;
         }
 
-        /* Ambient Background Glow */
-        body::before {
-            content: '';
+        .font-display { font-family: 'Orbitron', sans-serif; }
+
+        /* Navigation Bar */
+        .top-nav {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 15% 15%, rgba(106, 17, 203, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 85% 85%, rgba(37, 117, 252, 0.1) 0%, transparent 50%);
-            z-index: -1;
-            pointer-events: none;
+            top: 0; left: 0; width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(15, 11, 31, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
         }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .btn-home {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+        .btn-home:hover { border-color: var(--primary); color: var(--accent-glow); }
+
+        .btn-support {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            box-shadow: 0 0 10px rgba(124, 77, 255, 0.3);
+        }
+        .btn-support:hover { box-shadow: 0 0 15px rgba(155, 107, 255, 0.6); transform: translateY(-1px); }
 
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 2rem 1.5rem 4rem;
+            padding: 7rem 1.5rem 4rem;
         }
 
-        /* Header Section */
+        /* Header */
         header {
             text-align: center;
-            padding: 3rem 0 2rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
             margin-bottom: 3rem;
         }
 
-        .header-icon {
+        header h1 {
             font-size: 2.5rem;
-            background: var(--primary-gradient);
+            background: linear-gradient(90deg, var(--accent-glow), var(--primary), var(--secondary));
             -webkit-background-clip: text;
-            color: transparent;
-            margin-bottom: 1rem;
-            display: inline-block;
-            animation: pulse 2s infinite;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(to right, #fff, #a855f7);
-            -webkit-background-clip: text;
-            color: transparent;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
-            font-weight: 700;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1rem;
-            letter-spacing: 1px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* Rules Grid Layout */
+        header p { color: var(--text-sub); font-size: 1rem; }
+
+        /* Grid Layout */
         .rules-grid {
             display: grid;
             gap: 1.5rem;
         }
 
-        /* Rule Card Styling */
+        /* Card Styling */
         .rule-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 1.5rem 2rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            transition: 0.3s;
             position: relative;
-            overflow: hidden;
         }
 
         .rule-card:hover {
-            border-color: rgba(168, 85, 247, 0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Accent line at top of card */
-        .rule-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--primary-gradient);
-            opacity: 0.5;
-            transition: opacity 0.3s;
-        }
-        .rule-card:hover::before {
-            opacity: 1;
+            border-color: var(--primary);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
         }
 
         .card-header {
@@ -139,195 +133,334 @@
             padding-bottom: 0.8rem;
         }
 
-        .section-number {
-            background: rgba(168, 85, 247, 0.15);
-            color: var(--accent-purple);
-            font-weight: 700;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+        .section-icon {
+            font-size: 1.2rem;
+            color: var(--accent-glow);
+            width: 40px;
+            height: 40px;
+            background: rgba(155, 107, 255, 0.1);
+            border-radius: 10px;
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 1rem;
-            border: 1px solid rgba(168, 85, 247, 0.3);
+            align-items: center;
         }
 
         .card-title {
             font-size: 1.2rem;
-            color: #fff;
-            font-weight: 600;
+            color: var(--text-main);
+            font-weight: 700;
         }
 
-        /* List Styling */
-        .rules-list {
-            list-style: none;
-        }
-
+        .rules-list { list-style: none; }
         .rules-list li {
             position: relative;
             padding-left: 1.5rem;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.6rem;
             font-size: 0.95rem;
-            color: #d1d5db;
+            color: var(--text-sub);
         }
 
         .rules-list li::before {
-            content: '•';
-            color: var(--accent-purple);
+            content: '⬝';
+            color: var(--primary);
             position: absolute;
             left: 0;
             font-weight: bold;
+            font-size: 1.2rem;
+            top: -2px;
         }
 
-        /* Emphasis Styles */
-        strong {
-            color: #fff;
-            font-weight: 600;
-        }
+        strong { color: var(--text-main); font-weight: 600; }
+        .warning { color: var(--danger); font-weight: 600; }
 
-        .warning-text {
-            color: #f87171;
-            font-weight: 500;
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+            z-index: 999;
+            box-shadow: 0 0 15px var(--primary);
         }
+        .back-to-top.show { opacity: 1; visibility: visible; }
+        .back-to-top:hover { transform: scale(1.1); }
 
-        /* Footer */
-        .footer-note {
-            text-align: center;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.8; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
-            100% { opacity: 0.8; transform: scale(1); }
-        }
-
-        /* Responsive Adjustments */
         @media (max-width: 768px) {
-            h1 { font-size: 1.8rem; }
+            header h1 { font-size: 1.8rem; }
             .rule-card { padding: 1.2rem; }
-            .card-title { font-size: 1rem; }
+            .nav-btn span { display: none; } /* Hide text on mobile, show icons only */
+            .nav-btn { padding: 8px 12px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Navigation -->
+    <nav class="top-nav">
+        <a href="index.html" class="nav-btn btn-home font-display">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Home</span>
+        </a>
+        <a href="support.html" class="nav-btn btn-support font-display">
+            <i class="fas fa-headset"></i>
+            <span>Support</span>
+        </a>
+    </nav>
+
     <div class="container">
-        <header>
-            <div class="header-icon"><i class="fas fa-balance-scale"></i></div>
-            <h1>Official Voting Guidelines</h1>
-            <div class="subtitle">Terms of Service & Regulations</div>
+        <header id="top">
+            <h1 class="font-display">Voting Guidelines</h1>
+            <p>Official Terms & Regulations for INCEPTRA 25</p>
         </header>
 
         <div class="rules-grid">
-
-            <!-- Section 1 -->
+            
+            <!-- 1. Eligibility -->
             <div class="rule-card">
                 <div class="card-header">
-                    <div class="section-number">1</div>
-                    <h2 class="card-title">Voting Eligibility & Timeframe</h2>
+                    <div class="section-icon"><i class="fas fa-user-check"></i></div>
+                    <h2 class="card-title font-display">Eligibility & Participation</h2>
                 </div>
                 <ul class="rules-list">
-                    <li><strong>Designated Voting Window:</strong> Voting is strictly permitted only during the officially scheduled timeframe.</li>
-                    <li><strong>Strict Deadlines:</strong> The system will automatically reject any votes attempted before the official start time or after the closing deadline.</li>
-                    <li><strong>Attendee Exclusivity:</strong> Voting is open only to verified participants and attendees of the event.</li>
+                    <li>Voters must be physically present at the INCEPTRA 25 venue to cast a vote.</li>
+                    <li>Only individuals with a valid event ticket or registration are eligible to participate.</li>
+                    <li>Participants must be at least 18 years old or have guardian consent if required by local laws.</li>
+                    <li>Staff members directly involved in managing the voting system are prohibited from voting.</li>
                 </ul>
             </div>
 
-            <!-- Section 2 -->
+            <!-- 2. Timeframe -->
             <div class="rule-card">
                 <div class="card-header">
-                    <div class="section-number">2</div>
-                    <h2 class="card-title">Voting Limits & Categories</h2>
+                    <div class="section-icon"><i class="fas fa-clock"></i></div>
+                    <h2 class="card-title font-display">Voting Schedule</h2>
                 </div>
                 <ul class="rules-list">
-                    <li><strong>Category Restriction (Boys):</strong> Each voter is entitled to cast exactly one (1) vote for a candidate in the Boys' category.</li>
-                    <li><strong>Category Restriction (Girls):</strong> Each voter is entitled to cast exactly one (1) vote for a candidate in the Girls' category.</li>
-                    <li><strong>Maximum Vote Limit:</strong> A single user can cast a maximum of two votes in total across the entire platform.</li>
-                    <li><strong>Irreversible Submissions:</strong> Once a vote is successfully submitted, it is final. Votes cannot be changed, edited, or canceled under any circumstances.</li>
+                    <li>Voting opens strictly at the designated start time announced by the organizers.</li>
+                    <li>Voting closes precisely at the deadline; late submissions will be automatically rejected.</li>
+                    <li>The system clock is synchronized with official global time; disputes regarding timing will not be entertained.</li>
+                    <li>Any extensions or changes to the schedule will be announced via official PA systems.</li>
                 </ul>
             </div>
 
-            <!-- Section 3 -->
+            <!-- 3. Location & Geofencing -->
             <div class="rule-card">
                 <div class="card-header">
-                    <div class="section-number">3</div>
-                    <h2 class="card-title">Location & Geofencing (Premises Rule)</h2>
+                    <div class="section-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <h2 class="card-title font-display">Location Verification</h2>
                 </div>
                 <ul class="rules-list">
-                    <li><strong>Physical Presence Required:</strong> Voting is strictly geofenced. You must be physically located within the designated event premises to access the voting portal.</li>
-                    <li><strong>Location Services:</strong> Voters must grant location access on their devices to verify their presence inside the event boundaries.</li>
-                    <li class="warning-text"><i class="fas fa-exclamation-triangle"></i> No Location Spoofing: The use of VPNs, proxies, or fake GPS applications to bypass the location restriction is strictly prohibited and will result in an instant ban.</li>
+                    <li><strong>GPS Required:</strong> Location services must be enabled on your device to access the voting portal.</li>
+                    <li><strong>Geofencing:</strong> Votes originating from outside the predefined GPS coordinates of the venue will be blocked.</li>
+                    <li class="warning"><strong>No Spoofing:</strong> Use of VPNs, fake GPS apps, or proxies to bypass location checks results in an instant ban.</li>
+                    <li>If location fails, please approach the technical help desk for manual verification.</li>
                 </ul>
             </div>
 
-            <!-- Section 4 -->
+            <!-- 4. Account Security -->
             <div class="rule-card">
                 <div class="card-header">
-                    <div class="section-number">4</div>
-                    <h2 class="card-title">Account & Email Verification</h2>
+                    <div class="section-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h2 class="card-title font-display">Account & Verification</h2>
                 </div>
                 <ul class="rules-list">
-                    <li><strong>Valid Email Requirement:</strong> All voters must register using a valid, active, and personal email address.</li>
-                    <li><strong>No Fake Accounts:</strong> The use of disposable, temporary, or bot-generated email accounts is strictly forbidden.</li>
-                    <li><strong>Mandatory Verification:</strong> Votes will only be counted after the user verifies their identity (e.g., clicking a confirmation link sent to their email or entering an OTP).</li>
-                    <li><strong>Single Identity:</strong> Voting on behalf of someone else or using another person’s email address/device is not allowed.</li>
+                    <li>A valid email address or phone number is required for one-time password (OTP) verification.</li>
+                    <li>Each unique identifier (email/phone) is linked to exactly one voting profile.</li>
+                    <li>Disposable or temporary email addresses are strictly forbidden.</li>
+                    <li>Keep your OTP confidential; do not share it with anyone, including volunteers.</li>
+                    <li>Account sharing is prohibited; actions taken under your account are your responsibility.</li>
                 </ul>
             </div>
 
-            <!-- Section 5 -->
+            <!-- 5. Vote Limits -->
             <div class="rule-card">
                 <div class="card-header">
-                    <div class="section-number">5</div>
-                    <h2 class="card-title">Anti-Fraud & Security Measures</h2>
+                    <div class="section-icon"><i class="fas fa-vote-yea"></i></div>
+                    <h2 class="card-title font-display">Voting Mechanics</h2>
                 </div>
                 <ul class="rules-list">
-                    <li class="warning-text"><strong>Zero Tolerance for Bots:</strong> The use of automated scripts, bots, or third-party software to generate votes will trigger automatic deletion of those votes.</li>
-                    <li><strong>IP & Device Monitoring:</strong> The system will actively monitor IP addresses and device IDs. Suspicious mass voting from a single device or network will be flagged and voided.</li>
-                    <li><strong>System Integrity:</strong> Any malicious attempts to hack, manipulate, or overload the voting servers will result in an immediate ban and potential disciplinary action.</li>
-                    <li><strong>Audit Rights:</strong> The organizing committee reserves the right to audit the voting logs to identify and remove fraudulent activity before declaring the winners.</li>
+                    <li><strong>Maximum Votes:</strong> Each voter can cast exactly one (1) vote per category.</li>
+                    <li><strong>Categories:</strong> There are separate categories for Boys and Girls.</li>
+                    <li><strong>Finality:</strong> Once a vote is submitted, it cannot be changed, edited, or revoked.</li>
+                    <li>Ensure you review your selection carefully before hitting the "Submit" button.</li>
                 </ul>
             </div>
 
-            <!-- Section 6 -->
+            <!-- 6. Anti-Fraud -->
             <div class="rule-card">
                 <div class="card-header">
-                    <div class="section-number">6</div>
-                    <h2 class="card-title">Code of Conduct & Fair Play</h2>
+                    <div class="section-icon"><i class="fas fa-ban"></i></div>
+                    <h2 class="card-title font-display">Anti-Fraud & Integrity</h2>
                 </div>
                 <ul class="rules-list">
-                    <li><strong>Candidate Disqualification:</strong> If a candidate or their campaign is found guilty of utilizing fake emails, bots, or location spoofing, the candidate will face immediate disqualification.</li>
-                    <li><strong>No Bribery:</strong> Offering money, gifts, or any other incentives in exchange for votes is strictly a violation of fair play rules.</li>
-                    <li><strong>No Coercion:</strong> Forcing, intimidating, or harassing other attendees to vote for a specific candidate is strictly prohibited.</li>
+                    <li class="warning"><strong>Zero Bots:</strong> Automated scripts or botting tools are illegal.</li>
+                    <li>The system monitors IP addresses and device fingerprints for duplicate voting attempts.</li>
+                    <li>Suspicious activity patterns (e.g., rapid-fire votes) will trigger an automatic flag.</li>
+                    <li>Attempts to manipulate the server database will lead to legal action and event bans.</li>
+                    <li>All votes are logged with timestamps and device info for audit trails.</li>
                 </ul>
             </div>
 
-            <!-- Section 7 -->
+            <!-- 7. Code of Conduct -->
             <div class="rule-card">
                 <div class="card-header">
-                    <div class="section-number">7</div>
-                    <h2 class="card-title">Privacy, Technicalities & Final Authority</h2>
+                    <div class="section-icon"><i class="fas fa-gavel"></i></div>
+                    <h2 class="card-title font-display">Code of Conduct</h2>
                 </div>
                 <ul class="rules-list">
-                    <li><strong>Data Privacy:</strong> Your email address and location data are strictly confidential. They are collected solely for vote authentication and will never be shared with third parties.</li>
-                    <li><strong>Technical Disclaimers:</strong> The organizers are not responsible for votes that fail to submit due to personal device malfunctions, poor cellular data, or local internet connectivity issues.</li>
-                    <li><strong>Result Confidentiality:</strong> Live voting tallies will remain hidden from the public to maintain fairness and excitement.</li>
-                    <li><strong>Final Authority:</strong> The organizing committee holds the ultimate authority over the voting process. Their decisions regarding disputes, rule violations, and final results are binding and final.</li>
+                    <li>Voters must respect the privacy of others; photography of other people's screens is banned.</li>
+                    <li><strong>No Bribery:</strong> Offering money or gifts for votes is a violation.</li>
+                    <li><strong>No Coercion:</strong> Forcing someone to vote for a specific candidate is prohibited.</li>
+                    <li>Abusive language or harassment of the voting committee will result in removal.</li>
+                </ul>
+            </div>
+
+            <!-- 8. Technical -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-icon"><i class="fas fa-wifi"></i></div>
+                    <h2 class="card-title font-display">Technical Requirements</h2>
+                </div>
+                <ul class="rules-list">
+                    <li>Use a modern browser (Chrome, Safari, Firefox, Edge) updated to the latest version.</li>
+                    <li>Ensure stable internet connection; organizers are not liable for user connectivity issues.</li>
+                    <li>Clear browser cache if the page fails to load properly.</li>
+                    <li>Do not refresh the page while the vote is being processed.</li>
+                </ul>
+            </div>
+
+            <!-- 9. Disputes -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-icon"><i class="fas fa-exclamation-circle"></i></div>
+                    <h2 class="card-title font-display">Disputes & Results</h2>
+                </div>
+                <ul class="rules-list">
+                    <li>Live vote counts are hidden to maintain fairness.</li>
+                    <li>The organizing committee reserves the right to disqualify fraudulent votes.</li>
+                    <li>In the event of a tie, a tie-breaking mechanism (e.g., coin toss or revote) will be announced.</li>
+                    <li>Results declared by the committee are final and binding.</li>
+                </ul>
+            </div>
+
+            <!-- 10. Privacy -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-icon"><i class="fas fa-user-secret"></i></div>
+                    <h2 class="card-title font-display">Data Privacy</h2>
+                </div>
+                <ul class="rules-list">
+                    <li>Personal data collected is used solely for vote authentication.</li>
+                    <li>Data is encrypted and stored securely; it will not be sold to third parties.</li>
+                    <li>Voter anonymity is preserved in the final public results.</li>
+                    <li>Data will be purged 30 days after the event conclusion.</li>
+                </ul>
+            </div>
+
+            <!-- 11. Accessibility -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-icon"><i class="fas fa-wheelchair"></i></div>
+                    <h2 class="card-title font-display">Accessibility</h2>
+                </div>
+                <ul class="rules-list">
+                    <li>Assistive technology users should ensure compatibility with the web portal.</li>
+                    <li>Volunteers are available to assist visually or physically impaired voters.</li>
+                    <li>Priority queues will be provided for those needing special assistance.</li>
+                </ul>
+            </div>
+
+            <!-- 12. Candidate Rules -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-icon"><i class="fas fa-user-tie"></i></div>
+                    <h2 class="card-title font-display">Candidate Conduct</h2>
+                </div>
+                <ul class="rules-list">
+                    <li>Candidates are not allowed to campaign within 10 meters of the voting station.</li>
+                    <li>Candidates found buying votes will be disqualified immediately.</li>
+                    <li>Agents appointed by candidates must carry valid ID badges.</li>
+                    <li>Candidates cannot touch or handle voter devices.</li>
+                </ul>
+            </div>
+
+            <!-- 13. Device Usage -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h2 class="card-title font-display">Device Regulations</h2>
+                </div>
+                <ul class="rules-list">
+                    <li>One vote per device is preferred. If using a shared device, ensure proper logout.</li>
+                    <li>Do not leave your device unattended while logged into the voting portal.</li>
+                    <li>Jailbroken or rooted devices may face security restrictions.</li>
+                </ul>
+            </div>
+
+            <!-- 14. Social Media -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-icon"><i class="fas fa-hashtag"></i></div>
+                    <h2 class="card-title font-display">Social Media & Publicity</h2>
+                </div>
+                <ul class="rules-list">
+                    <li>Voters are encouraged to share participation but not reveal specific vote choices publicly if asked.</li>
+                    <li>Recording video of the voting process (filling the form) is prohibited to ensure secrecy.</li>
+                    <li>Hashtag usage for event promotion is welcomed, provided it does not harass others.</li>
+                </ul>
+            </div>
+
+            <!-- 15. Final Authority -->
+            <div class="rule-card">
+                <div class="card-header">
+                    <div class="section-icon"><i class="fas fa-balance-scale"></i></div>
+                    <h2 class="card-title font-display">Final Authority</h2>
+                </div>
+                <ul class="rules-list">
+                    <li>The organizing committee has the final say on any ambiguities in these rules.</li>
+                    <li>Rules may be updated without prior notice; the latest version on the site applies.</li>
+                    <li>By voting, you acknowledge that you have read and understood these 30 guidelines.</li>
                 </ul>
             </div>
 
         </div>
 
-        <div class="footer-note">
-            <p>By participating in the voting process, you agree to abide by all the rules and regulations stated above.</p>
-            <p style="margin-top: 0.5rem; color: #555;">© 2025 INCEPTRA Organizing Committee. All Rights Reserved.</p>
+        <div style="text-align: center; margin-top: 3rem; color: var(--text-sub); font-size: 0.9rem;">
+            <p>By participating, you agree to abide by the above regulations.</p>
+            <p style="margin-top: 0.5rem; opacity: 0.6;">© 2026 INCEPTRA. All Rights Reserved.</p>
         </div>
     </div>
 
+    <!-- Back to Top Button -->
+    <div class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+
+    <script>
+        // Show/Hide Back to Top Button
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                document.getElementById("backToTop").classList.add("show");
+            } else {
+                document.getElementById("backToTop").classList.remove("show");
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
