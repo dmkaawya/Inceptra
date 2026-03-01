@@ -40,15 +40,10 @@
             box-sizing: border-box;
         }
 
-        .navbar {
-    /* වෙනස් කළ කොටස (Safari සහ අනිත් ඒවට සපෝට් කරන්න) */
-    position: -webkit-sticky; 
-    position: sticky;
-    top: 0;
-
-    /* ඔයාගේ පරණ Design එක එහෙම්මම තියෙනවා */
+       .navbar {
+    position: fixed; 
+    top: 0; 
     width: 100%;
-    /* iPhone වල notch එකෙන් බේරෙන්න padding-top එක update කරලා තියෙන්නේ */
     padding: calc(1rem + env(safe-area-inset-top)) 1.5rem 1rem 1.5rem; 
     background: rgba(15, 11, 31, 0.9);
     backdrop-filter: blur(10px);
@@ -310,5 +305,25 @@
         updateCountdown();
         setInterval(updateCountdown, 1000);
     </script>
+    <script>
+    function adjustForDevice() {
+        // Navbar එක හොයාගන්නවා
+        const navbar = document.querySelector('.navbar');
+        
+        if (navbar) {
+            // ඒ වෙලාවේ අදාළ Device එකේ Navbar එකේ හරියටම උස මනිනවා
+            const navbarHeight = navbar.offsetHeight;
+            
+            // ඒ උස ප්‍රමාණයම Body එකේ උඩින් හිස්ව තියනවා
+            document.body.style.paddingTop = navbarHeight + 'px';
+        }
+    }
+
+    // වෙබ්සයිට් එක ලෝඩ් වෙද්දි මේක වැඩ කරනවා
+    window.addEventListener('DOMContentLoaded', adjustForDevice);
+    
+    // ෆෝන් එක හරවද්දි (Rotate කරද්දි) වුණත් මේක auto හැදෙනවා
+    window.addEventListener('resize', adjustForDevice);
+</script>
 </body>
 </html>
