@@ -41,7 +41,6 @@
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
-            /* Deep Gradient Background */
             background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-mid) 50%, var(--bg-light) 100%);
         }
 
@@ -49,7 +48,6 @@
             font-family: 'Orbitron', sans-serif;
         }
 
-        /* Main Title Gradient */
         .title-gradient {
             background: linear-gradient(90deg, var(--accent-glow), var(--accent-main), var(--accent-deep));
             -webkit-background-clip: text;
@@ -57,7 +55,6 @@
             background-clip: text;
         }
 
-        /* Neon Text Effect */
         .neon-text {
             text-shadow: 
                 0 0 10px rgba(155, 107, 255, 0.5),
@@ -65,9 +62,8 @@
                 0 0 40px rgba(124, 77, 255, 0.2);
         }
 
-        /* Card Styling */
         .countdown-box {
-            background: rgba(28, 28, 30, 0.6); /* Elevated Dark Surface with transparency */
+            background: rgba(28, 28, 30, 0.6);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(155, 107, 255, 0.2);
@@ -98,7 +94,6 @@
                 inset 0 0 30px rgba(155, 107, 255, 0.1);
         }
 
-        /* Button Styling */
         .btn-primary {
             background: linear-gradient(135deg, var(--accent-deep), var(--accent-main));
             transition: all 0.3s ease;
@@ -131,7 +126,6 @@
             transform: translateY(0px);
         }
 
-        /* Footer */
         footer {
             background: rgba(15, 11, 31, 0.8);
             backdrop-filter: blur(10px);
@@ -151,7 +145,6 @@
             outline-offset: 2px;
         }
         
-        /* Subtle background animation */
         .bg-glow {
             position: fixed;
             top: -50%;
@@ -196,26 +189,27 @@
                 
                 <!-- Days -->
                 <div class="countdown-box rounded-2xl p-5 sm:p-8 text-center">
-                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-2" id="days">000</div>
-                    <div class="text-[var(--accent-main)] uppercase tracking-[0.2em] text-[10px] sm:text-sm font-bold">Days</div>
+                    <!-- Changed label size to text-[9px] sm:text-[11px] for smaller appearance -->
+                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-1" id="days">000</div>
+                    <div class="text-[var(--accent-main)] uppercase tracking-[0.15em] text-[9px] sm:text-[11px] font-semibold">Days</div>
                 </div>
                 
                 <!-- Hours -->
                 <div class="countdown-box rounded-2xl p-5 sm:p-8 text-center">
-                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-2" id="hours">00</div>
-                    <div class="text-[var(--accent-main)] uppercase tracking-[0.2em] text-[10px] sm:text-sm font-bold">Hours</div>
+                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-1" id="hours">00</div>
+                    <div class="text-[var(--accent-main)] uppercase tracking-[0.15em] text-[9px] sm:text-[11px] font-semibold">Hours</div>
                 </div>
                 
                 <!-- Minutes -->
                 <div class="countdown-box rounded-2xl p-5 sm:p-8 text-center">
-                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-2" id="minutes">00</div>
-                    <div class="text-[var(--accent-main)] uppercase tracking-[0.2em] text-[10px] sm:text-sm font-bold">Minutes</div>
+                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-1" id="minutes">00</div>
+                    <div class="text-[var(--accent-main)] uppercase tracking-[0.15em] text-[9px] sm:text-[11px] font-semibold">Minutes</div>
                 </div>
                 
                 <!-- Seconds -->
                 <div class="countdown-box rounded-2xl p-5 sm:p-8 text-center">
-                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-2" id="seconds">00</div>
-                    <div class="text-[var(--accent-main)] uppercase tracking-[0.2em] text-[10px] sm:text-sm font-bold">Seconds</div>
+                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-1" id="seconds">00</div>
+                    <div class="text-[var(--accent-main)] uppercase tracking-[0.15em] text-[9px] sm:text-[11px] font-semibold">Seconds</div>
                 </div>
             </div>
         </div>
