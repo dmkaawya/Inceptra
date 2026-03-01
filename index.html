@@ -28,6 +28,10 @@
             --text-primary: #FFFFFF;
             --text-soft: #E6E6E6;
             --text-muted: #A0A0A5;
+
+            /* Additional Vars for Footer */
+            --border: rgba(155, 107, 255, 0.2);
+            --accent: #9B6BFF;
         }
 
         * {
@@ -42,6 +46,8 @@
             min-height: 100vh;
             overflow-x: hidden;
             background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-mid) 50%, var(--bg-light) 100%);
+            display: flex; 
+            flex-direction: column;
         }
 
         .font-display {
@@ -94,6 +100,7 @@
                 inset 0 0 30px rgba(155, 107, 255, 0.1);
         }
 
+        /* Primary Button (Buy Ticket) */
         .btn-primary {
             background: linear-gradient(135deg, var(--accent-deep), var(--accent-main));
             transition: all 0.3s ease;
@@ -126,18 +133,18 @@
             transform: translateY(0px);
         }
 
-        footer {
-            background: rgba(15, 11, 31, 0.8);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .footer-link {
-            transition: color 0.3s ease;
-        }
-
-        .footer-link:hover {
+        /* Secondary Button (Support) */
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--accent-main);
             color: var(--accent-glow);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(155, 107, 255, 0.1);
+            box-shadow: 0 0 15px rgba(155, 107, 255, 0.2);
+            transform: translateY(-3px);
         }
 
         a:focus-visible, button:focus-visible {
@@ -166,7 +173,7 @@
 <body>
     <div class="bg-glow"></div>
     
-    <main class="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-16 relative z-10">
+    <main class="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-16 relative z-10">
         
         <!-- Event badge -->
         <span class="inline-block px-5 py-2 border border-[var(--accent-main)] text-[var(--accent-glow)] text-xs sm:text-sm font-semibold tracking-[0.25em] uppercase rounded-full mb-8 bg-[#0F0B1F]/50 backdrop-blur-sm">
@@ -189,7 +196,6 @@
                 
                 <!-- Days -->
                 <div class="countdown-box rounded-2xl p-5 sm:p-8 text-center">
-                    <!-- Changed label size to text-[9px] sm:text-[11px] for smaller appearance -->
                     <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-1" id="days">000</div>
                     <div class="text-[var(--accent-main)] uppercase tracking-[0.15em] text-[9px] sm:text-[11px] font-semibold">Days</div>
                 </div>
@@ -214,31 +220,38 @@
             </div>
         </div>
         
-        <!-- Buy Ticket Button -->
-        <a href="store.html" class="btn-primary inline-flex items-center gap-3 px-10 py-4 rounded-full font-display font-bold text-base sm:text-lg text-white tracking-wider">
-            <span>Buy Ticket</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-        </a>
-        <br>
-         <!-- support Button -->
-        <a href="support.html" class="btn-primary inline-flex items-center gap-3 px-10 py-4 rounded-full font-display font-bold text-base sm:text-lg text-white tracking-wider">
-            <span>Support</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-        </a>
+        <!-- Buttons Container -->
+        <div class="flex flex-col sm:flex-row gap-4 items-center justify-center w-full px-4">
+            
+            <!-- Buy Ticket Button -->
+            <a href="store.html" class="btn-primary inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full font-display font-bold text-base sm:text-lg text-white tracking-wider w-full sm:w-auto">
+                <span>Buy Ticket</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+            
+            <!-- Support Button -->
+            <a href="support.html" class="btn-secondary inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full font-display font-bold text-base sm:text-lg tracking-wider w-full sm:w-auto">
+                <span>Support</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </a>
+            
+        </div>
         
     </main>
     
-    <!-- Footer -->
-    <footer class="py-6 sm:py-8 px-4">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="text-[var(--text-muted)] text-xs sm:text-sm text-center sm:text-left tracking-wide">
-                2026 Inceptra. All Rights Reserved.
+    <!-- Footer (Updated) -->
+    <footer class="p-6 mt-auto border-t border-[var(--border)]">
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[var(--text-muted)]">
+            <div class="flex gap-6">
+                <a href="support.html" class="hover:text-white transition-colors">Support</a>
+                <a href="rules.html" class="hover:text-white transition-colors">Terms & Services</a>
             </div>
             <div>
+                2026 Copyright. Powered by <a href="https://vezlo-web.vercel.app/" target="_blank" class="text-[var(--accent)] hover:underline">Vezlo Web</a>
             </div>
         </div>
     </footer>
