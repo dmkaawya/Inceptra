@@ -1,156 +1,538 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Masterminds</title>
+    <title>Inceptra 25 | The Masterminds</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1; 
-            --secondary: #a855f7; 
-            --bg: #0b0f1a; 
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --text-main: #ffffff;
-            --text-sub: #94a3b8;
+            --primary: #9B6BFF;
+            --secondary: #7C4DFF;
+            --accent-glow: #B388FF;
+            --bg-base: #0F0B1F;
+            --bg-mid: #14102A;
+            --bg-light: #1A1333;
+            --card-bg: rgba(28, 28, 30, 0.6);
+            --text-main: #FFFFFF;
+            --text-sub: #A0A0A5;
+            --border: rgba(155, 107, 255, 0.2);
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
 
         body {
-            background-color: var(--bg);
+            background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-mid) 50%, var(--bg-light) 100%);
             color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-            margin: 0;
-            padding: 4rem 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Header Styling */
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
+        .font-display { font-family: 'Orbitron', sans-serif; }
+
+        /* --- Navigation --- */
+        .navbar {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(15, 11, 31, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
+        .nav-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900; font-size: 1.2rem;
+            background: linear-gradient(90deg, var(--accent-glow), var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links { display: none; gap: 1.5rem; }
+        .nav-links a { color: var(--text-sub); text-decoration: none; font-weight: 600; transition: 0.3s; font-size: 0.9rem; }
+        .nav-links a:hover { color: var(--accent-glow); }
+
+        .menu-btn { display: block; cursor: pointer; z-index: 1001; }
+        .menu-btn span { display: block; width: 25px; height: 2px; margin: 5px auto; background: var(--primary); transition: 0.3s; }
+
+        .mobile-menu {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-base);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            gap: 2rem;
+            transform: translateY(-100%); transition: transform 0.4s ease;
+            z-index: 999;
+        }
+        .mobile-menu.active { transform: translateY(0); }
+        .mobile-menu a { color: var(--text-main); text-decoration: none; font-size: 1.5rem; font-weight: 700; font-family: 'Orbitron', sans-serif; }
+        
+        @media (min-width: 769px) {
+            .nav-links { display: flex; }
+            .menu-btn { display: none; }
+        }
+
+        .main-content { padding-top: 80px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+
+        .section-header { text-align: center; margin-bottom: 3rem; }
         .section-header h2 {
-            font-size: 3rem;
-            margin: 0;
-            background: linear-gradient(to right, #6366f1, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: -1px;
+            font-size: 1.8rem; margin: 0;
+            background: linear-gradient(90deg, var(--accent-glow), var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-transform: uppercase; letter-spacing: 1px;
         }
+        .section-header p { color: var(--text-sub); font-size: 1rem; margin-top: 8px; }
 
-        .section-header p {
-            color: var(--text-sub);
-            font-size: 1.1rem;
-            margin-top: 10px;
+        /* --- Event Info Box --- */
+        .event-info-box {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 20px; padding: 2rem; text-align: center;
+            margin-bottom: 3rem; backdrop-filter: blur(10px);
         }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem; margin-top: 1.5rem;
+        }
+        .info-item h4 { color: var(--accent-glow); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .info-item p { font-size: 1.2rem; font-weight: 600; }
+        
+        .clickable { cursor: pointer; transition: 0.2s; position: relative; display: inline-block; }
+        .clickable:hover { color: var(--accent-glow); }
+        
+        .location-link { color: var(--text-main); text-decoration: none; border-bottom: 1px dashed var(--primary); padding-bottom: 2px; }
+        .location-link:hover { color: var(--accent-glow); border-color: var(--accent-glow); }
 
+        .popup-box {
+            position: absolute; bottom: 120%; left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white; padding: 8px 15px; border-radius: 6px;
+            font-size: 0.8rem; white-space: nowrap; z-index: 10;
+            opacity: 0; visibility: hidden; transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .popup-box::after {
+            content: ''; position: absolute; top: 100%; left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent; border-top-color: var(--primary);
+        }
+        .clickable:hover .popup-box, .clickable:active .popup-box { opacity: 1; visibility: visible; }
+
+        .btn-buy-ticket {
+            display: inline-block; margin-top: 0.5rem;
+            padding: 10px 28px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white; font-weight: 700; font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem; border-radius: 30px;
+            text-decoration: none; transition: 0.3s;
+            box-shadow: 0 0 15px rgba(124, 77, 255, 0.3);
+        }
+        .btn-buy-ticket:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(155, 107, 255, 0.6); }
+
+        /* --- Team Grid --- */
         .team-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            max-width: 1200px;
-            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem; margin-bottom: 4rem;
         }
 
         .team-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            padding: 3rem 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 20px; padding: 2rem 1.5rem; text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-
-        .team-card:hover {
-            transform: translateY(-12px);
-            border-color: var(--secondary);
-            background: rgba(168, 85, 247, 0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
+        .team-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(124, 77, 255, 0.15); }
 
         .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 25px; /* Squircle look */
+            width: 80px; height: 80px; border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            margin: 0 auto 1.5rem;
-            display: flex;
+            margin: 0 auto 1rem auto;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 800; font-size: 1.5rem;
+            box-shadow: 0 0 15px rgba(155, 107, 255, 0.3);
+        }
+        .role { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--accent-glow); letter-spacing: 1px; margin-bottom: 0.3rem; display: block; }
+        .team-card h3 { font-size: 1.3rem; margin: 0.3rem 0; }
+        .bio { color: var(--text-sub); line-height: 1.5; font-size: 0.9rem; }
+
+        /* --- Payment Section --- */
+        .bank-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 4rem; }
+        @media (min-width: 768px) { .bank-grid { grid-template-columns: 1fr 1fr; } }
+
+        .bank-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 1.5rem; transition: 0.3s; }
+        .bank-card:hover { border-color: var(--primary); }
+        .bank-name { font-weight: 700; color: var(--accent-glow); font-size: 1.1rem; margin-bottom: 1rem; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; }
+        .detail-label { color: var(--text-sub); }
+        .detail-value { color: var(--text-main); font-weight: 600; text-align: right; }
+
+        /* --- Contact Section --- */
+        .contact-section { background: rgba(0, 0, 0, 0.2); border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border); margin-bottom: 4rem; }
+        .committee-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+        @media (max-width: 600px) { .committee-list { grid-template-columns: 1fr; } }
+
+        .committee-member { background: rgba(255, 255, 255, 0.03); padding: 1rem; border-radius: 10px; border: 1px solid transparent; cursor: pointer; transition: 0.3s; }
+        .committee-member:hover, .committee-member.active { border-color: var(--primary); background: rgba(155, 107, 255, 0.1); }
+        .member-name { font-weight: 700; font-size: 1rem; }
+        .member-role { font-size: 0.8rem; color: var(--accent-glow); }
+        .member-contact { font-size: 0.8rem; color: var(--text-sub); margin-top: 5px; }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: 0.3rem; color: var(--text-sub); font-size: 0.85rem; font-weight: 600; }
+        .form-input, .form-textarea { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text-main); font-family: 'Rajdhani', sans-serif; font-size: 0.95rem; }
+        .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--primary); }
+        .form-textarea { min-height: 100px; resize: vertical; }
+        
+        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--secondary), var(--primary)); border: none; border-radius: 8px; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.3s; font-family: 'Orbitron', sans-serif; }
+        .btn-submit:hover { box-shadow: 0 5px 15px rgba(155, 107, 255, 0.4); }
+
+        /* --- Social Media Section (Body) --- */
+        .social-section {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 2rem 1rem;
+        }
+        .social-title {
+            font-size: 1.2rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .social-icon-body {
+            display: inline-flex;
             justify-content: center;
             align-items: center;
-            font-weight: 800;
-            font-size: 1.8rem;
+            width: 80px; height: 80px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--accent-glow);
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(155, 107, 255, 0.2);
+        }
+        .social-icon-body:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            transform: rotate(-3deg);
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(155, 107, 255, 0.6);
         }
 
-        .team-card:hover .avatar {
-            transform: rotate(0deg) scale(1.1);
-            transition: 0.3s ease;
+        /* --- Footer (Clean & Simple) --- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            text-align: center;
         }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        
+        .footer-links { display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .footer-link { color: var(--text-sub); text-decoration: none; transition: 0.3s; font-size: 0.85rem; }
+        .footer-link:hover { color: var(--accent-glow); }
 
-        .role {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--primary);
-            letter-spacing: 1.5px;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        h3 {
-            font-size: 1.6rem;
-            margin: 0.5rem 0;
-        }
-
-        .bio {
-            color: var(--text-sub);
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-
-        @media (max-width: 768px) {
-            .section-header h2 { font-size: 2.2rem; }
-            .team-container { grid-template-columns: 1fr; }
-        }
+        .copyright { color: var(--text-sub); font-size: 0.75rem; margin-bottom: 0.5rem; opacity: 0.6; }
+        .powered-by { font-size: 0.7rem; color: var(--text-sub); opacity: 0.4; }
+        .powered-by a { color: var(--primary); text-decoration: none; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <div class="section-header">
-        <h2>The Masterminds</h2>
-        <p>The crew that turned the vision into pixels and code.</p>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-logo">INCEPTRA 25</div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#team">Team</a>
+            <a href="#payment">Payment</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <div class="menu-btn" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#home" onclick="toggleMenu()">Home</a>
+        <a href="#team" onclick="toggleMenu()">Team</a>
+        <a href="#payment" onclick="toggleMenu()">Payment</a>
+        <a href="#contact" onclick="toggleMenu()">Contact</a>
     </div>
 
-    <div class="team-container">
+    <div class="main-content">
         
-        <div class="team-card">
-            <span class="role">Lead Web Developer</span>
-            <div class="avatar">DK</div>
-            <h3>DM Kaawya</h3>
-            <p class="bio">The heavy lifter on the tech side. If the site is fast and the code is clean, it’s because he built it that way.</p>
+        <!-- Home / Event Info Section -->
+        <div id="home" class="container">
+            <div class="event-info-box">
+                <div class="section-header" style="margin-bottom: 0;">
+                    <h2>Event Details</h2>
+                    <p>Join us for an unforgettable experience</p>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h4>Date</h4>
+                        <p class="clickable" onclick="showRemainingDays(this)">
+                            March 17, 2026
+                            <span class="popup-box" id="datePopup"></span>
+                        </p>
+                    </div>
+                    <div class="info-item">
+                        <h4>Time</h4>
+                        <p class="clickable" onclick="showRemainingDays(this)">
+                            09:30 AM - 04:30 PM
+                            <span class="popup-box" id="timePopup"></span>
+                        </p>
+                    </div>
+                    <div class="info-item">
+                        <h4>Venue</h4>
+                        <p>
+                            <a href="https://maps.google.com/?q=Silarich+Hotel+Monaragala" target="_blank" class="location-link">
+                                Silarich Hotel, Monaragala
+                            </a>
+                        </p>
+                    </div>
+                    <div class="info-item">
+                        <h4>Tickets</h4>
+                        <a href="store.html" class="btn-buy-ticket font-display">Buy Ticket</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="team-card">
-            <span class="role">Head of Brand & Graphics</span>
-            <div class="avatar">TR</div>
-            <h3>Thashila Ranoosh</h3>
-            <p class="bio">Owner of the visual identity. Every graphic and color choice came from his desk to ensure the aesthetic was top-tier.</p>
+        <!-- Team Section -->
+        <div id="team" class="container">
+            <div class="section-header">
+                <h2>The Masterminds</h2>
+                <p>The crew that turned the vision into pixels and code.</p>
+            </div>
+
+            <div class="team-container">
+                <!-- Member 1 -->
+                <div class="team-card">
+                    <span class="role">Lead Web Developer</span>
+                    <div class="avatar font-display">DK</div>
+                    <h3>DM Kaawya</h3>
+                    <p class="bio">The heavy lifter on the tech side. Built the fast and clean architecture of the site.</p>
+                </div>
+
+                <!-- Member 2 -->
+                <div class="team-card">
+                    <span class="role">Head of Brand & Graphics</span>
+                    <div class="avatar font-display">TR</div>
+                    <h3>Thashila Ranoosh</h3>
+                    <p class="bio">Owner of the visual identity. Ensured the aesthetic was top-tier from his desk.</p>
+                </div>
+
+                <!-- Member 3 -->
+                <div class="team-card">
+                    <span class="role">Product Concept & Co-Dev</span>
+                    <div class="avatar font-display">NB</div>
+                    <h3>Nadeeja Bandara</h3>
+                    <p class="bio">The hybrid. Conceptualized the digital experience and drove development from day one.</p>
+                </div>
+            </div>
         </div>
 
-        <div class="team-card">
-            <span class="role">Product Concept & Co-Dev</span>
-            <div class="avatar">NB</div>
-            <h3>Nadeeja Bandara</h3>
-            <p class="bio">The hybrid. Conceptualized the entire digital experience and drove both the development and branding from day one.</p>
+        <!-- Payment Section -->
+        <div id="payment" class="container">
+            <div class="section-header">
+                <h2>Payment Details</h2>
+                <p>Secure your spot by transferring to one of the accounts below.</p>
+            </div>
+
+            <div class="bank-grid">
+                <div class="bank-card">
+                    <div class="bank-name">Ceylon Bank</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Account Number</span>
+                        <span class="detail-value">0094709986</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Account Holder</span>
+                        <span class="detail-value">MR. P AT DULMIKA</span>
+                    </div>
+                </div>
+
+                <div class="bank-card">
+                    <div class="bank-name">Peoples Bank</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Account Number</span>
+                        <span class="detail-value">068 2 001 1 0084831</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Account Holder</span>
+                        <span class="detail-value">MR. MJK DAMINDU THISHAN NIMSARA</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div id="contact" class="container">
+            <div class="section-header">
+                <h2>Contact Committee</h2>
+                <p>Select a member to send a direct message.</p>
+            </div>
+
+            <div class="contact-section">
+                <div class="committee-list" id="memberList">
+                    <div class="committee-member" onclick="selectMember(0)">
+                        <div class="member-name">Mr. Kamal Perera</div>
+                        <div class="member-role">Event Coordinator</div>
+                        <div class="member-contact">+94 77 123 4567</div>
+                    </div>
+                    <div class="committee-member" onclick="selectMember(1)">
+                        <div class="member-name">Ms. Nimali Silva</div>
+                        <div class="member-role">Ticketing Manager</div>
+                        <div class="member-contact">+94 71 987 6543</div>
+                    </div>
+                    <div class="committee-member" onclick="selectMember(2)">
+                        <div class="member-name">Mr. Amal Fernando</div>
+                        <div class="member-role">Logistics Head</div>
+                        <div class="member-contact">+94 76 555 4433</div>
+                    </div>
+                    <div class="committee-member" onclick="selectMember(3)">
+                        <div class="member-name">Mr. Dasun W.</div>
+                        <div class="member-role">Public Relations</div>
+                        <div class="member-contact">+94 78 222 3333</div>
+                    </div>
+                </div>
+
+                <form id="messageForm" onsubmit="sendMessage(event)">
+                    <div class="form-group">
+                        <label class="form-label">Sending To</label>
+                        <input type="text" class="form-input" id="recipientName" readonly placeholder="Select a member above">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Your Name</label>
+                        <input type="text" class="form-input" id="senderName" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-input" id="subject" placeholder="Subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-textarea" id="messageBody" placeholder="Type your message..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit font-display">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Social Media Section -->
+        <div class="social-section">
+            <div class="social-title">Follow Us</div>
+            <a href="#" class="social-icon-body">
+                <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
+                </svg>
+            </a>
         </div>
 
     </div>
 
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#" class="footer-link">Terms</a>
+                <a href="#" class="footer-link">Privacy</a>
+            </div>
+
+            <div class="copyright">
+                2026 Inceptra. All Rights Reserved.
+            </div>
+            
+            <div class="powered-by">
+                Powered by <a href="https://vezlo-web.vercel.app" target="_blank">Vezlo Web</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Countdown & Days Remaining Logic ---
+        const targetDate = new Date('2026-03-17T09:30:00').getTime();
+
+        function getRemainingDays() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            if (distance < 0) return 0;
+            return Math.floor(distance / (1000 * 60 * 60 * 24));
+        }
+
+        function showRemainingDays(element) {
+            const days = getRemainingDays();
+            const popup = element.querySelector('.popup-box');
+            
+            if (days > 0) {
+                popup.textContent = `Only ${days} days left!`;
+            } else {
+                popup.textContent = "The event has started!";
+            }
+            
+            popup.style.opacity = '1';
+            popup.style.visibility = 'visible';
+            
+            setTimeout(() => {
+                popup.style.opacity = '0';
+                popup.style.visibility = 'hidden';
+            }, 2000);
+        }
+
+        // --- Contact Form Logic ---
+        const members = [
+            { name: "Mr. Kamal Perera", phone: "+94771234567" },
+            { name: "Ms. Nimali Silva", phone: "+949876543" },
+            { name: "Mr. Amal Fernando", phone: "+94765554433" },
+            { name: "Mr. Dasun Wanigasekara", phone: "+94782223333" }
+        ];
+
+        let selectedMemberIndex = null;
+        const memberElements = document.querySelectorAll('.committee-member');
+
+        function selectMember(index) {
+            selectedMemberIndex = index;
+            memberElements.forEach((el, i) => {
+                if (i === index) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+            document.getElementById('recipientName').value = members[index].name;
+            if(window.innerWidth < 768) {
+                document.getElementById('messageForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function sendMessage(e) {
+            e.preventDefault();
+            if (selectedMemberIndex === null) {
+                alert("Please select a committee member.");
+                return;
+            }
+            const member = members[selectedMemberIndex];
+            const senderName = document.getElementById('senderName').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('messageBody').value;
+            const text = `Hello ${member.name}, this is ${senderName}.\n\nSubject: ${subject}\n\nMessage: ${message}`;
+            const whatsappUrl = `https://wa.me/${member.phone.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // --- Navigation Logic ---
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
