@@ -10,12 +10,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0a0a;
-            --fg: #ffffff;
-            --accent-cyan: #00f5d4;
-            --accent-magenta: #f72585;
-            --card: rgba(20, 20, 20, 0.9);
-            --border: rgba(0, 245, 212, 0.3);
+            /* Background Palette */
+            --bg-base: #0F0B1F;
+            --bg-mid: #14102A;
+            --bg-light: #1A1333;
+            
+            /* Card Palette */
+            --card-base: #111111;
+            --card-elevated: #1C1C1E;
+            
+            /* Brand Purples */
+            --accent-main: #9B6BFF;
+            --accent-deep: #7C4DFF;
+            --accent-glow: #B388FF;
+            
+            /* Text Colors */
+            --text-primary: #FFFFFF;
+            --text-soft: #E6E6E6;
+            --text-muted: #A0A0A5;
         }
 
         * {
@@ -26,54 +38,104 @@
 
         body {
             font-family: 'Rajdhani', sans-serif;
-            background: var(--bg);
-            color: var(--fg);
+            color: var(--text-primary);
             min-height: 100vh;
+            overflow-x: hidden;
+            /* Deep Gradient Background */
+            background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-mid) 50%, var(--bg-light) 100%);
         }
 
         .font-display {
             font-family: 'Orbitron', sans-serif;
         }
 
-        .neon-cyan {
+        /* Main Title Gradient */
+        .title-gradient {
+            background: linear-gradient(90deg, var(--accent-glow), var(--accent-main), var(--accent-deep));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Neon Text Effect */
+        .neon-text {
             text-shadow: 
-                0 0 5px var(--accent-cyan),
-                0 0 10px var(--accent-cyan),
-                0 0 20px var(--accent-cyan);
+                0 0 10px rgba(155, 107, 255, 0.5),
+                0 0 20px rgba(155, 107, 255, 0.3),
+                0 0 40px rgba(124, 77, 255, 0.2);
         }
 
-        .neon-magenta {
-            text-shadow: 
-                0 0 5px var(--accent-magenta),
-                0 0 10px var(--accent-magenta),
-                0 0 20px var(--accent-magenta);
-        }
-
-        .neon-border-cyan {
-            box-shadow: 
-                0 0 5px var(--accent-cyan),
-                0 0 10px var(--accent-cyan);
-        }
-
-        .neon-border-magenta {
-            box-shadow: 
-                0 0 5px var(--accent-magenta),
-                0 0 10px var(--accent-magenta);
-        }
-
+        /* Card Styling */
         .countdown-box {
-            background: var(--card);
-            border: 1px solid var(--border);
+            background: rgba(28, 28, 30, 0.6); /* Elevated Dark Surface with transparency */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(155, 107, 255, 0.2);
+            box-shadow: 
+                0 4px 30px rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(155, 107, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .countdown-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-main), transparent);
+            opacity: 0.5;
         }
 
+        .countdown-box:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(155, 107, 255, 0.5);
+            box-shadow: 
+                0 8px 40px rgba(124, 77, 255, 0.3),
+                inset 0 0 30px rgba(155, 107, 255, 0.1);
+        }
+
+        /* Button Styling */
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            background: linear-gradient(135deg, var(--accent-deep), var(--accent-main));
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(124, 77, 255, 0.4);
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.6s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
         }
 
         .btn-primary:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px var(--accent-cyan), 0 0 40px var(--accent-magenta);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(155, 107, 255, 0.6);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0px);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(15, 11, 31, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .footer-link {
@@ -81,68 +143,87 @@
         }
 
         .footer-link:hover {
-            color: var(--accent-cyan);
+            color: var(--accent-glow);
         }
 
         a:focus-visible, button:focus-visible {
-            outline: 2px solid var(--accent-cyan);
+            outline: 2px solid var(--accent-glow);
             outline-offset: 2px;
+        }
+        
+        /* Subtle background animation */
+        .bg-glow {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(124, 77, 255, 0.03) 0%, transparent 60%);
+            animation: rotate 60s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <main class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+    <div class="bg-glow"></div>
+    
+    <main class="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-16 relative z-10">
         
         <!-- Event badge -->
-        <span class="inline-block px-4 py-2 border border-[var(--accent-cyan)] text-[var(--accent-cyan)] text-sm font-semibold tracking-widest uppercase rounded-full mb-6">
+        <span class="inline-block px-5 py-2 border border-[var(--accent-main)] text-[var(--accent-glow)] text-xs sm:text-sm font-semibold tracking-[0.25em] uppercase rounded-full mb-8 bg-[#0F0B1F]/50 backdrop-blur-sm">
             March 17, 2026
         </span>
         
         <!-- Main title -->
-        <h1 class="font-display font-black text-5xl sm:text-7xl md:text-8xl text-center mb-4">
-            <span class="neon-cyan text-[var(--accent-cyan)]">INCEPTRA</span>
-            <span class="neon-magenta text-[var(--accent-magenta)]"> 25</span>
+        <h1 class="font-display font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl text-center mb-5 leading-tight neon-text">
+            <span class="title-gradient">INCEPTRA 25</span>
         </h1>
         
         <!-- Tagline -->
-        <p class="text-lg sm:text-xl text-gray-400 text-center max-w-2xl mb-10 tracking-wide">
+        <p class="text-base sm:text-lg md:text-xl text-[var(--text-muted)] text-center max-w-xl mb-12 sm:mb-16 tracking-wider px-4">
             Where Beginnings Become Legacy
         </p>
         
         <!-- Countdown Timer -->
-        <div class="w-full max-w-4xl mb-10">
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 px-4">
+        <div class="w-full max-w-5xl mb-12 sm:mb-16 px-2">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
                 
                 <!-- Days -->
-                <div class="countdown-box rounded-xl p-4 sm:p-6 text-center neon-border-cyan">
-                    <div class="font-display font-black text-4xl sm:text-5xl md:text-6xl text-[var(--accent-cyan)]" id="days">000</div>
-                    <div class="text-gray-400 uppercase tracking-widest text-xs sm:text-sm mt-2">Days</div>
+                <div class="countdown-box rounded-2xl p-5 sm:p-8 text-center">
+                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-2" id="days">000</div>
+                    <div class="text-[var(--accent-main)] uppercase tracking-[0.2em] text-[10px] sm:text-sm font-bold">Days</div>
                 </div>
                 
                 <!-- Hours -->
-                <div class="countdown-box rounded-xl p-4 sm:p-6 text-center neon-border-magenta">
-                    <div class="font-display font-black text-4xl sm:text-5xl md:text-6xl text-[var(--accent-magenta)]" id="hours">00</div>
-                    <div class="text-gray-400 uppercase tracking-widest text-xs sm:text-sm mt-2">Hours</div>
+                <div class="countdown-box rounded-2xl p-5 sm:p-8 text-center">
+                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-2" id="hours">00</div>
+                    <div class="text-[var(--accent-main)] uppercase tracking-[0.2em] text-[10px] sm:text-sm font-bold">Hours</div>
                 </div>
                 
                 <!-- Minutes -->
-                <div class="countdown-box rounded-xl p-4 sm:p-6 text-center neon-border-cyan">
-                    <div class="font-display font-black text-4xl sm:text-5xl md:text-6xl text-[var(--accent-cyan)]" id="minutes">00</div>
-                    <div class="text-gray-400 uppercase tracking-widest text-xs sm:text-sm mt-2">Minutes</div>
+                <div class="countdown-box rounded-2xl p-5 sm:p-8 text-center">
+                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-2" id="minutes">00</div>
+                    <div class="text-[var(--accent-main)] uppercase tracking-[0.2em] text-[10px] sm:text-sm font-bold">Minutes</div>
                 </div>
                 
                 <!-- Seconds -->
-                <div class="countdown-box rounded-xl p-4 sm:p-6 text-center neon-border-magenta">
-                    <div class="font-display font-black text-4xl sm:text-5xl md:text-6xl text-[var(--accent-magenta)]" id="seconds">00</div>
-                    <div class="text-gray-400 uppercase tracking-widest text-xs sm:text-sm mt-2">Seconds</div>
+                <div class="countdown-box rounded-2xl p-5 sm:p-8 text-center">
+                    <div class="font-display font-black text-4xl sm:text-6xl md:text-7xl text-[var(--text-primary)] mb-2" id="seconds">00</div>
+                    <div class="text-[var(--accent-main)] uppercase tracking-[0.2em] text-[10px] sm:text-sm font-bold">Seconds</div>
                 </div>
             </div>
         </div>
         
         <!-- Buy Ticket Button -->
-        <a href="store.html" class="btn-primary inline-flex items-center gap-3 px-8 py-4 rounded-full font-display font-bold text-lg text-white tracking-wider">
+        <a href="store.html" class="btn-primary inline-flex items-center gap-3 px-10 py-4 rounded-full font-display font-bold text-base sm:text-lg text-white tracking-wider">
             <span>Buy Ticket</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
         </a>
@@ -150,13 +231,13 @@
     </main>
     
     <!-- Footer -->
-    <footer class="border-t border-gray-800 py-6 px-4">
+    <footer class="py-6 sm:py-8 px-4">
         <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="text-gray-500 text-sm text-center sm:text-left">
+            <div class="text-[var(--text-muted)] text-xs sm:text-sm text-center sm:text-left tracking-wide">
                 2026 Inceptra. All Rights Reserved.
             </div>
             <div>
-                <a href="support.html" class="footer-link text-gray-400 text-sm font-medium">
+                <a href="support.html" class="footer-link text-[var(--text-muted)] text-xs sm:text-sm font-medium hover:text-[var(--accent-glow)]">
                     Support
                 </a>
             </div>
@@ -164,7 +245,8 @@
     </footer>
 
     <script>
-        const targetDate = new Date('2026-03-17T10:00:00').getTime();
+        // Countdown Logic
+        const targetDate = new Date('2026-03-17T09:30:00').getTime();
         
         const daysEl = document.getElementById('days');
         const hoursEl = document.getElementById('hours');
