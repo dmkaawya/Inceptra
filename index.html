@@ -40,6 +40,25 @@
             box-sizing: border-box;
         }
 
+        .navbar {
+    /* වෙනස් කළ කොටස (Safari සහ අනිත් ඒවට සපෝට් කරන්න) */
+    position: -webkit-sticky; 
+    position: sticky;
+    top: 0;
+
+    /* ඔයාගේ පරණ Design එක එහෙම්මම තියෙනවා */
+    width: 100%;
+    /* iPhone වල notch එකෙන් බේරෙන්න padding-top එක update කරලා තියෙන්නේ */
+    padding: calc(1rem + env(safe-area-inset-top)) 1.5rem 1rem 1.5rem; 
+    background: rgba(15, 11, 31, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+}
+
         body {
             font-family: 'Rajdhani', sans-serif;
             color: var(--text-primary);
